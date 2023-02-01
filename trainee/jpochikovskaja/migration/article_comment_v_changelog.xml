@@ -1,0 +1,30 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" 
+    xmlns:pro="http://www.liquibase.org/xml/ns/pro" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+                        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog 
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+                        
+       <changeSet author="Yulia P (generated)" id="1675177265351-6">
+        <createView 
+        fullDefinition="true" 
+        viewName="ARTICLE_COMMENT_V">
+        CREATE OR REPLACE FORCE VIEW "ARTICLE_COMMENT_V" ("ID", "ARTICLE_ID", "AUTHOR", "TITLE", "TS", "RATING", "COMMENTER", "CONTENT", "IN_REPLY_TO") AS select 
+            a.id, 
+            a.article_id, 
+            b.author, 
+            b.title, 
+            a.ts, 
+            a.rating, 
+            a.commenter, 
+            a.content, 
+            SUBSTR(c.content,1,50) AS in_reply_to
+from article_comment a inner join article b on a.article_id = b.id left outer join article_comment c on a.reply_to_id = c.id
+</createView>
+    </changeSet>
+    
+</databaseChangeLog>
