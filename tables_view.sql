@@ -32,7 +32,7 @@ create table audit_action(
     user_name varchar2(128) not null, 
     action_type char(1) not null, 
     action_summary varchar2(250) not null, 
-    constraint  audit_action_pk primary key(id),
+    constraint audit_action_pk primary key(id),
     constraint check_action_type check (action_type in ('I', 'U', 'D')));
     
 create view article_comment_v 
@@ -46,4 +46,6 @@ as select
             a.commenter, 
             a.content, 
             SUBSTR(c.content,1,50) AS in_reply_to
-from article_comment a inner join article b on a.article_id = b.id left outer join article_comment c on a.reply_to_id =c.id;
+from article_comment a 
+join article b on a.article_id = b.id 
+left join article_comment c on a.reply_to_id =c.id;
