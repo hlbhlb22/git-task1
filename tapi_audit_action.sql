@@ -2,6 +2,7 @@
 --drop trigger article_audit;
 --drop trigger article_comment_audit;
 
+-- TODO: move this proc into tapi_audit package
 create or replace PROCEDURE auditProc(
     v_table_name in varchar,
     v_user_name in varchar,
@@ -40,6 +41,8 @@ begin
              v_action_summary := 'Delete from table article';
         auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
     end if;
+    
+    -- TODO: do a single call of auditProc(...) to avoid copy-paste'ing within if...else 
      COMMIT;
 end;
 
@@ -70,6 +73,9 @@ begin
              v_action_summary := 'Delete from table article_comment';
         auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
     end if;
+    
+    -- TODO: do a single call of auditProc()
+    
      COMMIT;
 end;
 
@@ -111,7 +117,7 @@ procedure activate_audit_trigger(i_table_name varchar2, i_enable boolean )
         when EXCEPTION_PACKAGE.NO_ACCESS then
             RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_NO_ACCESS, 'No access');
         when EXCEPTION_PACKAGE.TABLE_NOTFOUNT then
-            RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_TABLE_NOTFOUNT, 'Table ' || i_table_name || ' doesn`t exist');
+            RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_TABLE_NOTFOUNT, 'Table ' || i_table_name || ' doesn''t exist');
     end;  
 
 procedure enable_audit(i_table_name varchar2)
