@@ -1,7 +1,3 @@
---drop trigger chaeckAuthor;
---drop trigger chaeckÑontent;
---drop trigger checkTitle;
-
 create or replace trigger chaeckAuthor
 before insert or update on article
 for each row
@@ -14,7 +10,7 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_PERSON_NOT_SPECIFIED,'Person is not specified');
 end;
 
-create or replace trigger chaeckÑontent
+create or replace trigger chaeckï¿½ontent
 before insert or update on article
 for each row
 begin
@@ -24,7 +20,7 @@ begin
   
 EXCEPTION
     WHEN EXCEPTION_PACKAGE.CONTENT_EMPTY THEN        
-        RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_CONTENT_EMPTY,'Content can’t be empty');
+        RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_CONTENT_EMPTY,'Content canï¿½t be empty');
 end;
 
 create or replace trigger checkTitle

@@ -1,0 +1,11 @@
+CREATE USER yp_admin IDENTIFIED BY innodba202301302
+DEFAULT TABLESPACE USERS QUOTA UNLIMITED ON USERS
+TEMPORARY TABLESPACE TEMP;
+
+grant CREATE SESSION to yp_admin;
+grant EXECUTE on  yp_base.tapi_audit to yp_admin;
+
+
+
+
+

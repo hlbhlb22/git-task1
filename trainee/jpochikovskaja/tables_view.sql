@@ -1,8 +1,3 @@
---drop table article;
---drop table article_comment;
---drop table audit_action;
---drop view article_comment_v;
-
 create table article (
     id int generated always as identity not null,
     crt_dt date default sysdate not null, 

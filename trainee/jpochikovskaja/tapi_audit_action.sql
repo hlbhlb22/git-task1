@@ -1,19 +1,3 @@
---drop PROCEDURE auditProc;
---drop trigger article_audit;
---drop trigger article_comment_audit;
-
--- TODO: move this proc into tapi_audit package
-create or replace PROCEDURE auditProc(
-    v_table_name in varchar,
-    v_user_name in varchar,
-    v_action_type in char,
-    v_action_summary in varchar)
-IS 
-BEGIN
-  INSERT INTO audit_action(table_name, user_name, action_type, action_summary) 
-    VALUES(v_table_name, v_user_name, v_action_type, v_action_summary);
-END auditProc;
-
 create or replace trigger article_audit
 before insert or update or delete on article
 for each row
@@ -26,26 +10,25 @@ DECLARE
 
 begin
     v_table_name := 'article';
+    
     select username into  v_user_name  from user_users;
-
+    
     if inserting
         then v_action_type := 'I';
              v_action_summary := 'Insert into table article';
-         auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
     elsif updating 
         then v_action_type := 'U';
              v_action_summary := 'Update table article';
-        auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
     elsif deleting 
         then v_action_type := 'D';
-             v_action_summary := 'Delete from table article';
-        auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
+             v_action_summary := 'Delete from table article';       
     end if;
-    
-    -- TODO: do a single call of auditProc(...) to avoid copy-paste'ing within if...else 
-     COMMIT;
+    auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
+    COMMIT;
 end;
-
+/
+alter trigger article_audit disable;
+/
 create or replace trigger article_comment_audit
 before insert or update or delete on article_comment
 for each row
@@ -58,27 +41,26 @@ DECLARE
 
 begin
     v_table_name := 'article_comment';
+    
     select username into  v_user_name  from user_users;
 
     if inserting
         then v_action_type := 'I';
              v_action_summary := 'Insert into table article_comment';
-         auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
     elsif updating 
         then v_action_type := 'U';
              v_action_summary := 'Update table article_comment';
-        auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
     elsif deleting 
         then v_action_type := 'D';
              v_action_summary := 'Delete from table article_comment';
-        auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
     end if;
-    
-    -- TODO: do a single call of auditProc()
-    
-     COMMIT;
+    auditProc(v_table_name, v_user_name, v_action_type, v_action_summary);
+    COMMIT;
 end;
+/
+alter trigger article_comment_audit disable;
 
+/
 create or replace context taudit using tapi_audit accessed globally;
 
 create or replace PACKAGE tapi_audit IS
@@ -86,10 +68,21 @@ create or replace PACKAGE tapi_audit IS
     procedure enable_audit (i_table_name varchar2);
     procedure disable_audit (i_table_name varchar2);
 end tapi_audit;
-
+/
 create or replace PACKAGE BODY tapi_audit IS 
 
 i_password varchar2(25) := 'secret4576';
+
+procedure auditProc(
+    v_table_name in varchar,
+    v_user_name in varchar,
+    v_action_type in char,
+    v_action_summary in varchar)
+    is
+    begin
+        insert into audit_action(table_name, user_name, action_type, action_summary) 
+            values (v_table_name, v_user_name, v_action_type, v_action_summary);
+    end auditProc;
 
 procedure specify_secret_key(i_key varchar2)
     is
@@ -132,6 +125,6 @@ procedure disable_audit(i_table_name varchar2)
        activate_audit_trigger(i_table_name, false);
     end;
 END tapi_audit;
-
+/
 
 
