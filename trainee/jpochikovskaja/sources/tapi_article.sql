@@ -1,43 +1,46 @@
-create or replace trigger chaeckAuthor
+create or replace trigger chaeck_author
 before insert or update on article
 for each row
 begin
     if :new.author is null
-        then RAISE EXCEPTION_PACKAGE.PERSON_NOT_SPECIFIED;
+        then raise EXCEPTION_PACKAGE.PERSON_NOT_SPECIFIED;
     end if;
-EXCEPTION
-    WHEN EXCEPTION_PACKAGE.PERSON_NOT_SPECIFIED THEN        
+exception
+    when EXCEPTION_PACKAGE.PERSON_NOT_SPECIFIED then        
         RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_PERSON_NOT_SPECIFIED,'Person is not specified');
 end;
+/
 
-create or replace trigger chaeck�ontent
+create or replace trigger chaeck_content
 before insert or update on article
 for each row
 begin
     if :new.content is null
-        then RAISE EXCEPTION_PACKAGE.CONTENT_EMPTY;
+        then raise EXCEPTION_PACKAGE.CONTENT_EMPTY;
     end if;
   
-EXCEPTION
-    WHEN EXCEPTION_PACKAGE.CONTENT_EMPTY THEN        
-        RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_CONTENT_EMPTY,'Content can�t be empty');
+exception
+    when EXCEPTION_PACKAGE.CONTENT_EMPTY then        
+        RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_CONTENT_EMPTY,'Content cant be empty');
 end;
+/
 
-create or replace trigger checkTitle
+create or replace trigger check_title
 before insert or update on article
 for each row
 begin
     if :new.title is null
-        then RAISE EXCEPTION_PACKAGE.TITLE_SPECIFIED;
+        then raise EXCEPTION_PACKAGE.TITLE_SPECIFIED;
     end if;
     
-    if UPPER(:new.title) = :new.title
+    if upper(:new.title) = :new.title
         then RAISE EXCEPTION_PACKAGE.TITLE_UPPER_CASE;
     end if;
    
-EXCEPTION
-    WHEN EXCEPTION_PACKAGE.TITLE_SPECIFIED THEN        
+exception
+    when EXCEPTION_PACKAGE.TITLE_SPECIFIED then        
         RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_TITLE_SPECIFIED,'Title must be specified');
-    WHEN EXCEPTION_PACKAGE.TITLE_UPPER_CASE THEN        
-        RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_TITLE_UPPER_CASE,'Title can`t be in UPPER CASE');
+    when EXCEPTION_PACKAGE.TITLE_UPPER_CASE then        
+        RAISE_APPLICATION_ERROR(EXCEPTION_PACKAGE.ID_TITLE_UPPER_CASE,'Title cant be in UPPER CASE');
 end;
+/

@@ -32,7 +32,7 @@ create table audit_action(
     
 create view article_comment_v 
 as select 
-            a.id, 
+            a.id as comment_id, 
             a.article_id, 
             b.author, 
             b.title, 

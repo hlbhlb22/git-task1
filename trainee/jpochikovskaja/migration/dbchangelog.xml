@@ -8,36 +8,25 @@
                         http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog 
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     
-
-    <!-- <include file="tapi_comment_changelog.xml" relativeToChangelogFile="true"/> -->
-    <!-- <include file="exceptions_changelog.xml" relativeToChangelogFile="true"/> -->
-
-    <!-- USERS -->
-    <!-- <include file="user_yp_base_changelog.xml" relativeToChangelogFile="true"/> -->   
-    <!-- <include file="user_yp_app_changelog.xml" relativeToChangelogFile="true"/> -->
-    <!-- <include file="user_yp_admin_changelog.xml" relativeToChangelogFile="true"/> -->
-
+    <!-- USER -->
+    <!-- <include file="user_yp_base_changelog.xml" relativeToChangelogFile="true"/>    -->
+    
     <!-- TABLES -->
-    <!-- <include file="article_changelog.xml" relativeToChangelogFile="true"/> -->
-    <!-- <include file="article_comment_changelog.xml" relativeToChangelogFile="true"/> -->
-    <!-- <include file="audit_action_changelog.xml" relativeToChangelogFile="true"/> -->
+    <!-- <include file="article_changelog.xml" relativeToChangelogFile="true"/>
+    <include file="article_comment_changelog.xml" relativeToChangelogFile="true"/>
+    <include file="audit_action_changelog.xml" relativeToChangelogFile="true"/> -->
 
     <!-- VIEW -->
     <!-- <include file="article_comment_v_changelog.xml" relativeToChangelogFile="true"/> -->
 
     <!-- PACKAGES -->
-    <!-- <include file="exceptions_changelog.xml" relativeToChangelogFile="true"/> -->
-    <!-- <include file="tapi_comment_changelog.xml" relativeToChangelogFile="true"/> -->
+    <!-- <include file="exceptions_changelog.xml" relativeToChangelogFile="true"/>
+    <include file="tapi_comment_changelog.xml" relativeToChangelogFile="true"/>
     <include file="tapi_audit_action_changelog.xml" relativeToChangelogFile="true"/>
-
-
-
-
-
-
-
-
-
-
+    <include file="tapi_article_changelog.xml" relativeToChangelogFile="true"/> -->
+    
+    <!-- USERS -->
+    <include file="user_yp_app_changelog.xml" relativeToChangelogFile="true"/> 
+    <include file="user_yp_admin_changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

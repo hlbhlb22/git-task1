@@ -1,11 +1,11 @@
-create or replace PACKAGE tapi_comment IS 
+create or replace package tapi_comment is 
     procedure create_comment(i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob);
    	procedure change_comment(i_ac_id int, i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob);
    	procedure add_like(i_ac_id int);
    	procedure add_dislike(i_ac_id int);
 end tapi_comment;
 /
-create or replace PACKAGE BODY tapi_comment IS 	
+create or replace package body tapi_comment is 	
 
 procedure save_comment(i_ac_id int, i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob)
     is 
@@ -66,5 +66,5 @@ procedure add_dislike(i_ac_id int)
             dbms_output.put_line('Add Dislike'); 
 	end add_dislike;
 
-END tapi_comment;
+end tapi_comment;
 /

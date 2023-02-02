@@ -9,7 +9,7 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
                         
-       <changeSet author="Yulia P (generated)" id="1675177265351-6">
+       <changeSet author="Yulia P (generated)" id="1675177265353-5">
         <createView 
         fullDefinition="true" 
         viewName="ARTICLE_COMMENT_V">

@@ -9,7 +9,7 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
                         
                            
- <changeSet author="Yulia P (generated)" id="1675177265351-3">
+ <changeSet author="Yulia P (generated)" id="1675177265353-4">
         <createTable tableName="AUDIT_ACTION">
             <column autoIncrement="true" defaultOnNull="false" generationType="ALWAYS" name="ID" type="NUMBER(*, 0)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="AUDIT_ACTION_PK"/>

@@ -22,4 +22,4 @@ create or replace PACKAGE EXCEPTION_PACKAGE IS
    	pragma exception_init(DIRECT_DML_PROHIBITED, -20202);
     pragma exception_init(TABLE_NOTFOUNT, -20203); 
     pragma exception_init(NO_ACCESS, -20204); 
-END;
+end;

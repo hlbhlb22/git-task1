@@ -8,12 +8,11 @@
                         http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog 
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     
-<changeSet  author="Yulia P (generated)" id="1675177265353-8">
+<changeSet  author="Yulia P (generated)" id="1675177265353-15">
     <sqlFile   
         dbms="oracle"
         encoding="utf8"
-        endDelimiter="/"
-        path="C:\Users\37529\Documents\1Work\dblab_source\trainee\jpochikovskaja\sources\tapi_audit_action.sql"
+        path="C:\Users\37529\Documents\1Work\dblab_source\trainee\jpochikovskaja\sources\users_yp_admin.sql"
         relativeToChangelogFile="true"
         splitStatements="true"
         stripComments="true"/>
