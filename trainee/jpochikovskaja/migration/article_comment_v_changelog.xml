@@ -14,7 +14,7 @@
         fullDefinition="true" 
         viewName="ARTICLE_COMMENT_V">
         CREATE OR REPLACE FORCE VIEW "ARTICLE_COMMENT_V" ("ID", "ARTICLE_ID", "AUTHOR", "TITLE", "TS", "RATING", "COMMENTER", "CONTENT", "IN_REPLY_TO") AS select 
-            a.id, 
+            a.id as comment_id, 
             a.article_id, 
             b.author, 
             b.title, 

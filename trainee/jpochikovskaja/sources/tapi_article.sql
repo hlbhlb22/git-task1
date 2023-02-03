@@ -1,6 +1,6 @@
 create or replace trigger chaeck_author
 before insert or update on article
-for each row
+for each row follows article_audit
 begin
     if :new.author is null
         then raise EXCEPTION_PACKAGE.PERSON_NOT_SPECIFIED;
@@ -13,7 +13,7 @@ end;
 
 create or replace trigger chaeck_content
 before insert or update on article
-for each row
+for each row follows article_audit
 begin
     if :new.content is null
         then raise EXCEPTION_PACKAGE.CONTENT_EMPTY;
@@ -27,7 +27,7 @@ end;
 
 create or replace trigger check_title
 before insert or update on article
-for each row
+for each row follows article_audit
 begin
     if :new.title is null
         then raise EXCEPTION_PACKAGE.TITLE_SPECIFIED;
