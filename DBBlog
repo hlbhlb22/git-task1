@@ -1,0 +1,216 @@
+create table article (id serial not null,
+crt_dt timestamp default current_timestamp not null,
+mod_dt timestamp default current_timestamp not null,
+author varchar(128) not null,
+title varchar(50) not null,
+"content" text not null,
+constraint article_pk primary key (id));
+
+create table article_comment (id serial not null,
+article_id int not null,
+ts timestamp default current_timestamp not null,
+reply_to_id int,
+rating int,
+votes int,
+commenter varchar(128) not null,
+"content" text not null,
+constraint article_comment_pk primary key(id),
+constraint article_comment_fk_article foreign key (article_id) references article(id),
+constraint article_comment_fk_article_comment foreign key (reply_to_id) references article_comment(id));
+
+create table audit_action (id bigserial not null,
+ts timestamp not null,
+table_name varchar(128) not null,
+user_name varchar(128) not null,
+action_type char(1) not null,
+action_summary varchar(250) not null,
+constraint audit_action_pk primary key (id));
+create function article_trg_biur() returns trigger as $article_trg_biur$ begin if new.author is null
+or new.author like '' then raise exception 'Person is not specified'
+	using errcode = '01501';
+end if;
+
+if new.title is null
+or new.title = '' then raise exception 'Title must be specified'
+	using errcode = '01504';
+end if;
+
+if length(new.title) > 1 then if lower(substring(new.title, 2)) not like substring(new.title,
+2) then raise exception 'Title can`t be in UPPER CASE'
+	using errcode = '01503';
+end if;
+end if;
+
+if new."content" is null
+or new."content" = '' then raise exception 'Content can`t be empty'
+	using errcode = '01502';
+end if;
+
+return new;
+end $article_trg_biur$ language plpgsql;
+
+create trigger article_trg_biur before
+insert
+	or
+update
+	on
+	article for each row execute function article_trg_biur();
+
+create procedure tapi_comment_save(i_id int,
+i_article_id int,
+i_reply_to_id int,
+i_rating int,
+i_votes int,
+i_commenter varchar (128),
+i_content text) language plpgsql as $$ begin
+insert
+	into
+	article_comment (id,
+	article_id,
+	reply_to_id,
+	commenter,
+	"content")
+values (i_id,
+i_article_id,
+i_reply_to_id,
+i_commenter,
+p_content) on
+conflict (id) do
+update
+set
+	rating = i_rating,
+	votes = p_votes,
+	"content" = i_content;
+end;
+
+$$;
+
+create procedure tapi_comment_create (i_article_id int,
+i_reply_to_id int,
+i_commenter varchar (128),
+i_content text) language plpgsql as $$ declare v_record record;
+
+begin
+select
+	max(id) as id
+into
+	v_record
+from
+	article_comment;
+
+call tapi_comment_save(v_record.id + 1,
+i_article_id,
+i_reply_to_id,
+null,
+null,
+i_commenter,
+i_content);
+end;
+
+$$;
+
+create procedure tapi_comment_change(i_id int,
+i_content text) language plpgsql as $$ declare v_record record;
+begin 
+select
+	*
+into
+	v_record
+from
+	article_comment
+where
+	id = i_id;
+
+call tapi_comment_save (i_id,
+v_record.article_id,
+v_record.reply_to_id,
+v_record.rating,
+v_record.votes,
+v_record.commenter,
+i_content);
+end;
+
+$$;
+
+create procedure tapi_comment_add_like (i_id int) language plpgsql as $$ declare v_record record;
+
+begin
+select
+	*
+	into
+		v_record
+from
+		article_comment
+where
+		id = i_id;
+
+call tapi_comment_save(i_id,
+v_record.article_id,
+v_record.reply_to_id,
+case
+	when v_record.rating is not null then v_record.rating + 1
+	else 1
+end,
+case
+	when v_record.votes is not null then v_record.votes + 1
+	else 1
+end,
+v_record.commenter,
+v_record."content");
+end;
+
+$$;
+
+create procedure tapi_comment_add_dislike (i_id int) language plpgsql as $$ declare v_record record;
+
+begin
+select
+	*
+	into
+		v_record
+from
+		article_comment
+where
+		id = i_id;
+
+call tapi_comment_save(i_id,
+v_record.article_id,
+v_record.reply_to_id,
+case
+	when v_record.rating is not null then v_record.rating - 1
+	else -1
+end,
+case
+	when v_record.votes is not null then v_record.votes + 1
+	else 1
+end,
+v_record.commenter,
+v_record."content");
+end;
+
+$$;
+
+create view article_comment_v as
+select
+	ac.id as id,
+	ac.article_id as article_id,
+	a.author as article_author,
+	a.title as article_title,
+	ac.ts as ts,
+	ac.rating as rating,
+	ac.commenter as commenter,
+	ac."content" as "content",
+	(
+	select
+		substring(ac."content",
+		1,
+		case
+			when length(ac."content") > 50 then 50
+			else length(ac."content")
+		end)
+	from
+		article_comment ac) as in_reply_to
+from
+	article_comment ac
+inner join article a on
+	ac.article_id = a.id
