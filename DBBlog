@@ -66,19 +66,19 @@ IF;
 END;
 
 CREATE OR REPLACE
-PROCEDURE tapi_comment_save (i_record RECORD)
+PROCEDURE tapi_comment_save (i_record IN article_comment%rowtype)
 AS
 BEGIN
 	MERGE
 INTO
 	article_comment ac
-		USING i_recors ir
+		USING i_record ir
     ON
 	(ac.id = ir.id)
 	WHEN MATCHED THEN
     UPDATE
 SET
-	ac.rating = it.rating,
+	ac.rating = ir.rating,
 	ac.votes = ir.votes,
 	ac.content = ir.content
 	WHEN NOT MATCHED THEN
@@ -91,4 +91,31 @@ VALUES (ir.article_id,
 ir.reply_to_id,
 ir.commenter,
 ir.content);
-END;
+END tapi_comment_save;
+
+CREATE
+OR REPLACE
+PROCEDURE tapi_comment_create(i_article_id IN NUMBER,
+i_reply_to_id IN NUMBER,
+i_commenter IN varchar2, i_content IN clob) AS v_record article_comment%rowtype;
+BEGIN
+	SELECT
+	CASE
+		WHEN max(id) IS NULL THEN 1
+		ELSE max(id) + 1
+	END
+INTO
+	v_record.id
+FROM
+	ARTICLE_COMMENT ac;
+
+v_record.article_id := i_article_id;
+
+v_record.reply_to_id := i_reply_to_id;
+
+v_record.commenter := i_commenter;
+
+v_record.content := i_content;
+
+CALL tapi_comment_save(v_record);
+END tapi_comment_create;
