@@ -1,97 +1,4 @@
 CREATE OR REPLACE
-VIEW DIM_ARTICLE_V AS
-SELECT
-	CASE
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%MONDAY%' THEN 1
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%TUESDAY%' THEN 2
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%WEDNESDAY%' THEN 3
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%THURSDAY%' THEN 4
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%FRIDAY%' THEN 5
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%SATURDAY%' THEN 6
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%SUNDAY%' THEN 7
-	END AS week_day,
-	count(*) AS num_of_articles,
-	TO_CHAR(dd.D_DATE, 'dd.MM.yyyy') AS cur_date
-FROM
-	DIM_ARTICLE da
-LEFT JOIN DIM_DATES dd ON
-	TO_CHAR(da.crt_dt, ' dd.MM.yyyy') = TO_CHAR(dd.D_DATE, ' dd.MM.yyyy')
-WHERE
-	da.IS_ACT_IND = 1
-GROUP BY
-	TO_CHAR(dd.D_DATE, 'dd.MM.yyyy'),
-	TO_CHAR(dd.D_DATE, 'DAY');
-
-CREATE OR REPLACE
-VIEW F_ARTICLE_COMMENT_V AS
-SELECT
-	tt.hour_period AS hour_period,
-	tt.exact_num_of_comments AS exact_num_of_comments,
-	(tt.exact_num_of_comments + tt.lg + tt.ld) / 3 AS rolling_num_of_comments,
-	tt.cur_date AS cur_date
-FROM
-	(
-	SELECT
-		t.hour_period AS hour_period,
-		t.exact_num_of_comments AS exact_num_of_comments,
-		CASE
-			WHEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments) IS NULL THEN 0
-			ELSE CASE
-				WHEN hour_period - 1 = lead(t.hour_period) OVER(ORDER BY t.hour_period) THEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments)
-				ELSE 0
-			END
-		END AS lg,
-		CASE
-			WHEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments) IS NULL THEN 0
-			ELSE CASE
-				WHEN hour_period + 1 = lead(t.hour_period) OVER(ORDER BY t.hour_period) THEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments)
-				ELSE 0
-			END
-		END AS ld,
-		t.cur_date AS cur_date
-	FROM
-		(
-		SELECT
-			-1 AS hour_period,
-			count(*) AS exact_num_of_comments,
-			TO_CHAR(dd.D_DATE, 'dd.MM.yyyy') AS cur_date
-		FROM
-			F_ARTICLE_COMMENT fac
-		INNER JOIN DIM_DATES dd ON
-			dd.ID = fac.DATE_ID
-		WHERE
-			EXTRACT(HOUR FROM fac.TIME_IVAL) = 23
-		GROUP BY
-			TO_CHAR(dd.D_DATE, 'dd.MM.yyyy'),
-			EXTRACT(HOUR FROM fac.TIME_IVAL)
-	UNION ALL
-		SELECT
-			EXTRACT(HOUR FROM fac.TIME_IVAL) AS hour_period,
-			count(*) AS exact_num_of_comments,
-			TO_CHAR(dd.D_DATE, 'dd.MM.yyyy') AS cur_date
-		FROM
-			F_ARTICLE_COMMENT fac
-		INNER JOIN DIM_DATES dd ON
-			dd.ID = fac.DATE_ID
-		GROUP BY
-			TO_CHAR(dd.D_DATE, 'dd.MM.yyyy'),
-			EXTRACT(HOUR FROM fac.TIME_IVAL)
-	UNION ALL
-		SELECT
-			24 AS hour_period,
-			count(*) AS exact_num_of_comments,
-			TO_CHAR(dd.D_DATE, 'dd.MM.yyyy') AS cur_date
-		FROM
-			F_ARTICLE_COMMENT fac
-		INNER JOIN DIM_DATES dd ON
-			dd.ID = fac.DATE_ID
-		WHERE
-			EXTRACT(HOUR FROM fac.TIME_IVAL) = 0
-		GROUP BY
-			TO_CHAR(dd.D_DATE, 'dd.MM.yyyy'),
-			EXTRACT(HOUR FROM fac.TIME_IVAL)) t) tt;
-
-CREATE OR REPLACE
 TYPE report_articles_type AS OBJECT (week_day int,
 num_of_articles int);
 
@@ -119,34 +26,44 @@ CREATE OR REPLACE
 PACKAGE
 	BODY stats AS FUNCTION report_articles(i_begin_date IN DATE,
 	i_end_date IN DATE) RETURN report_articles_table PIPELINED IS CURSOR article_c IS
-SELECT
-	week_day,
-	num_of_articles,
-	cur_date
+CASE
+		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%MONDAY%' THEN 1
+		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%TUESDAY%' THEN 2
+		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%WEDNESDAY%' THEN 3
+		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%THURSDAY%' THEN 4
+		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%FRIDAY%' THEN 5
+		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%SATURDAY%' THEN 6
+		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%SUNDAY%' THEN 7
+	END AS week_day,
+	count(*) AS num_of_articles,
+	TO_CHAR(dd.D_DATE, 'dd.MM.yyyy') AS cur_date
 FROM
-	DIM_ARTICLE_v;
+	DIM_ARTICLE da
+LEFT JOIN DIM_DATES dd ON
+	TO_CHAR(da.crt_dt, ' dd.MM.yyyy') = TO_CHAR(dd.D_DATE, ' dd.MM.yyyy')
+WHERE
+	da.IS_ACT_IND = 1
+	AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') >= to_date(to_char(i_begin_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
+	AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') <= to_date(to_char(i_end_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
+GROUP BY
+	TO_CHAR(dd.D_DATE, 'DAY');
 
 v_week_day int;
 
 v_num_of_articles int;
-
-v_cur_date varchar(10);
-
-BEGIN OPEN article_c;
-
-LOOP FETCH article_c
+BEGIN
+	OPEN article_c;
+LOOP
+	FETCH article_c
 INTO
 	v_week_day,
-	v_num_of_articles,
-	v_cur_date;
+	v_num_of_articles;
+
+pipe ROW(report_articles_type(v_week_day,
+v_num_of_articles));
 
 EXIT
 WHEN article_c%notfound;
-
-IF to_date(v_cur_date, 'dd.MM.yyyy') >= to_date(to_char(i_begin_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
-AND to_date(v_cur_date, 'dd.MM.yyyy') <= to_date(to_char(i_end_date, 'dd.MM.yyyy'), 'dd.MM.yyyy') THEN pipe ROW (report_articles_type(v_week_day,
-	v_num_of_articles));
-END IF;
 
 EXIT
 WHEN article_c%notfound;
@@ -161,12 +78,70 @@ END report_articles;
 FUNCTION report_comments (i_begin_date IN DATE,
 i_end_date IN DATE) RETURN report_comments_table PIPELINED AS CURSOR comments_c IS
 SELECT
-	hour_period,
-	EXACT_NUM_OF_COMMENTS,
-	ROLLING_NUM_OF_COMMENTS,
-	CUR_DATE
+	tt.hour_period AS hour_period,
+	tt.exact_num_of_comments AS exact_num_of_comments,
+	(tt.exact_num_of_comments + tt.lg + tt.ld) / 3 AS rolling_num_of_comments
 FROM
-	F_ARTICLE_COMMENT_V facv;
+	(
+	SELECT
+		t.hour_period AS hour_period,
+		t.exact_num_of_comments AS exact_num_of_comments,
+		CASE
+			WHEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments) IS NULL THEN 0
+			ELSE CASE
+				WHEN hour_period - 1 = lead(t.hour_period) OVER(ORDER BY t.hour_period) THEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments)
+				ELSE 0
+			END
+		END AS lg,
+		CASE
+			WHEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments) IS NULL THEN 0
+			ELSE CASE
+				WHEN hour_period + 1 = lead(t.hour_period) OVER(ORDER BY t.hour_period) THEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments)
+				ELSE 0
+			END
+		END AS ld
+	FROM
+		(
+		SELECT
+			-1 AS hour_period,
+			count(*) AS exact_num_of_comments
+		FROM
+			F_ARTICLE_COMMENT fac
+		INNER JOIN DIM_DATES dd ON
+			dd.ID = fac.DATE_ID
+		WHERE
+			EXTRACT(HOUR FROM fac.TIME_IVAL) = 23
+			AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') >= to_date(to_char(i_begin_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
+				AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') <= to_date(to_char(i_end_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
+			GROUP BY
+				EXTRACT(HOUR FROM fac.TIME_IVAL)
+		UNION ALL
+			SELECT
+				EXTRACT(HOUR FROM fac.TIME_IVAL) AS hour_period,
+				count(*) AS exact_num_of_comments
+			FROM
+				F_ARTICLE_COMMENT fac
+			INNER JOIN DIM_DATES dd ON
+				dd.ID = fac.DATE_ID
+			WHERE
+				to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') >= to_date(to_char(i_begin_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
+					AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') <= to_date(to_char(i_end_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
+				GROUP BY
+					EXTRACT(HOUR FROM fac.TIME_IVAL)
+			UNION ALL
+				SELECT
+					24 AS hour_period,
+					count(*) AS exact_num_of_comments
+				FROM
+					F_ARTICLE_COMMENT fac
+				INNER JOIN DIM_DATES dd ON
+					dd.ID = fac.DATE_ID
+				WHERE
+					EXTRACT(HOUR FROM fac.TIME_IVAL) = 0
+					AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') >= to_date(to_char(i_begin_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
+						AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') <= to_date(to_char(i_end_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
+					GROUP BY
+						EXTRACT(HOUR FROM fac.TIME_IVAL)) t) tt;
 
 v_hour_period NUMBER(2);
 
@@ -174,30 +149,20 @@ v_EXACT_NUM_OF_COMMENTS int;
 
 v_ROLLING_NUM_OF_COMMENTS float;
 
-v_CUR_DATE varchar(10);
-
 BEGIN OPEN comments_c;
 
 LOOP FETCH comments_c
 INTO
 	v_hour_period,
 	v_EXACT_NUM_OF_COMMENTS,
-	v_ROLLING_NUM_OF_COMMENTS,
-	v_cur_date;
+	v_ROLLING_NUM_OF_COMMENTS;
 
 EXIT
 WHEN comments_c%notfound;
 
-IF
-	to_date(v_cur_date, 'dd.MM.yyyy') >= to_date(to_char(i_begin_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
-AND to_date(v_cur_date, 'dd.MM.yyyy') <= to_date(to_char(i_end_date, 'dd.MM.yyyy'), 'dd.MM.yyyy') THEN pipe ROW (report_comments_type(v_hour_period,
+pipe ROW (report_comments_type(v_hour_period,
 	v_EXACT_NUM_OF_COMMENTS,
 	v_ROLLING_NUM_OF_COMMENTS));
-END
-IF;
-
-EXIT
-WHEN comments_c%notfound;
 END
 LOOP;
 
@@ -206,3 +171,19 @@ CLOSE comments_c;
 RETURN;
 END report_comments;
 END stats;
+
+CREATE OR REPLACE
+VIEW DIM_ARTICLE_V AS
+SELECT
+	*
+FROM
+	STATS.REPORT_ARTICLES(current_date,
+	current_date); 
+	
+CREATE OR REPLACE
+VIEW F_ARTICLE_COMMENT_V  AS
+SELECT
+	*
+FROM
+	STATS.REPORT_COMMENTS(current_date,
+	current_date);
