@@ -185,4 +185,4 @@ SELECT
 	*
 FROM
 	STATS.REPORT_COMMENTS(current_date,
-	current_date);
+	current_date); 
