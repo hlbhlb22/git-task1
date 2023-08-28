@@ -26,7 +26,8 @@ CREATE OR REPLACE
 PACKAGE
 	BODY stats AS FUNCTION report_articles(i_begin_date IN DATE,
 	i_end_date IN DATE) RETURN report_articles_table PIPELINED IS CURSOR article_c IS
-CASE
+SELECT
+	CASE
 		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%MONDAY%' THEN 1
 		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%TUESDAY%' THEN 2
 		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%WEDNESDAY%' THEN 3
@@ -35,8 +36,7 @@ CASE
 		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%SATURDAY%' THEN 6
 		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%SUNDAY%' THEN 7
 	END AS week_day,
-	count(*) AS num_of_articles,
-	TO_CHAR(dd.D_DATE, 'dd.MM.yyyy') AS cur_date
+	count(*) AS num_of_articles
 FROM
 	DIM_ARTICLE da
 LEFT JOIN DIM_DATES dd ON
@@ -51,22 +51,21 @@ GROUP BY
 v_week_day int;
 
 v_num_of_articles int;
+
 BEGIN
 	OPEN article_c;
+
 LOOP
 	FETCH article_c
 INTO
 	v_week_day,
 	v_num_of_articles;
 
+EXIT
+WHEN article_c%notfound;
+
 pipe ROW(report_articles_type(v_week_day,
 v_num_of_articles));
-
-EXIT
-WHEN article_c%notfound;
-
-EXIT
-WHEN article_c%notfound;
 END
 LOOP;
 
@@ -178,10 +177,10 @@ SELECT
 	*
 FROM
 	STATS.REPORT_ARTICLES(current_date,
-	current_date); 
-	
+	current_date);
+
 CREATE OR REPLACE
-VIEW F_ARTICLE_COMMENT_V  AS
+VIEW F_ARTICLE_COMMENT_V AS
 SELECT
 	*
 FROM
