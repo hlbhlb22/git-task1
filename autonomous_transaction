@@ -1,0 +1,7 @@
+CREATE OR REPLACE PROCEDURE DELL.audit_action_p(i_ts timestamp, i_table_name varchar2, i_user_name varchar2, i_action_type char, i_action_summary varchar2) IS
+PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN 
+	INSERT INTO audit_action(ts, table_name, user_name, action_type, ACTION_SUMMARY)
+	values(current_timestamp, i_table_name, i_user_name, i_action_type, i_action_summary);
+COMMIT;
+END audit_action_p;
