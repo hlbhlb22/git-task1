@@ -18,15 +18,16 @@ CREATE TABLE dim_dates AS
 WITH base_calendar AS
  (
 SELECT
+	-- TODO: to_number( to_char( currdate, 'YYYYMMDD'))
 	TO_NUMBER(TO_CHAR(currdate, 'YYYY') || TO_char(currdate, 'MM') || TO_CHAR(currdate, 'DD')) AS id,
 	currdate AS d_date,
-	TO_CHAR(currdate, 'YYYY') AS d_year,
+	TO_CHAR(currdate, 'YYYY') AS d_year,  -- TODO: extract( year from <date>) - preserve NUMBER data type
 	CASE
 		WHEN to_number(TO_CHAR(currdate, 'Q') ) <= 2 THEN 1
 		ELSE 2
 	END AS half_year,
 	to_number(TO_CHAR(currdate, 'Q') ) AS d_quarter,
-	to_number(TRIM(LEADING '0' FROM TO_CHAR(currdate, 'MM'))) AS d_month,
+	to_number(TRIM(LEADING '0' FROM TO_CHAR(currdate, 'MM'))) AS d_month, -- TODO: it can work without trimming
 	TO_CHAR(currdate, 'MONTH') AS name_month,
 	to_number(TRIM(LEADING '0' FROM TO_CHAR(currdate, 'DDD'))) AS d_day,
 	to_number(TO_CHAR(currdate, 'WW')) AS d_week
@@ -111,7 +112,7 @@ FROM
 
 BEGIN
 	
-OPEN article_c;
+OPEN article_c;	-- use: FOR...LOOP for cursors
 
 LOOP FETCH article_c
 INTO
