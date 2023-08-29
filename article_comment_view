@@ -1,0 +1,5 @@
+CREATE OR REPLACE VIEW article_comment_v AS
+SELECT ac.id, ac.article_id, a.author, a.title, ac.ts, ac.rating, ac.commenter, ac.content, (
+SELECT substr(content,1,50) FROM ARTICLE_COMMENT WHERE id=ac.REPLY_TO_ID)AS in_reply_to
+FROM ARTICLE_COMMENT ac
+INNER JOIN article a on ac.ARTICLE_ID=a.id;
