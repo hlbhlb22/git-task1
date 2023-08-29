@@ -30,29 +30,17 @@ PACKAGE
 	FUNCTION report_articles(i_begin_date IN DATE,
 	i_end_date IN DATE) RETURN report_articles_table PIPELINED IS CURSOR article_c IS
 SELECT
-	CASE -- TODO: use to_char( ..., 'd') to get day-of-week
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%MONDAY%' THEN 1
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%TUESDAY%' THEN 2
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%WEDNESDAY%' THEN 3
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%THURSDAY%' THEN 4
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%FRIDAY%' THEN 5
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%SATURDAY%' THEN 6
-		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%SUNDAY%' THEN 7
-	END AS week_day,
+	TO_CHAR(dd.D_DATE, 'd') AS week_day,
 	count(*) AS num_of_articles
 FROM
 	DIM_ARTICLE da
 LEFT JOIN DIM_DATES dd ON
-	-- TODO: use:
-	-- da.crt_dt between <date-1> and <date-2> 
-	-- to make the index in-use
 	TO_CHAR(da.crt_dt, ' dd.MM.yyyy') = TO_CHAR(dd.D_DATE, ' dd.MM.yyyy')
 WHERE
 	da.IS_ACT_IND = 1
-	AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') >= to_date(to_char(i_begin_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
-	AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') <= to_date(to_char(i_end_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
+	AND da.crt_dt BETWEEN i_begin_date AND i_end_date
 GROUP BY
-	TO_CHAR(dd.D_DATE, 'DAY');
+	TO_CHAR(dd.D_DATE, 'd');
 
 v_week_day int;
 
@@ -80,25 +68,24 @@ CLOSE article_c;
 RETURN;
 END report_articles;
 
---
--- TODO: add more comments to explain the logic
---
 --Piplined function for comments
 FUNCTION report_comments (i_begin_date IN DATE,
 i_end_date IN DATE) RETURN report_comments_table PIPELINED AS CURSOR comments_c IS
+--Get data for report
 SELECT
 	tt.hour_period AS hour_period,
 	tt.exact_num_of_comments AS exact_num_of_comments,
 	(tt.exact_num_of_comments + tt.lg + tt.ld) / 3 AS rolling_num_of_comments
 FROM
 	(
+	--converting nulls in lead and lag
 	SELECT
 		t.hour_period AS hour_period,
 		t.exact_num_of_comments AS exact_num_of_comments,
 		CASE
-			WHEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments) IS NULL THEN 0
+			WHEN lag(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments) IS NULL THEN 0
 			ELSE CASE
-				WHEN hour_period - 1 = lead(t.hour_period) OVER(ORDER BY t.hour_period) THEN lead(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments)
+				WHEN hour_period - 1 = lag(t.hour_period) OVER(ORDER BY t.hour_period) THEN lag(t.exact_num_of_comments) OVER(ORDER BY t.exact_num_of_comments)
 				ELSE 0
 			END
 		END AS lg,
@@ -111,6 +98,7 @@ FROM
 		END AS ld
 	FROM
 		(
+		--Get hour "23" for rolling number of comments
 		SELECT
 			-1 AS hour_period,
 			count(*) AS exact_num_of_comments
@@ -126,6 +114,7 @@ FROM
 			GROUP BY
 				EXTRACT(HOUR FROM fac.TIME_IVAL)
 		UNION ALL
+		--Get all data
 			SELECT
 				EXTRACT(HOUR FROM fac.TIME_IVAL) AS hour_period,
 				count(*) AS exact_num_of_comments
@@ -139,6 +128,7 @@ FROM
 				GROUP BY
 					EXTRACT(HOUR FROM fac.TIME_IVAL)
 			UNION ALL
+			--Get "0" hour for rolling time of comments
 				SELECT
 					24 AS hour_period,
 					count(*) AS exact_num_of_comments
@@ -153,54 +143,37 @@ FROM
 					GROUP BY
 						EXTRACT(HOUR FROM fac.TIME_IVAL)) t) tt;
 
-v_hour_period NUMBER(2);
-
-v_EXACT_NUM_OF_COMMENTS int;
-
-v_ROLLING_NUM_OF_COMMENTS float;
-
 BEGIN 
---
--- TODO: convert OPEN...FETCH into FOR...LOOP
---
-OPEN comments_c;
 
-LOOP FETCH comments_c
-INTO
-	v_hour_period,
-	v_EXACT_NUM_OF_COMMENTS,
-	v_ROLLING_NUM_OF_COMMENTS;
+FOR rec IN comments_c LOOP
 
-EXIT
-WHEN comments_c%notfound;
-
-pipe ROW (report_comments_type(v_hour_period,
-	v_EXACT_NUM_OF_COMMENTS,
-	v_ROLLING_NUM_OF_COMMENTS));
+pipe ROW (rec);
 END
 LOOP;
-
-CLOSE comments_c;
 
 RETURN;
 END report_comments;
 END stats;
+
 --Create or replace view for article report
 CREATE OR REPLACE
 VIEW DIM_ARTICLE_V AS
---
--- TODO: list columns explicitly
---
+
 SELECT
-	*
+	rep1.week_day,
+	rep1.num_of_articles
 FROM
 	STATS.REPORT_ARTICLES(current_date,
-	current_date);
+	current_date) rep1;
+	
+	
 --Create or replace view for comment report
 CREATE OR REPLACE
 VIEW F_ARTICLE_COMMENT_V AS
 SELECT
-	*
+	rep2.hour_period,
+	rep2.exact_num_of_comments,
+	rep2.rolling_num_of_comments
 FROM
 	STATS.REPORT_COMMENTS(current_date,
-	current_date); 
+	current_date) rep2; 
