@@ -7,30 +7,30 @@ CREATE TABLE article (
     content CLOB NOT NULL
 ) tablespace p_article;
 
-create table audit_action(
-id number(20,0) generated always as identity primary key,
-ts timestamp(2) not null,
-table_name varchar2(128) not null,
-row_id int NOT NULL,
-user_name varchar2(128) not null,
-action_type char(1) not null,
-action_summary varchar2(250) not null
+CREATE TABLE audit_action(
+    id number(20,0) generated always as identity primary key,
+    ts timestamp(2) not null,
+    table_name varchar2(128) not null,
+    row_id int NOT NULL,
+    user_name varchar2(128) not null,
+    action_type char(1) not null,
+    action_summary varchar2(250) not null
 ) tablespace p_article;
 
 CREATE TABLE article_comment(
-id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-article_id INT NOT NULL,
-ts timestamp(2) DEFAULT current_timestamp NOT NULL,
-reply_to_id INT,
-rating INT,
-votes INT,
-commenter varchar2(128) NOT NULL,
-content clob NOT NULL,
-constraint fk_article_id FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE,
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    article_id INT NOT NULL,
+    ts timestamp(2) DEFAULT current_timestamp NOT NULL,
+    reply_to_id INT,
+    rating INT,
+    votes INT,
+    commenter varchar2(128) NOT NULL,
+    content clob NOT NULL,
+CONSTRAINT fk_article_id FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE,
 CONSTRAINT fk_reply_to_id FOREIGN Key (reply_to_id) REFERENCES article_comment(id)
 )
 PARTITION BY range(ts)
 INTERVAL (INTERVAL '1' year)
 (
-PARTITION one VALUES less than (TO_DATE('2023-01-01', 'YYYY-MM-DD')) TABLESPACE p_article
+PARTITION one VALUES LESS THAN (TO_DATE('2023-01-01', 'YYYY-MM-DD')) TABLESPACE p_article
 )enable ROW movement;
