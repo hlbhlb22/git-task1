@@ -1,0 +1,31 @@
+CREATE OR REPLACE TRIGGER article_trg_biudr
+BEFORE INSERT or UPDATE OR DELETE ON DELL.article
+FOR EACH ROW 
+BEGIN
+	IF :NEW.author IS NULL THEN
+	dbms_output.put_line('Person is not specified');
+	raise EXCEPTIONS.PERSON_NOT_SPECIFIED;
+	ELSIF :New.title=upper(:new.title) THEN 
+	dbms_output.put_line('Title should not be in upper case');
+	raise EXCEPTIONS.UPPER_CASE;
+	ELSIF :NEW.title IS NULL THEN
+	dbms_output.put_line('Title is empty');
+	raise EXCEPTIONS.TITLE_NOT_SPECIFIED;
+    ELSIF :NEW.content IS NULL THEN
+    dbms_output.put_line('Content is empty');
+	raise EXCEPTIONS.EMPTY_CONTENT;
+    END IF;
+END article_trg_biudr;
+
+CREATE OR REPLACE TRIGGER DELL.article_comment_trg_biudr
+BEFORE INSERT or UPDATE OR DELETE ON DELL.article_comment
+FOR EACH ROW 
+BEGIN
+	IF :NEW.commenter IS NULL THEN
+	dbms_output.put_line('Person is not specified');
+	raise EXCEPTIONS.PERSON_NOT_SPECIFIED;
+    ELSIF :NEW.content IS NULL THEN
+    dbms_output.put_line('Content is empty');
+	raise EXCEPTIONS.EMPTY_CONTENT;
+    END IF;
+END article_comment_trg_biudr;
