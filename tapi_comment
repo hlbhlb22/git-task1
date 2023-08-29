@@ -1,0 +1,63 @@
+REATE OR REPLACE PACKAGE DELL.tapi_comment IS 
+PROCEDURE tapi_comment_create(i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob);
+PROCEDURE tapi_comment_update(i_id int, i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob);
+PROCEDURE tapi_comment_add_like(i_comment_id int);
+PROCEDURE tapi_comment_add_dislike(i_comment_id int);
+END tapi_comment;
+
+CREATE OR REPLACE PACKAGE BODY DELL.tapi_comment IS 
+
+PROCEDURE tapi_comment_save(i_id int, i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob) IS
+
+BEGIN 
+MERGE INTO ARTICLE_COMMENT x
+USING DUAL
+ON (x.id=i_id)
+WHEN MATCHED THEN
+UPDATE  
+set x.ARTICLE_ID=i_article_id, x.REPLY_TO_ID=i_reply_to_id, x.COMMENTER=i_commenter, x.CONTENT=i_content
+WHERE x.ID=i_id
+WHEN NOT MATCHED THEN
+INSERT (ARTICLE_ID, REPLY_TO_ID, COMMENTER, CONTENT)
+VALUES (i_article_id, i_reply_to_id, i_commenter, i_content)
+WHERE i_id=0;
+END tapi_comment_save;
+
+PROCEDURE tapi_comment_update(i_id int, i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob) IS 
+BEGIN 
+tapi_comment_save(i_id,i_article_id, i_reply_to_id, i_commenter, i_content);
+END tapi_comment_update;
+
+PROCEDURE tapi_comment_create(i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob) IS 
+BEGIN 
+tapi_comment_save(0, i_article_id, i_reply_to_id, i_commenter, i_content);
+END tapi_comment_create;
+
+PROCEDURE tapi_change_votes(i_comment_id int) is
+BEGIN 
+UPDATE ARTICLE_COMMENT x
+SET x.VOTES=nvl(x.VOTES,0)+1
+WHERE ID=i_comment_id;
+END tapi_change_votes;
+
+PROCEDURE tapi_change_rating(i_comment_id int, i_rating int) IS
+BEGIN
+UPDATE ARTICLE_COMMENT x
+//SET x.RATING=(nvl(x.VOTES,0)*nvl(x.RATING,0)+i_rating)/(nvl(x.VOTES,0)+1)
+SET x.RATING=nvl(x.RATING,0)+i_rating
+WHERE id=i_comment_id;
+END tapi_change_rating;
+
+PROCEDURE tapi_comment_add_like(i_comment_id int) is
+begin
+tapi_change_rating(i_comment_id,1);
+tapi_change_votes(i_comment_id);
+END tapi_comment_add_like;
+
+PROCEDURE tapi_comment_add_dislike(i_comment_id int) IS
+BEGIN
+tapi_change_rating(i_comment_id,0);
+tapi_change_votes(i_comment_id);
+END tapi_comment_add_dislike;
+
+END tapi_comment;
