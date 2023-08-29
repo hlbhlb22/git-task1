@@ -57,17 +57,20 @@ CREATE OR REPLACE PACKAGE BODY etl_blog AS
     count_dim_article_row int;
 BEGIN
     FOR article_rec IN c_articles LOOP
-        INSERT INTO SCD.dim_article(COL_nid, COL_crt_dt, COL_mod_dt, COL_author, COL_title, COL_content)
-        SELECT id, COL_crt_dt, COL_mod_dt, COL_author, COL_title, COL_content
-        FROM BLOG_BASE.ARTICLE
-        WHERE id = article_rec.id;
 
-        SELECT COUNT(*) INTO count_dim_article_row FROM SCD.dim_article WHERE COL_nid = article_rec.id;
 
-        IF count_dim_article_row > 0 THEN
+      --посдание мне из будущего сделать select где мы сравниваем дату последнего апдейта и даты начала из dim_article
+      select COUNT(*) into count_dim_article_row from dim_article da inner join BLOG_BASE.ARTICLE aa on aa.ID = da.COL_nid where da.COL_nid = article_rec.ID  and (aa.COL_CRT_DT = da.COL_crt_dt OR aa.COL_MOD_DT = da.COL_crt_dt);
+      DBMS_OUTPUT.PUT_LINE(count_dim_article_row);
+        IF count_dim_article_row = 0 THEN
+
             UPDATE SCD.dim_article
             SET COL_end_dt = CURRENT_TIMESTAMP, COL_is_act_ind = NULL
             WHERE COL_is_act_ind = 1 AND COL_nid = article_rec.id;
+            INSERT INTO SCD.dim_article(COL_nid, COL_crt_dt, COL_mod_dt, COL_author, COL_title, COL_content)
+        SELECT id, COL_crt_dt, COL_mod_dt, COL_author, COL_title, COL_contenT
+        FROM BLOG_BASE.ARTICLE
+        WHERE id = article_rec.id;
         END IF;
     END LOOP;
 END etl_load_articles;
@@ -79,9 +82,13 @@ BEGIN
     USING (
         SELECT
             ac.id AS comment_id,
-            a.id AS article_sid,
+            D.SID AS article_sid,
             dd.id AS date_id,
-           ac.col_ts AS time_ival,
+           NUMTODSINTERVAL(EXTRACT(DAY FROM ac.col_ts), 'DAY')
+            + NUMTODSINTERVAL(EXTRACT(HOUR FROM ac.col_ts), 'HOUR')
+            + NUMTODSINTERVAL(EXTRACT(MINUTE FROM ac.col_ts), 'MINUTE')
+            + NUMTODSINTERVAL(EXTRACT(SECOND FROM ac.col_ts), 'SECOND')
+            AS time_ival,
             ac.col_rating AS rating,
             ac.col_votes AS votes,
             ac.col_content AS content,
@@ -90,6 +97,7 @@ BEGIN
         JOIN BLOG_BASE.article a ON ac.col_article_id = a.id
          JOIN dim_dates dd ON  trunc(ac.col_ts)= dd.COL_D_DATE
         JOIN BLOG_BASE.audit_action aa ON ac.id = aa.col_table_id
+        JOIN DIM_ARTICLE D on a.COL_AUTHOR = D.COL_AUTHOR
         WHERE aa.id = (SELECT MAX(id) FROM BLOG_BASE.audit_action WHERE col_table_id = ac.id)
     ) src
     ON (dst.COL_comment_id = src.comment_id)
@@ -128,18 +136,12 @@ END etl_blog;
 
 
 BEGIN
-    SCD.etl_blog.ETL_LOAD_COMMENTS();
-
+    SCD.etl_blog.ETL_LOAD_ARTICLES();
+    SCD.ETL_BLOG.ETL_LOAD_COMMENTS();
+commit ;
 end;
 
-SELECT * FROM dim_article;
-SELECT * FROM DIM_DATES;
-SELECT * FROM F_ARTICLE_COMMENT;
-select * from BLOG_BASE.audit_action;
-select * from BLOG_BASE.article;
-select * from BLOG_BASE.article_comment;
 
-delete  from DIM_DATES;
 
 
 BEGIN
@@ -215,7 +217,7 @@ BEGIN
             TO_NUMBER(CEIL(EXTRACT(MONTH FROM p_current_date) / 3)),
             TO_NUMBER(EXTRACT(MONTH FROM p_current_date)),
             TO_CHAR(current_date, 'Month'),
-            TO_NUMBER( EXTRACT(DAY FROM p_current_date)),
+            TO_NUMBER( TO_CHAR( p_current_date, 'D')),
             TO_NUMBER(CEIL(EXTRACT(DAY FROM p_current_date)/7)),
             1,
            TO_NUMBER(TO_CHAR(LAST_DAY(p_current_date), 'DD'))
@@ -239,3 +241,4 @@ BEGIN
 END;
 
 /
+select * from dim_article;

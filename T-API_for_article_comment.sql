@@ -3,10 +3,10 @@ CREATE OR REPLACE PACKAGE TAPI_COMMENT IS
                                   p_content IN article_comment.col_content%TYPE,
                                   p_article      IN article_comment.col_article_id%TYPE
                                  );
-    procedure tapi_comment_change(p_commenter IN article_comment.col_commenter%TYPE,
+    procedure tapi_comment_change(
                                   p_reply_to_id IN article_comment.col_reply_to_id%TYPE,
-                                  p_content IN article_comment.col_content%TYPE,
-                                  p_article      IN article_comment.col_article_id%TYPE);
+                                  p_content IN article_comment.col_content%TYPE
+                                );
     PROCEDURE tapi_comment_add_like(
         p_comment_id IN article_comment.id%TYPE
     );
@@ -112,3 +112,6 @@ FROM article_comment ac
          LEFT JOIN
      article_comment ac_reply ON ac.col_reply_to_id = ac_reply.id;
 
+BEGIN
+    TAPI_COMMENT.tapi_comment_create('NXBVCXN', 'KDJ', 30);
+end;

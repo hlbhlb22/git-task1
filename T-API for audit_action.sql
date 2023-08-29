@@ -4,10 +4,10 @@ FOR EACH ROW
 BEGIN
     if inserting then
         INSERT INTO AUDIT_ACTION (COL_TS, COL_TABLE_NAME, COL_USER_NAME, COL_ACTION_TYPE, COL_ACTION_SUMMARY, COL_TABLE_ID)
-    VALUES (SYSTIMESTAMP, 'article', user, 'I', 'Article operation: Insert', :NEW.ID);
+    VALUES (:NEW.COL_CRT_DT, 'article', user, 'I', 'Article operation: Insert', :NEW.ID);
     elsif updating then
         INSERT INTO AUDIT_ACTION (COL_TS, COL_TABLE_NAME, COL_USER_NAME, COL_ACTION_TYPE, COL_ACTION_SUMMARY, COL_TABLE_ID)
-    VALUES (SYSTIMESTAMP, 'article',user, 'U', 'Article operation: Update', :NEW.ID);
+    VALUES (:NEW.COL_CRT_DT, 'article',user, 'U', 'Article operation: Update', :NEW.ID);
         elsif deleting then
         INSERT INTO AUDIT_ACTION (COL_TS, COL_TABLE_NAME, COL_USER_NAME, COL_ACTION_TYPE, COL_ACTION_SUMMARY, COL_TABLE_ID)
     VALUES (SYSTIMESTAMP, 'article', user, 'D', 'Article operation: Delete', :OLD.ID);
