@@ -27,7 +27,7 @@ PACKAGE
 	BODY stats AS FUNCTION report_articles(i_begin_date IN DATE,
 	i_end_date IN DATE) RETURN report_articles_table PIPELINED IS CURSOR article_c IS
 SELECT
-	CASE
+	CASE -- TODO: use to_char( ..., 'd') to get day-of-week
 		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%MONDAY%' THEN 1
 		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%TUESDAY%' THEN 2
 		WHEN TO_CHAR(dd.D_DATE, 'DAY') LIKE '%WEDNESDAY%' THEN 3
@@ -40,6 +40,9 @@ SELECT
 FROM
 	DIM_ARTICLE da
 LEFT JOIN DIM_DATES dd ON
+	-- TODO: use:
+	-- da.crt_dt between <date-1> and <date-2> 
+	-- to make the index in-use
 	TO_CHAR(da.crt_dt, ' dd.MM.yyyy') = TO_CHAR(dd.D_DATE, ' dd.MM.yyyy')
 WHERE
 	da.IS_ACT_IND = 1
@@ -74,6 +77,9 @@ CLOSE article_c;
 RETURN;
 END report_articles;
 
+--
+-- TODO: add more comments to explain the logic
+--
 FUNCTION report_comments (i_begin_date IN DATE,
 i_end_date IN DATE) RETURN report_comments_table PIPELINED AS CURSOR comments_c IS
 SELECT
@@ -110,6 +116,7 @@ FROM
 			dd.ID = fac.DATE_ID
 		WHERE
 			EXTRACT(HOUR FROM fac.TIME_IVAL) = 23
+			-- TODO: use trunc(<date>) to remove a time fraction:
 			AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') >= to_date(to_char(i_begin_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
 				AND to_date(to_char(dd.D_DATE, 'dd.MM.yyyy'), 'dd.MM.yyyy') <= to_date(to_char(i_end_date, 'dd.MM.yyyy'), 'dd.MM.yyyy')
 			GROUP BY
@@ -148,7 +155,11 @@ v_EXACT_NUM_OF_COMMENTS int;
 
 v_ROLLING_NUM_OF_COMMENTS float;
 
-BEGIN OPEN comments_c;
+BEGIN 
+--
+-- TODO: convert OPEN...FETCH into FOR...LOOP
+--
+OPEN comments_c;
 
 LOOP FETCH comments_c
 INTO
@@ -173,6 +184,9 @@ END stats;
 
 CREATE OR REPLACE
 VIEW DIM_ARTICLE_V AS
+--
+-- TODO: list columns explicitly
+--
 SELECT
 	*
 FROM
