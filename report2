@@ -1,0 +1,9 @@
+CREATE OR REPLACE VIEW report2 as
+SELECT avg(exact_num_of_comments) OVER (ORDER BY DATE_ID, HOUR_PERIOD ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)  AS rolling_num_of_comments,
+HOUR_PERIOD, exact_num_of_comments
+from
+(SELECT date_id, HOUR_PERIOD, count(*) OVER (PARTITION BY HOUR_PERIOD) AS exact_num_of_comments
+FROM 
+(SELECT EXTRACT (HOUR FROM time_ival) AS hour_period,
+date_id
+FROM scd.F_ARTICLE_COMMENT GROUP BY EXTRACT (HOUR FROM time_ival), date_id));
