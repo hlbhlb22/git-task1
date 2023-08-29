@@ -1,14 +1,20 @@
-REATE OR REPLACE PACKAGE DELL.tapi_comment IS 
+CREATE OR REPLACE PACKAGE DELL.tapi_comment IS 
+--PL/SQL to create comment
 PROCEDURE tapi_comment_create(i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob);
+--PL/SQL to update comment
 PROCEDURE tapi_comment_update(i_id int, i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob);
+--PL/SQL to add like to comment
 PROCEDURE tapi_comment_add_like(i_comment_id int);
+--PL/SQL to add dislike to comment
 PROCEDURE tapi_comment_add_dislike(i_comment_id int);
 END tapi_comment;
 
 CREATE OR REPLACE PACKAGE BODY DELL.tapi_comment IS 
 
+--PL/SQL to save comment data
 PROCEDURE tapi_comment_save(i_id int, i_article_id int, i_reply_to_id int, i_commenter varchar2, i_content clob) IS
 
+--check if comment is already exist
 BEGIN 
 MERGE INTO ARTICLE_COMMENT x
 USING DUAL
@@ -33,6 +39,7 @@ BEGIN
 tapi_comment_save(0, i_article_id, i_reply_to_id, i_commenter, i_content);
 END tapi_comment_create;
 
+--private PL/SQL to increment number of votes
 PROCEDURE tapi_change_votes(i_comment_id int) is
 BEGIN 
 UPDATE ARTICLE_COMMENT x
@@ -40,13 +47,16 @@ SET x.VOTES=nvl(x.VOTES,0)+1
 WHERE ID=i_comment_id;
 END tapi_change_votes;
 
+--private PL/SQL to change rating
 PROCEDURE tapi_change_rating(i_comment_id int, i_rating int) IS
 BEGIN
 UPDATE ARTICLE_COMMENT x
-//SET x.RATING=(nvl(x.VOTES,0)*nvl(x.RATING,0)+i_rating)/(nvl(x.VOTES,0)+1)
+--I suppose it's the right logic of counting rating in 100 point system
+//SET x.RATING=((nvl(x.VOTES,0)*nvl(x.RATING,0)+i_rating)/(nvl(x.VOTES,0)+1))*100
 SET x.RATING=nvl(x.RATING,0)+i_rating
 WHERE id=i_comment_id;
 END tapi_change_rating;
+
 
 PROCEDURE tapi_comment_add_like(i_comment_id int) is
 begin

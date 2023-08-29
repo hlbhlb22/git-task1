@@ -2,19 +2,19 @@ CREATE OR REPLACE TRIGGER article_trg_biudr
 BEFORE INSERT or UPDATE OR DELETE ON DELL.article
 FOR EACH ROW 
 BEGIN
-	--Check for AUTHOR not be empty
+--Check for AUTHOR not be empty
 	IF :NEW.author IS NULL THEN
 	dbms_output.put_line('Person is not specified');
 	raise EXCEPTIONS.PERSON_NOT_SPECIFIED;
-	--Check for TITLE not be in upper case
+--Check for TITLE not be in upper case
 	ELSIF :New.title=UPPER(:new.title) THEN 
 	dbms_output.put_line('Title should not be in upper case');
 	raise EXCEPTIONS.UPPER_CASE;
-	--Check for TITLE not be empty
+--Check for TITLE not be empty
 	ELSIF :NEW.title IS NULL THEN
 	dbms_output.put_line('Title is empty');
 	raise EXCEPTIONS.TITLE_NOT_SPECIFIED;
-	--Check for CONTENT not be empty
+--Check for CONTENT not be empty
     ELSIF :NEW.content IS NULL THEN
     dbms_output.put_line('Content is empty');
 	raise EXCEPTIONS.EMPTY_CONTENT;
@@ -25,11 +25,11 @@ CREATE OR REPLACE TRIGGER DELL.article_comment_trg_biudr
 BEFORE INSERT or UPDATE OR DELETE ON DELL.article_comment
 FOR EACH ROW 
 BEGIN
-	--Check for COMMENTER not be empty
+--Check for COMMENTER not be empty
 	IF :NEW.commenter IS NULL THEN
 	dbms_output.put_line('Person is not specified');
 	raise EXCEPTIONS.PERSON_NOT_SPECIFIED;
-	--Check for CONTENT not be empty
+--Check for CONTENT not be empty
     ELSIF :NEW.content IS NULL THEN
     dbms_output.put_line('Content is empty');
 	raise EXCEPTIONS.EMPTY_CONTENT;

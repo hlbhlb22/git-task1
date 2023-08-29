@@ -29,6 +29,7 @@ CREATE TABLE article_comment(
 CONSTRAINT fk_article_id FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE,
 CONSTRAINT fk_reply_to_id FOREIGN Key (reply_to_id) REFERENCES article_comment(id)
 )
+--System partition
 PARTITION BY range(ts)
 INTERVAL (INTERVAL '1' year)
 (

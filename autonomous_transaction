@@ -1,3 +1,4 @@
+--Procedure to make record in audit
 CREATE OR REPLACE PROCEDURE DELL.audit_action_p(i_ts timestamp, i_table_name varchar2, i_user_name varchar2, i_action_type char, i_action_summary varchar2) IS
 PRAGMA AUTONOMOUS_TRANSACTION;
 BEGIN 

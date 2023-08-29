@@ -1,3 +1,4 @@
+--Trigger for audit records for article
 CREATE OR REPLACE TRIGGER DELL.article_audit_trg_biudr
 BEFORE INSERT OR UPDATE OR DELETE ON article
 FOR EACH ROW 
@@ -15,11 +16,12 @@ BEGIN
        v_action := 'D';
 END IF;
 	SELECT sys_context('userenv', 'CURRENT_USER') INTO v_user_name FROM dual;
+	--add record in audit_action
 	DELL.audit_action_p(current_timestamp, 'ARTICLE',v_row_id, v_user_name, v_action,'итог');
 END;
 
 
-
+--Trigger for audit records for comments
 CREATE OR REPLACE TRIGGER DELL.article_comment_audit_trg_biudr
 BEFORE INSERT OR UPDATE ON article_comment
 FOR EACH ROW 
@@ -32,5 +34,6 @@ BEGIN
 	ELSIF updating THEN v_action:='U'; v_row_id:= :NEW.id;
 END IF;
 	SELECT sys_context('userenv', 'CURRENT_USER') INTO v_user_name FROM dual;
+	--add record in audit_action
 	DELL.audit_action_p(current_timestamp, 'ARTICLE_COMMENT',v_row_id, v_user_name, v_action,'итог');
 END;
