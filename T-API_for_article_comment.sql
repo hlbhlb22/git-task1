@@ -1,15 +1,19 @@
 CREATE OR REPLACE PACKAGE TAPI_COMMENT IS
+    --public procedure for create comment
     procedure tapi_comment_create(p_commenter IN article_comment.col_commenter%TYPE,
                                   p_content IN article_comment.col_content%TYPE,
                                   p_article      IN article_comment.col_article_id%TYPE
                                  );
+    --public procedure for change create comment
     procedure tapi_comment_change(
                                   p_reply_to_id IN article_comment.col_reply_to_id%TYPE,
                                   p_content IN article_comment.col_content%TYPE
                                 );
+    -- procedure for add like to article_comment
     PROCEDURE tapi_comment_add_like(
         p_comment_id IN article_comment.id%TYPE
     );
+    -- procedure for add dislike to article_comment
     PROCEDURE tapi_comment_add_dislike(
         p_comment_id IN article_comment.id%TYPE
     );
@@ -18,6 +22,7 @@ end;
 
 
 CREATE OR REPLACE PACKAGE BODY TAPI_COMMENT IS
+    -- private procedure for create and change article_comment
     PROCEDURE tapi_comment_save(
         p_reply_to_id  IN article_comment.col_reply_to_id%TYPE DEFAULT NULL,
         p_commenter    IN article_comment.col_commenter%TYPE DEFAULT NULL,
@@ -30,8 +35,7 @@ CREATE OR REPLACE PACKAGE BODY TAPI_COMMENT IS
         ON (ac.id = p_reply_to_id)
         WHEN MATCHED THEN
             UPDATE
-            SET
-                col_content     = p_content
+            SET col_content = p_content
         WHEN NOT MATCHED THEN
             INSERT (col_commenter,
                     col_content,
@@ -43,6 +47,7 @@ CREATE OR REPLACE PACKAGE BODY TAPI_COMMENT IS
                     p_article,
                     0,
                     0);
+
     END tapi_comment_save;
     procedure tapi_comment_create(p_commenter IN article_comment.col_commenter%TYPE,
                                   p_content IN article_comment.col_content%TYPE,
@@ -58,6 +63,7 @@ CREATE OR REPLACE PACKAGE BODY TAPI_COMMENT IS
         begin
             tapi_comment_save(p_reply_to_id => p_reply_to_id, p_content => p_content);
         end;
+        --private procedures for change votes
          PROCEDURE tapi_change_votes(
         p_comment_id   IN article_comment.id%TYPE,
         p_votes_change IN NUMBER
@@ -67,7 +73,7 @@ CREATE OR REPLACE PACKAGE BODY TAPI_COMMENT IS
         SET col_votes = col_votes + p_votes_change
         WHERE id = p_comment_id;
     END tapi_change_votes;
-
+--private procedures for change rating
     PROCEDURE tapi_change_rating(
         p_comment_id   IN article_comment.id%TYPE,
         p_rating_change IN NUMBER

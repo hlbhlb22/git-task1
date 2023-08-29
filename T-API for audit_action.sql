@@ -1,4 +1,6 @@
 CREATE OR REPLACE TRIGGER article_audit_trigger
+    --triggers for audit witch  fixes all changes to tables
+
 AFTER INSERT OR UPDATE OR DELETE ON article
 FOR EACH ROW
 BEGIN
@@ -35,12 +37,16 @@ END;
  CREATE CONTEXT blog_ctx USING BLOG_BASE.TAPI_AUDIT;
 
 CREATE OR REPLACE PACKAGE tapi_audit IS
+    --specify secret key
     PROCEDURE tapi_audit_specify_secret_key(i_key IN VARCHAR2);
+        --enable trigger for audit
     PROCEDURE tapi_audit_enable(i_table_name IN VARCHAR2);
+        --disable trigger for audit
     PROCEDURE tapi_audit_disable(i_table_name IN VARCHAR2);
 END tapi_audit;
 
 CREATE OR REPLACE PACKAGE BODY tapi_audit IS
+    --secret key
     SECRET_KEY CONSTANT VARCHAR2(50) := 'your_secret_key_here';
 
     PROCEDURE tapi_audit_specify_secret_key(i_key IN VARCHAR2) IS
