@@ -1,0 +1,14 @@
+
+CREATE OR REPLACE VIEW report1 as
+SELECT 
+    DISTINCT REPLACE (d_day,0,7) AS week_day,
+    AVG(article_count) OVER (PARTITION BY d_day) AS avg_article_count
+FROM (
+    SELECT 
+        COUNT(*) AS article_count,
+       to_char(CRT_DT, 'DDMMYYYY')AS day_name,
+       TO_NUMBER(to_char(CRT_DT, 'D'))-1 AS d_day
+    FROM scd.DIM_ARTICLE
+    WHERE IS_ACT_IND = 1
+    GROUP BY to_char(CRT_DT, 'DDMMYYYY'), TO_NUMBER(to_char(CRT_DT, 'D'))-1
+) ORDER BY week_day;
