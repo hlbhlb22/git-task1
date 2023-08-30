@@ -1,6 +1,6 @@
 CREATE TABLE dim_article(
 	sid int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	--natural key
+--natural key
 	nid int NOT NULL,
 	crt_dt DATE NOT NULL,
 	mod_dt DATE NOT NULL,

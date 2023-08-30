@@ -3,7 +3,7 @@ CREATE OR REPLACE PACKAGE BODY SCD.etl_blog IS
 --procedure to load articles	
 PROCEDURE etl_load_articles IS
 
-cursor p_article is SELECT * FROM DELL.ARTICLE ORDER BY DELL.ARTICLe.ID;
+cursor p_article IS SELECT * FROM DELL.ARTICLE ORDER BY DELL.ARTICLe.ID;
 
 --create variables to catch data from cursor
 v_id_article DELL.ARTICLE.ID%TYPE;
@@ -23,7 +23,7 @@ OPEN p_article;
 		v_author_article,v_title_article,v_content_article;
 	EXIT WHEN p_article%NOTFOUND;
 
-SELECT COUNT(NID) INTO v_exist FROM scd.DIM_ARTICLE WHERE NID=v_id_article AND IS_ACT_IND=1;
+SELECT COUNT(NID) INTO v_exist FROM SCD.DIM_ARTICLE WHERE NID=v_id_article AND IS_ACT_IND=1;
 
 --create new record
 if(v_exist=0) then
@@ -31,30 +31,30 @@ if(v_exist=0) then
 		INSERT INTO scd.DIM_ARTICLE(nid, crt_dt, mod_dt, AUTHOR,TITLE,CONTENT,START_DT,END_DT,IS_ACT_IND)
 	SELECT v_id_article,v_crt_dt_article,v_mod_dt_article,
 		v_author_article,v_title_article,v_content_article, current_date, NULL, 1
-	FROM dual;
+	FROM DUAL;
 
 --if article was loaded earlier check fields on updates
 ELSIF (v_exist>0) THEN
 DECLARE
 --variables to compare data
-				v_art_crt_dt scd.DIM_ARTICLE.CRT_DT%TYPE;
-				v_art_mod_dt scd.DIM_ARTICLE.MOD_DT%TYPE;
-				v_art_author scd.DIM_ARTICLE.AUTHOR%TYPE;
-				v_art_title scd.DIM_ARTICLE.TITLE%TYPE;
-				v_art_content scd.DIM_ARTICLE.CONTENT%TYPE;
+				v_art_crt_dt SCD.DIM_ARTICLE.CRT_DT%TYPE;
+				v_art_mod_dt SCD.DIM_ARTICLE.MOD_DT%TYPE;
+				v_art_author SCD.DIM_ARTICLE.AUTHOR%TYPE;
+				v_art_title SCD.DIM_ARTICLE.TITLE%TYPE;
+				v_art_content SCD.DIM_ARTICLE.CONTENT%TYPE;
 			BEGIN
 --get the active record			
 				SELECT CRT_DT, MOD_DT, AUTHOR, TITLE, CONTENT
 				INTO v_art_crt_dt, v_art_mod_dt, v_art_author, v_art_title, v_art_content
-				FROM scd.DIM_ARTICLE 
+				FROM SCD.DIM_ARTICLE 
 				WHERE NID=v_id_article AND IS_ACT_IND=1;
-	if(v_art_crt_dt<>v_crt_dt_article or v_art_mod_dt<>v_mod_dt_article OR v_art_author<>v_author_article OR v_art_title<>v_title_article OR v_art_content<>v_content_article) THEN 
+	IF(v_art_crt_dt<>v_crt_dt_article or v_art_mod_dt<>v_mod_dt_article OR v_art_author<>v_author_article OR v_art_title<>v_title_article OR v_art_content<>v_content_article) THEN 
 	UPDATE scd.DIM_ARTICLE x
 		SET x.END_DT=current_date, x.IS_ACT_IND=NULL 
 		WHERE x.IS_ACT_IND=1 AND x.NID=v_id_article;
 	INSERT INTO scd.DIM_ARTICLE(nid, crt_dt, mod_dt, AUTHOR,TITLE,CONTENT,START_DT,END_DT,IS_ACT_IND)
 		SELECT v_id_article,v_crt_dt_article,v_mod_dt_article,v_author_article,v_title_article,v_content_article, current_date, NULL, 1
-		FROM dual;
+		FROM DUAL;
 --if record hadn't changes skip it
 	ELSIF (v_art_crt_dt=v_crt_dt_article and v_art_mod_dt=v_mod_dt_article and v_art_author=v_author_article and v_art_title=v_title_article and v_art_content=v_content_article) THEN 
 	CONTINUE;
@@ -105,7 +105,7 @@ SELECT TS, ACTION_TYPE INTO v_ts_audit_action, v_action_type_audit_action FROM D
 
 --check whether record is already exist
 MERGE INTO SCD.F_ARTICLE_COMMENT x
-	USING dual
+	USING DUAL
 	ON (x.ARTICLE_SID=v_sid_dim_article AND x.COMMENT_ID=v_id_article_comment)
 WHEN MATCHED THEN
 --if record exists update it
@@ -116,7 +116,7 @@ UPDATE
 	x.votes=nvl(v_votes_article_comment,0),
 	x.content=v_content_article_comment,
 	x.action_type=v_action_type_audit_action 
-	WHERE x.article_sid=v_sid_dim_article anD x.comment_id=v_id_article_comment
+	WHERE x.article_sid=v_sid_dim_article AND x.comment_id=v_id_article_comment
 --if record doesn't exist create it
 --get time of creation from audit using to_dsinterval
 	WHEN NOT MATCHED THEN

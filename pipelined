@@ -1,0 +1,38 @@
+--creating row to insert in report
+CREATE OR REPLACE TYPE SCD.r1_row AS object
+(
+	week_day NUMBER,
+	avg_article_count number
+);
+
+--create table of sorted rows
+CREATE OR REPLACE TYPE SCD.r1_tab IS TABLE OF r1_row;
+
+CREATE OR REPLACE PACKAGE SCD.PIPELINED_FUNCTIONS IS
+FUNCTION r1_function(v_begin_date DATE, v_end_date DATE) RETURN SCD.r1_tab PIPELINED;
+END PIPELINED_FUNCTIONS;
+
+CREATE OR REPLACE PACKAGE BODY SCD.PIPELINED_FUNCTIONS IS
+FUNCTION r1_function(v_begin_date DATE, v_end_date date) RETURN SCD.r1_tab PIPELINED is
+BEGIN
+--get a row in a date interval
+	FOR rec IN (
+	SELECT 
+    DISTINCT REPLACE (d_day,0,7) AS week_day,
+    AVG(article_count) OVER (PARTITION BY d_day) AS avg_article_count
+FROM (
+    SELECT 
+        COUNT(*) AS article_count,
+       TO_CHAR(CRT_DT, 'DDMMYYYY')AS day_name,
+       TO_NUMBER(to_char(CRT_DT, 'D'))-1 AS d_day
+    FROM SCD.DIM_ARTICLE
+    WHERE IS_ACT_IND = 1 AND TO_DATE(CRT_DT) BETWEEN  v_begin_date and v_end_date
+    GROUP BY TO_CHAR(CRT_DT, 'DDMMYYYY'), TO_NUMBER(to_char(CRT_DT, 'D'))-1
+) ORDER BY week_day)
+LOOP
+--send row in a temporary table
+	pipe ROW (scd.r1_row(rec.week_day, rec.avg_article_count));
+END LOOP;
+END r1_function;
+
+END PIPELINED_FUNCTIONS;

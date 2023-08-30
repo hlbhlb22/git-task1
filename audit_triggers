@@ -15,8 +15,8 @@ BEGIN
     ELSIF deleting THEN 
        v_action := 'D';
 END IF;
-	SELECT sys_context('userenv', 'CURRENT_USER') INTO v_user_name FROM dual;
-	--add record in audit_action
+	SELECT sys_context('userenv', 'CURRENT_USER') INTO v_user_name FROM DUAL;
+--add record in audit_action
 	DELL.audit_action_p(current_timestamp, 'ARTICLE',v_row_id, v_user_name, v_action,'итог');
 END;
 
@@ -33,7 +33,7 @@ BEGIN
 	IF inserting THEN v_action:='I';v_row_id:= :NEW.id;
 	ELSIF updating THEN v_action:='U'; v_row_id:= :NEW.id;
 END IF;
-	SELECT sys_context('userenv', 'CURRENT_USER') INTO v_user_name FROM dual;
-	--add record in audit_action
+	SELECT sys_context('userenv', 'CURRENT_USER') INTO v_user_name FROM DUAL;
+--add record in audit_action
 	DELL.audit_action_p(current_timestamp, 'ARTICLE_COMMENT',v_row_id, v_user_name, v_action,'итог');
 END;
