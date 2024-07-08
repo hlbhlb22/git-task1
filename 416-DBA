@@ -1,0 +1,58 @@
+sudo xtrabackup --user=root --password=1121 --backup --target-dir=/home/gleb/dba/backup2
+INSERT INTO master (name) VALUES ('master3');INSERT INTO details(master_id, details_info) VALUES (3, 'Detail_3');sudo systemctl status mysql
+sudo systemctl stop mysql;sudo xtrabackup --prepare --target-dir=/home/gleb/dba/backup1;rsudo rm -rf /var/lib/mysql/*; ls -al /var/lib/mysql/;sudo xtrabackup --copy-back --target-dir=/home/gleb/dba/backup1
+;sudo chown -R mysql:mysql /var/lib/mysql;sudo systemctl restart mysql;udo mysql -u root -p;show databases;
++--------------------+
+| Database           |
++--------------------+
+| TEST               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.01 sec)
+SHOW TABLES;
++----------------+
+| Tables_in_TEST |
++----------------+
+| details        |
+| master         |
++----------------+
+2 rows in set (0.00 sec)SELECT * FROM master;
++----+---------+
+| id | name    |
++----+---------+
+|  1 | master1 |
+|  2 | master2 |
++----+---------+
+2 rows in set (0.01 sec)
+ sudo xtrabackup --prepare --target-dir=/home/gleb/dba/backup2;sudo xtrabackup --copy-back --target-dir=/home/gleb/dba/backup2; show databases;
++--------------------+
+| Database           |
++--------------------+
+| TEST               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+HOW TABLES;
++----------------+
+| Tables_in_TEST |
++----------------+
+| details        |
+| master         |
++----------------+
+2 rows in set (0.00 sec)
+select * from master;
++----+---------+
+| id | name    |
++----+---------+
+|  1 | master1 |
+|  2 | master2 |
+|  3 | master3 |
++----+---------+
+3 rows in set (0.01 sec)
+
