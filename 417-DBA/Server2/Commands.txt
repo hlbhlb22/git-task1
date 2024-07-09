@@ -1,4 +1,4 @@
-Async replication for that Server:
+Async replication:
 ip addr
 sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
 CHECK CONFIGURATION FILE!!!
