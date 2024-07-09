@@ -1,6 +1,4 @@
 Async Replication:
-Firstly, create one more virtual machine with OC.
-FOR that user:
 ip addr
 sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
 CHECK IP CONFIGURATION FILE
