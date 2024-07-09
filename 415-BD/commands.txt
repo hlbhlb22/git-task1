@@ -31,39 +31,3 @@ sudo apt autoclean
 wget https://dev.mysql.com/get/mysql-apt-config_0.8.17-1_all.deb
 sudo dpkg -i mysql-apt-config_0.8.17-1_all.deb
 apt-cache policy mysql-server
-
-SELECT 
-    event_name, 
-    COUNT_ALLOC, 
-    SUM_NUMBER_OF_BYTES_ALLOC AS total_alloc_bytes
-FROM 
-    performance_schema.memory_summary_global_by_event_name
-ORDER BY 
-    total_alloc_bytes DESC;
-	
-	-- Суммарное время ввода-вывода и количество операций для различных файловых операций
-SELECT 
-    event_name, 
-    COUNT_READ, 
-    SUM_TIMER_READ / 1000000000 AS total_read_time_ms,
-    COUNT_WRITE, 
-    SUM_TIMER_WRITE / 1000000000 AS total_write_time_ms
-FROM 
-    performance_schema.file_summary_by_event_name
-ORDER BY 
-    total_read_time_ms DESC, 
-    total_write_time_ms DESC
-	
-	-- Суммарное время ввода-вывода и количество операций для различных файловых операций
-SELECT 
-    event_name, 
-    COUNT_READ, 
-    SUM_TIMER_READ / 1000000000 AS total_read_time_ms,
-    COUNT_WRITE, 
-    SUM_TIMER_WRITE / 1000000000 AS total_write_time_ms
-FROM 
-    performance_schema.file_summary_by_event_name
-ORDER BY 
-    total_read_time_ms DESC, 
-    total_write_time_ms DESC
-
