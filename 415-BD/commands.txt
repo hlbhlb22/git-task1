@@ -41,11 +41,35 @@ mysql -h 10.221.48.162 -u User_TEST -p
 
 # Extra tasks:
 
-# Open config file:
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
 
-sudo apt-get remove --purge mysql*
-sudo apt-get autoremove
+
+# Open config file
+
+# I changed the following parametres:
+
+key_buffer_size = 128M 
+innodb_buffer_pool_size = 1G
+
+# Uncomment following parametres:
+
+general_log = 1 
+general_log_file = /var/log/mysql/genereal.log 
+slow_query_log = 1 
+slow_query_log_file = /var/log/mysql/slow.log 
+long_time_query = 2 
+
+sudo systemctl restart mysql
+
+sudo apt remove --purge mysql-server-mysql-clietn mysql-common 
+sudo apt autoremove
 sudo apt autoclean
-wget https://dev.mysql.com/get/mysql-apt-config_0.8.17-1_all.deb
-sudo dpkg -i mysql-apt-config_0.8.17-1_all.deb
-sudo apt-cache policy mysql-server
+sudo apt update
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.22-1_all.deb
+sudo dpkg -i mysql-apt-config_0.8.22-1_all.deb
+
+# Change cluster to 5
+
+sudo apt update
+
+sudo apt install mysql-server
