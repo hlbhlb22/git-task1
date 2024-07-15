@@ -1,0 +1,74 @@
+#Error.log:
+#024-07-12T11:10:27.463481Z 259 [Warning] [MY-010897] [Repl] Storing MySQL user name or password information in the connection metadata repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START REPLICA; see the 'START REPLICA Syntax' in the MySQL Manual for more information.
+#2024-07-12T11:10:27.479811Z 259 [ERROR] [MY-010584] [Repl] Replica I/O for channel 'group_replication_recovery': Error connecting to source 'GLEBASIK@10.221.48.162:3306'. This was attempt 1/1, with a delay of 60 seconds between attempts. Message: Access denied for user 'GLEBASIK'@'10.221.48.159' (using password: YES), Error_code: MY-001045
+#2024-07-12T11:10:27.518738Z 258 [ERROR] [MY-011582] [Repl] Plugin group_replication reported: 'There was an error when connecting to the donor server. Please check that group_replication_recovery channel credentials and all MEMBER_HOST column values of performance_schema.replication_group_members table are correct and DNS resolvable.'
+#2024-07-12T11:10:27.518776Z 258 [ERROR] [MY-011583] [Repl] Plugin group_replication reported: 'For details please check performance_schema.replication_connection_status table and error log messages of Replica I/O for channel group_replication_recovery.'
+#2024-07-12T11:10:28.089823Z 244 [System] [MY-014010] [Repl] Plugin group_replication reported: 'Plugin 'group_replication' has been started.'
+#2024-07-12T11:11:27.623943Z 258 [System] [MY-010597] [Repl] 'CHANGE REPLICATION SOURCE TO FOR CHANNEL 'group_replication_recovery' executed'. Previous state source_host='10.221.48.162', source_port= 3306, source_log_file='', source_log_pos= 4, source_bind=''. New state source_host='10.221.48.162', source_port= 3306, source_log_file='', source_log_pos= 4, source_bind=''.
+#2024-07-12T11:11:27.716497Z 265 [Warning] [MY-010897] [Repl] Storing MySQL user name or password information in the connection metadata repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START REPLICA; see the 'START REPLICA Syntax' in the MySQL Manual for more information.
+#2024-07-12T11:11:27.727656Z 265 [ERROR] [MY-010584] [Repl] Replica I/O for channel 'group_replication_recovery': Error connecting to source 'GLEBASIK@10.221.48.162:3306'. This was attempt 1/1, with a delay of 60 seconds between attempts. Message: Access denied for user 'GLEBASIK'@'10.221.48.159' (using password: YES), Error_code: MY-001045
+#2024-07-12T11:11:27.782721Z 258 [ERROR] [MY-011582] [Repl] Plugin group_replication reported: 'There was an error when connecting to the donor server. Please check that group_replication_recovery channel credentials and all MEMBER_HOST column values of performance_schema.replication_group_members table are correct and DNS resolvable.'
+#2024-07-12T11:11:27.782759Z 258 [ERROR] [MY-011583] [Repl] Plugin group_replication reported: 'For details please check performance_schema.replication_connection_status table and error log messages of Replica I/O for channel group_replication_recovery.'
+
+#Problem
+SELECT MEMBER_ID, MEMBER_HOST, MEMBER_STATE FROM performance_schema.replication_group_members;
++--------------------------------------+---------------+--------------+
+| MEMBER_ID                            | MEMBER_HOST   | MEMBER_STATE |
++--------------------------------------+---------------+--------------+
+| 513e0050-3f69-11ef-8bc7-080027a5729d | 10.221.48.159 | RECOVERING   |
+| 99f64f5f-3f82-11ef-b2ae-080027146eea | 10.221.48.162 | ONLINE       |
++--------------------------------------+---------------+--------------+
+
+#Commands
+Server1: uuidgen
+#result:18ebd185-ef81-4d2a-a92d-0d52353faf6a
+#ip: 10.221.48.159 -- server 1
+#ip: 10.221.48.162 -- server 2
+
+#Server1:
+sudo nano /etc/mysql/my.cnf
+#CHECK mysqld.cnf
+
+sudo systemctl restart mysql
+
+#Server2:
+sudo nano /etc/mysql/my.cnf
+#CHECK mysqld.cnf
+
+sudo systemctl restart mysql
+
+#Server1:
+sudo ufw allow from 10.221.48.162  to any port 3306
+sudo ufw allow from 10.221.48.162 to any port 33061
+
+#Server2:
+sudo ufw allow from 10.221.48.159 to any port 3306
+sudo ufw allow from 10.221.48.159 to any port 33061
+
+Server1: sudo mysql -u root -p
+#password
+SET SQL_LOG_BIN=0;
+CREATE USER 'repl'@'%' IDENTIFIED BY '1121' REQUIRE SSL;
+GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';
+FLUSH PRIVILEGES;
+SET SQL_LOG_BIN=1;
+CHANGE REPLICATION SOURCE TO SOURCE_USER='repl', SOURCE_PASSWORD='1121' FOR CHANNEL 'group_replication_recovery';
+INSTALL PLUGIN group_replication SONAME 'group_replication.so';
+SHOW PLUGINS;
+#List plugins
+SET GLOBAL group_replication_bootstrap_group=ON;
+START GROUP_REPLICATION;
+SET GLOBAL group_replication_bootstrap_group=OFF;
+SELECT * FROM performance_schema.replication_group_members;
+
+#Server2:
+sudo mysql -u root -p
+#password
+SET SQL_LOG_BIN=0;
+CREATE USER 'repl'@'%' IDENTIFIED BY '1121' REQUIRE SSL;
+GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';
+FLUSH PRIVILEGES;
+SET SQL_LOG_BIN=1;
+CHANGE REPLICATION SOURCE TO SOURCE_USER='repl', SOURCE_PASSWORD='1121' FOR CHANNEL 'group_replication_recovery';
+START GROUP_REPLICATION;
+SELECT MEMBER_ID, MEMBER_HOST, MEMBER_STATE FROM performance_schema.replication_group_members;
