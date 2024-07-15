@@ -1,7 +1,10 @@
-Async replication:
+#Async replication:
+
 ip addr
 sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
-CHECK CONFIGURATION FILE!!!
+
+#Check configuration file!
+
 sudo systemctl restart mysql
 sudo mysql -u root -p
 CHANGE REPLICATION SOURCE TO SOURCE_HOST='10.221.48.154', SOURCE_LOG_FILE='mysql-bin.000013', SOURCE_LOG_POS=716, SOURCE_SSL=1;
