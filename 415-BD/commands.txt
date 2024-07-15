@@ -1,33 +1,51 @@
 sudo apt install mysql-server-8.0
-sudo systemctl statys mysql.service
-CHECK configuration, data and log files:
+sudo systemctl status mysql.service
+
+# CHECK configuration, data and log files:
+
 cd /etc/mysql/mysql.conf.d
 sudo nano mysqld.cnf
 /var/lib/mysql - datadir
-/var/log/mysql - logs file
-Run any select query from local and remote hosts:
-Local:
+/var/log/mysql/error.log - logs file
+
+# Run any select query from local and remote hosts:
+
+# Local:
+
 sudo mysql
-SELECT USER FROM mysql.server;
-Remote:
-ssh localhost
+SELECT USER FROM mysql.user;
+
+#Remote:
+
+ssh gelb@10.221.48.162
 cd /etc/mysql/mysql.conf.d/
 sudo nano mysqld.cnf
-CHANGE BIND-ADDRESS TO 0.0.0.0
-save changes + exit
-sudo mysql
-CREATE USER 'CHIVAVA'@'%' IDENTIFIED BY '1121';
-GRANT ALL PRIVELEGES ON *.* TO 'CHIVAVA'@'%' WITH GRANT OPTION;
+
+#Change bind-address to 0.0.0.0
+
+#Save changes + exit
+
+sudo mysql -u root -p
+
+#Password
+
+CREATE USER 'User_TEST'@'10.221.48.162' IDENTIFIED BY '0862Ax-6';
+GRANT ALL PRIVILEGES ON *.* TO'User_TEST'@'10.221.48.162' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 EXIT
 sudo service mysql restart
 exit
-mysql -h localhost -u CHIVAVA -p
-EXTRA TASKS:
-OPEN CONFIGURATION FILE 
-sudo apt-get remove  --purge mysql*
+mysql -h 10.221.48.162 -u User_TEST -p
+
+#Password
+
+# Extra tasks:
+
+# Open config file:
+
+sudo apt-get remove --purge mysql*
 sudo apt-get autoremove
 sudo apt autoclean
 wget https://dev.mysql.com/get/mysql-apt-config_0.8.17-1_all.deb
 sudo dpkg -i mysql-apt-config_0.8.17-1_all.deb
-apt-cache policy mysql-server
+sudo apt-cache policy mysql-server
