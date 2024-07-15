@@ -1,0 +1,12 @@
+ssh gelb@10.221.48.162
+tmux
+sudo apt install vim
+find ~ -name ".tmux.cnf"
+SELECT * FROM INFORMATION_SHEMA.PROCESSLIST;
+SELECT PROCESSLIST;
+htop
+sudo iotop
+vmstat
+nload
+select version();
+sudo less var/log/mysql/error.log
