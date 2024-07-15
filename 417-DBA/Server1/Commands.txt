@@ -1,7 +1,7 @@
-Async Replication:
+#Async Replication:
 ip addr
 sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
-CHECK IP CONFIGURATION FILE
+#CHECK IP CONFIGURATION FILE
 sudo systemctl restart mysql
 sudo mysql -u root -p
 SHOW MASTER STATUS \G;
