@@ -4,17 +4,21 @@ CREATE TABLE master (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL
 );
+
 CREATE TABLE details (
     id INT PRIMARY KEY AUTO_INCREMENT,
     master_id INT,
     detail_info VARCHAR(255),
     FOREIGN KEY (master_id) REFERENCES master(id)
 );
+
+
 INSERT INTO master (name) VALUES ('Master 1'), ('Master 2');
 
 INSERT INTO details (master_id, detail_info) VALUES
 (1, 'Detail_1'),
 (2, 'Detail_2');
+
 sudo xtrabackup --user=root --password=1121 --backup --target-dir=/home/gleb/dba/backup1;
 
 INSERT INTO master (name) VALUES ('master3');
@@ -28,13 +32,14 @@ sudo systemctl status mysql
 sudo systemctl stop mysql;
 
 sudo xtrabackup --prepare --target-dir=/home/gleb/dba/backup1;
-sudo rm -rf /var/lib/mysql/*;
-ls -al /var/lib/mysql/;
+sudo find /var/lib/mysql -mindepth 1 -delete;
+sudo ls -al /var/lib/mysql/;
 sudo xtrabackup --copy-back --target-dir=/home/gleb/dba/backup1;
 sudo chown -R mysql:mysql /var/lib/mysql;
 sudo systemctl restart mysql;
 sudo mysql -u root -p;
 show databases;
+
 +--------------------+
 | Database           |
 +--------------------+
@@ -69,13 +74,14 @@ sudo systemctl status mysql
 sudo systemctl stop mysql;
 
 sudo xtrabackup --prepare --target-dir=/home/gleb/dba/backup2;
-sudo rm -rf /var/lib/mysql/*;
-ls -al /var/lib/mysql/;
+sudo find /var/lib/mysql -mindepth 1 -delete;
+sudo ls -al /var/lib/mysqsl/;
 sudo xtrabackup --copy-back --target-dir=/home/gleb/dba/backup2;
 sudo chown -R mysql:mysql /var/lib/mysql;
 sudo systemctl restart mysql;
 sudo mysql -u root -p;
 show databases;
+
 +--------------------+
 | Database           |
 +--------------------+
@@ -103,5 +109,4 @@ SELECT * FROM master;
 |  2 | master2 |
 |  3 | master3 |
 +----+---------+
-
 
