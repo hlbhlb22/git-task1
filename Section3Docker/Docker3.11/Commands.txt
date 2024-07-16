@@ -1,0 +1,60 @@
+sudo docker run -d -p 127.0.0.1:28080:80 --name rbm-dkr-01 nginx:stable
+
+#Unable to find image 'nginx:stable' locally
+#stable: Pulling from library/nginx
+#f11c1adaa26e: Pull complete 
+#d4e560a30915: Pull complete 
+#9ac6875eca60: Pull complete 
+#47927ca6802f: Pull complete 
+#4ede7ada96f6: Pull complete 
+#81bf9dd9cea6: Pull complete 
+#434abd9d8a2b: Pull complete 
+#Digest: sha256:ac96a05e4b3dd2c57c9ca2637012f4fa17b11d5fdd2ce856c2f937bd843f0440
+#Status: Downloaded newer image for nginx:stable
+#a07ee2a716811cb1dbb257be54e913081869d46f017c1e5ba347e76924779dcb
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                     NAMES
+#a07ee2a71681   nginx:stable   "/docker-entrypoint.…"   29 seconds ago   Up 27 seconds   127.0.0.1:28080->80/tcp   rbm-dkr-01
+
+curl http://127.0.0.1:28080
+
+#<!DOCTYPE html>
+#<html>
+#<head>
+#<title>Welcome to nginx!</title>
+#<style>
+#html { color-scheme: light dark; }
+#body { width: 35em; margin: 0 auto;
+#font-family: Tahoma, Verdana, Arial, sans-serif; }
+#</style>
+#</head>
+#<body>
+#<h1>Welcome to nginx!</h1>
+#<p>If you see this page, the nginx web server is successfully installed and
+#working. Further configuration is required.</p>
+
+#<p>For online documentation and support please refer to
+#<a href="http://nginx.org/">nginx.org</a>.<br/>
+#Commercial support is available at
+#<a href="http://nginx.com/">nginx.com</a>.</p>
+
+#<p><em>Thank you for using nginx.</em></p>
+#</body>
+#</html>
+
+sudo docker stop rbm-dkr-01
+sudo docker ps
+
+#CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+sudo curl http://127.0.0.1:28080
+
+#curl: (7) Failed to connect to 127.0.0.1 port 28080: Connection refused
+
+sudo docker ps -a
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS                      PORTS     NAMES
+#a07ee2a71681   nginx:stable   "/docker-entrypoint.…"   5 minutes ago    Exited (0) 4 minutes ago              rbm-dkr-01
+#fc7cf7571598   hello-world    "/hello"                 14 minutes ago   Exited (0) 14 minutes ago             gracious_brown
