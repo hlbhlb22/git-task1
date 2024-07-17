@@ -1,0 +1,38 @@
+sudo docker run -d -p 127.0.0.1:8890:80 --name inno-dkr-03 -v /home/unty/Downloads/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable
+
+#4399370371f1bbd1920d464df285a3502b1098e8881bb4bf5582c4ec5fa95b1
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                    NAMES
+#4399370371f1   nginx:stable   "/docker-entrypoint.…"   12 seconds ago   Up 10 seconds   127.0.0.1:8890->80/tcp   inno-dkr-03
+
+curl http://127.0.0.1:8890
+
+#Welcome to the training program Innowise: Docker! Again!
+
+sudo docker exec -ti inno-dkr-03 md5sum /etc/nginx/nginx.conf
+
+#e9914ee9d3c1fbedca68494ecf14028e  /etc/nginx/nginx.conf
+
+sudo nano /home/unty/Downloads/nginx.conf
+
+sudo docker exec inno-dkr-03 nginx -s reload
+
+sudo docker restart inno-dkr-03
+
+sudo curl http://127.0.0.1:8890
+
+#Welcome to the training program Innowise: Docker!
+
+sudo docker exec -ti inno-dkr-03 md5sum /etc/nginx/nginx.conf 
+
+#4f7ddc17dcbc937c5f144859e5e28b5c  /etc/nginx/nginx.conf
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS         PORTS                    NAMES
+#4399370371f1   nginx:stable   "/docker-entrypoint.…"   28 minutes ago   Up 5 minutes   127.0.0.1:8890->80/tcp   inno-dkr-03
+
+
+
