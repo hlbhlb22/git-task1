@@ -1,0 +1,49 @@
+X=$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 10)
+
+sudo docker run -d --name "inno-dkr-05-run-$X" nginx:stable
+
+#ee688217bb491a21a0d348d6a07b4890cb7e3f4981b30497547cacede5095cd5
+
+sudo docker run -d --name "inno-dkr-05-stop" nginx:stable
+
+#125ab5e6440a430c3dbadf813f5e829f362fb64e0ea35c988de47bb9129d3c25
+
+sudo docker ps | tee /home/unty/ps.txt
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                    NAMES
+#125ab5e6440a   nginx:stable   "/docker-entrypoint.…"   3 minutes ago    Up 3 minutes    80/tcp                   inno-dkr-05-stop
+#ee688217bb49   nginx:stable   "/docker-entrypoint.…"   4 minutes ago    Up 4 minutes    80/tcp                   inno-dkr-05-run-cc9e4a751a
+#903e9e0b2bf7   nginx:stable   "/docker-entrypoint.…"   37 minutes ago   Up 37 minutes   127.0.0.1:8891->80/tcp   inno-dkr-04
+
+sudo docker stop inno-dkr-05-stop
+
+#sudo docker psCONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                    NAMES
+#ee688217bb49   nginx:stable   "/docker-entrypoint.…"   5 minutes ago    Up 5 minutes    80/tcp                   inno-dkr-05-run-cc9e4a751a
+#903e9e0b2bf7   nginx:stable   "/docker-entrypoint.…"   38 minutes ago   Up 38 minutes   127.0.0.1:8891->80/tcp   inno-dkr-04
+
+sudo docker stop $(sudo docker ps -q)
+
+#ee688217bb49
+#903e9e0b2bf7
+#sudo docker ps
+
+sudo docker ps
+#CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+sudo docker ps -a
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS                      PORTS     NAMES
+#125ab5e6440a   nginx:stable   "/docker-entrypoint.…"   6 minutes ago    Exited (0) 2 minutes ago              inno-dkr-05-stop
+#ee688217bb49   nginx:stable   "/docker-entrypoint.…"   8 minutes ago    Exited (0) 28 seconds ago             inno-dkr-05-run-cc9e4a751a
+#903e9e0b2bf7   nginx:stable   "/do
+
+#cker-entrypoint.…"   41 minutes ago   Exited (0) 28 seconds ago             inno-dkr-04
+#7050055d8243   nginx:stable   "/docker-entrypoint.…"   25 hours ago     Exited (0) 25 hours ago               rbm-dkr-02
+#a07ee2a71681   nginx:stable   "/docker-entrypoint.…"   25 hours ago     Exited (0) 25 hours ago               rbm-dkr-01
+#fc7cf7571598   hello-world    "/hello"                 26 hours ago     Exited (0) 26 hours ago               gracious_brown
+
+sudo docker rm $(sudo docker ps -aq)
+
+sudo docker ps -a
+
+#CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
