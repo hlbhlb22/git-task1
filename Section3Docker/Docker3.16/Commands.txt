@@ -1,0 +1,7 @@
+sudo docker run -d -p 127.0.0.1:8892:80 --name inno-dkr-06-local nginx:stable -log-driver local -lot-opt max-size=1k
+37285fbcc233406134d0f1ccca71739a6b3277c24e9f20384f9b7075a05ce651
+
+sudo curl --silent http://127.0.0.1:8892 > /dev/null
+
+sudo cat /var/lib/docker/containers/37285fbcc233406134d0f1ccca71739a6b3277c24e9f20384f9b7075a05ce651/37285fbcc233406134d0f1ccca71739a6b3277c24e9f20384f9b7075a05ce651-json.log
+{"log":"/docker-entrypoint.sh: 47: exec: -log-driver: not found\n","stream":"stderr","time":"2024-07-17T14:32:05.654549584Z"}
