@@ -1,141 +1,203 @@
-sudo docker pull nginx:stable-alpine
+sudo docker build -t cache:1 /home/unty/Docker3.22
 
-#stable-alpine: Pulling from library/nginx
-#b84a74cde5af: Pull complete 
-#5f993fba5645: Pull complete 
-#33a20d884ccd: Pull complete 
-#455053b8a991: Pull complete 
-#57c7372bb88a: Pull complete 
-#5fdd91ad9396: Pull complete 
-#e4b1d914adae: Pull complete 
-#d0ec18c31a8d: Pull complete 
-#Digest: sha256:208ae3c180b7d26f6a8046fac4c8468b2ab8bd92123ab73f9c5ad0f6f1c5543d
-#Status: Downloaded newer image for nginx:stable-alpine
+#[+] Building 64.9s (6/6) FINISHED                                docker:default
+# => [internal] load build definition from Dockerfile                       0.2s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           2.4s
+# => [internal] load .dockerignore                                          0.1s
+# => => transferring context: 2B                                            0.0s
+# => [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed3597455  5.2s
+# => => resolve docker.io/library/alpine:latest@sha256:b89d9c93e9ed3597455  0.1s
+# => => sha256:a606584aa9aa875552092ec9e1d62cb98d486f51f38 1.47kB / 1.47kB  0.0s
+# => => sha256:ec99f8b99825a742d50fb3ce173d291378a46ab54b8 3.62MB / 3.62MB  1.3s
+# => => sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f 1.85kB / 1.85kB  0.0s
+# => => sha256:dabf91b69c191a1a0a1628fd6bdd029c0c4018041c7f052 528B / 528B  0.0s
+# => => extracting sha256:ec99f8b99825a742d50fb3ce173d291378a46ab54b8ef7dd  2.9s
+# => [2/2] RUN apk update && apk add build-base                            54.5s
+# => exporting to image                                                     1.9s 
+# => => exporting layers                                                    1.8s 
+# => => writing image sha256:c7922ea2c40daa0982eb5966f04794817c87c4b9979b5  0.0s 
+# => => naming to docker.io/library/cache:1                                 0.0s 
+ 
+sudo docker build -t cache:2 .
+
+#[+] Building 2.1s (6/6) FINISHED                                 docker:default
+# => [internal] load build definition from Dockerfile                       0.1s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           1.3s
+# => [internal] load .dockerignore                                          0.1s
+# => => transferring context: 2B                                            0.1s
+# => [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed3597455  0.0s
+# => CACHED [2/2] RUN apk update && apk add build-base                      0.0s
+# => exporting to image                                                     0.2s
+# => => exporting layers                                                    0.0s
+# => => writing image sha256:6ee12fdb79263190e3c26811cfa4be43bde8414907cfa  0.1s
+# => => naming to docker.io/library/cache:2                                 0.0s
+ 
+sudo docker build --no-cache=True /home/unty/Docker3.22
+
+#[+] Building 69.8s (6/6) FINISHED                                docker:default
+# => [internal] load build definition from Dockerfile                       0.2s
+# => => transferring dockerfile: 103B                                       0.0s
+# => [internal] load metadata for docker.io/library/alpine:latest           0.7s
+# => [internal] load .dockerignore                                          0.2s
+# => => transferring context: 2B                                            0.0s
+# => CACHED [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed  0.0s
+# => [2/2] RUN apk update && apk add build-base                            66.2s
+# => exporting to image                                                     1.9s 
+# => => exporting layers                                                    1.8s 
+# => => writing image sha256:6ee12fdb79263190e3c26811cfa4be43bde8414907cfa  0.0s
+
 
 sudo docker images
 
-#REPOSITORY              TAG             IMAGE ID       CREATED          SIZE
-#inno-dkr-11             optimized       e075782dd7a3   21 minutes ago   154MB
-#inno-dkr-11-optimized   latest          e075782dd7a3   21 minutes ago   154MB
-#inno-dkr-11             default         5b349a4f6270   49 minutes ago   206MB
-#nginx                   1nn0-dkr-10     414d9fd2e0d8   2 hours ago      23.4MB
-#nginx                   inn0-dkr-10     8cc5a078b507   2 hours ago      23.4MB
-#nginx                   inno-dkr-10     a8ecfbe1e52b   3 hours ago      23.4MB
-#nginx                   inno-dkr-09     f9a38c3e9d47   5 hours ago      169MB
-#nginx                   inno-dkr-08     102978bce580   24 hours ago     188MB
-#nginx                   stable          e7580268c63c   4 weeks ago      188MB
-#nginx                   stable-alpine   19ddafb0ee3c   4 weeks ago      43.2MB
-#hello-world             latest          d2c94e258dcb   14 months ago    13.3kB
+#REPOSITORY   TAG       IMAGE ID       CREATED          SIZE                     
+#<none>       <none>    6ee12fdb7926   11 seconds ago   232MB
+#cache        2         6ee12fdb7926   6 minutes ago    232MB
+#cache        1         c7922ea2c40d   9 minutes ago    232MB
+#nginx        stable    e7580268c63c   4 weeks ago      188MB
+#<none>       <none>    19ddafb0ee3c   4 weeks ago      43.2MB
+sudo docker history cache:2
 
-sudo docker tag nginx:stable-alpine nginx:inno-dkr-12
+#IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
+#6ee12fdb7926   22 minutes ago   RUN |1 MYARG= /bin/sh -c apk update && apk a…   224MB     buildkit.dockerfile.v0
+#<missing>      22 minutes ago   ARG MYARG                                       0B        buildkit.dockerfile.v0
+#<missing>      4 weeks ago      /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B        
+#<missing>      4 weeks ago      /bin/sh -c #(nop) ADD file:33ebe56b967747a97…   7.8MB     
 
+sudo docker history cache:1
+
+#IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
+#c7922ea2c40d   32 minutes ago   RUN |1 MYARG= /bin/sh -c apk update && apk a…   224MB     buildkit.dockerfile.v0
+#<missing>      32 minutes ago   ARG MYARG                                       0B        buildkit.dockerfile.v0
+#<missing>      4 weeks ago      /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B        
+#<missing>      4 weeks ago      /bin/sh -c #(nop) ADD file:33ebe56b967747a97…   7.8MB     
+
+sudo docker history 6ee12fdb7926
+
+#IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
+#6ee12fdb7926   25 minutes ago   RUN |1 MYARG= /bin/sh -c apk update && apk a…   224MB     buildkit.dockerfile.v0
+#<missing>      25 minutes ago   ARG MYARG                                       0B        buildkit.dockerfile.v0
+#<missing>      4 weeks ago      /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B        
+#<missing>      4 weeks ago      /bin/sh -c #(nop) ADD file:33ebe56b967747a97…   7.8MB     
+
+
+sudo docker build --build-arg MYARG=3 -t cache:3 /home/unty/Docker3.22
+
+#[+] Building 20.6s (6/6) FINISHED                                docker:default
+# => [internal] load build definition from Dockerfile                       0.2s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           1.3s
+# => [internal] load .dockerignore                                          0.1s
+# => => transferring context: 2B                                            0.0s
+# => CACHED [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed  0.0s
+# => [2/2] RUN apk update && apk add build-base                            16.9s
+# => exporting to image                                                     1.6s 
+# => => exporting layers                                                    1.4s 
+# => => writing image sha256:d515709e27694a24312d2543b266fdd50e8c7de63f8b2  0.1s 
+# => => naming to docker.io/library/cache:3 
+
+
+sudo docker build --build-arg MYARG=3 -t cache:3 /home/unty/Docker3.22       
+
+#[+] Building 1.7s (6/6) FINISHED                                 docker:default
+# => [internal] load build definition from Dockerfile                       0.1s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           0.7s
+# => [internal] load .dockerignore                                          0.2s
+# => => transferring context: 2B                                            0.1s
+# => [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed3597455  0.0s
+# => CACHED [2/2] RUN apk update && apk add build-base                      0.0s
+# => exporting to image                                                     0.1s
+# => => exporting layers                                                    0.0s
+# => => writing image sha256:d515709e27694a24312d2543b266fdd50e8c7de63f8b2  0.0s
+# => => naming to docker.io/library/cache:3
+ 
+ 
+sudo docker build --build-arg MYARG=4 -t cache:4 /home/unty/Docker3.22
+
+#[+] Building 37.4s (6/6) FINISHED                                docker:default
+# => [internal] load build definition from Dockerfile                       0.1s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           0.7s
+# => [internal] load .dockerignore                                          0.1s
+# => => transferring context: 2B                                            0.0s
+# => CACHED [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed  0.0s
+# => [2/2] RUN apk update && apk add build-base                            34.3s
+# => exporting to image                                                     1.8s 
+# => => exporting layers                                                    1.6s 
+# => => writing image sha256:160f7cf66a17ce61d09d9de39ab1f90f81c867609da62  0.0s 
+# => => naming to docker.io/library/cache:4           
+ 
 sudo docker images
 
-#REPOSITORY              TAG             IMAGE ID       CREATED          SIZE
-#inno-dkr-11             optimized       e075782dd7a3   22 minutes ago   154MB
-#inno-dkr-11-optimized   latest          e075782dd7a3   22 minutes ago   154MB
-#inno-dkr-11             default         5b349a4f6270   50 minutes ago   206MB
-#nginx                   1nn0-dkr-10     414d9fd2e0d8   2 hours ago      23.4MB
-#nginx                   inn0-dkr-10     8cc5a078b507   2 hours ago      23.4MB
-#nginx                   inno-dkr-10     a8ecfbe1e52b   3 hours ago      23.4MB
-#nginx                   inno-dkr-09     f9a38c3e9d47   5 hours ago      169MB
-#nginx                   inno-dkr-08     102978bce580   24 hours ago     188MB
-#nginx                   stable          e7580268c63c   4 weeks ago      188MB
-#nginx                   inno-dkr-12     19ddafb0ee3c   4 weeks ago      43.2MB
-#nginx                   stable-alpine   19ddafb0ee3c   4 weeks ago      43.2MB
-#hello-world             latest          d2c94e258dcb   14 months ago    13.3kB
+#REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+#cache        4         160f7cf66a17   2 minutes ago    232MB
+#cache        3         d515709e2769   4 minutes ago    232MB
+#cache        2         6ee12fdb7926   12 minutes ago    232MB
+#<none>       <none>    6ee12fdb7926   8 minutes ago    232MB
+#cache        1         c7922ea2c40d   17 minutes ago   232MB
+#nginx        stable    e7580268c63c   4 weeks ago      188MB
+#<none>       <none>    19ddafb0ee3c   4 weeks ago      43.2MB
 
-sudo docker images | tee /home/unty/images.txt 
+sudo docker inspect cache:4
 
-#REPOSITORY              TAG             IMAGE ID       CREATED          SIZE
-#inno-dkr-11-optimized   latest          e075782dd7a3   25 minutes ago   154MB
-#inno-dkr-11             optimized       e075782dd7a3   25 minutes ago   154MB
-#inno-dkr-11             default         5b349a4f6270   53 minutes ago   206MB
-#nginx                   1nn0-dkr-10     414d9fd2e0d8   2 hours ago      23.4MB
-#nginx                   inn0-dkr-10     8cc5a078b507   2 hours ago      23.4MB
-#nginx                   inno-dkr-10     a8ecfbe1e52b   3 hours ago      23.4MB
-#nginx                   inno-dkr-09     f9a38c3e9d47   5 hours ago      169MB
-#nginx                   inno-dkr-08     102978bce580   24 hours ago     188MB
-#nginx                   stable          e7580268c63c   4 weeks ago      188MB
-#nginx                   inno-dkr-12     19ddafb0ee3c   4 weeks ago      43.2MB
-#nginx                   stable-alpine   19ddafb0ee3c   4 weeks ago      43.2MB
-#hello-world             latest          d2c94e258dcb   14 months ago    13.3kB
-
-sudo docker rmi -f $(sudo docker images -aq)
-
-#Untagged: inno-dkr-11:default
-#Deleted: sha256:5b349a4f6270b4bb6bd944d335897aefd74223b820abb37693e8c9d44567832b
-#Untagged: nginx:inn0-dkr-10
-#Deleted: sha256:8cc5a078b507b534a12f23f4e4ac628f5253024b7748c658dd8951879e3808f8
-#Untagged: hello-world:latest
-#Untagged: hello-world@sha256:1408fec50309afee38f3535383f5b09419e6dc0925bc69891e79d84cc4cdcec6
-#Deleted: sha256:d2c94e258dcb3c5ac2798d32e1249e42ef01cba4841c2234249495f87264ac5a
-#Deleted: sha256:ac28800ec8bb38d5c35b49d45a6ac4777544941199075dff8c4eb63e093aa81e
-#Untagged: inno-dkr-11-optimized:latest
-#Untagged: inno-dkr-11:optimized
-#Deleted: sha256:e075782dd7a39adaeb2208609678863a13f3e2f892562f913f7c8f890499b600
-#Untagged: nginx:inno-dkr-08
-#Deleted: sha256:102978bce580a51d65a831ede838e8c83e002acc4b0973442ecc89d5d4f86c5a
-#Untagged: nginx:stable
-#Untagged: nginx@sha256:ac96a05e4b3dd2c57c9ca2637012f4fa17b11d5fdd2ce856c2f937bd843f0440
-#Deleted: sha256:e7580268c63c006498d2140004ffe6f6fbf63ff75050a5dc46d6097f2004d577
-#Untagged: nginx:inno-dkr-12
-#Untagged: nginx:stable-alpine
-#Untagged: nginx@sha256:208ae3c180b7d26f6a8046fac4c8468b2ab8bd92123ab73f9c5ad0f6f1c5543d
-#Deleted: sha256:19ddafb0ee3c28236f2c3d1e2f40d3735f34412949c385c8033c02ba111341b1
-#Deleted: sha256:569225b98d5ed33c96a8e1a7f75747fa47847a359e30196008415fcbc3e62eaf
-#Deleted: sha256:5cb2a2a33f650d9481ed899a2c81dd20bdc284715cf905663aea281598b57bdd
-#Deleted: sha256:bf10bb318a4231fc808cbea0d378c3eafe1f2a245e4c32705c11ca28f66aebca
-#Deleted: sha256:9e50d14a0d7a41df98f36d31f9b9fa2086cd50768626465f160e08eb6c13c927
-#Deleted: sha256:14dfb5ada66aeea72ebea2df75f0d1d37e36b53d8cd810e27600bc2497811227
-#Deleted: sha256:c6cca6b860639299dcb4bba8ba074624e390001c65e6c5eaee37c9c5d089e730
-#Deleted: sha256:ff7064fa96621d2e10cd89ba2ce18271f5930a2f65e9e60795fa344956c2774c
-#Deleted: sha256:af9a70194aa4d12f967dbd4bcb1ce9c98ba42adb4ec05536080fd4560155e809
-#Untagged: nginx:1nn0-dkr-10
-#Deleted: sha256:414d9fd2e0d8fdd1aefab1bd7c7339baf92c1bf064125082f6f577863a882ad2
-#Untagged: nginx:inno-dkr-10
-#Deleted: sha256:a8ecfbe1e52bc1a6f5a167a3a8964ecf6836d27bd3fd117e9652c854e1f31533
-#Untagged: nginx:inno-dkr-09
-#Deleted: sha256:f9a38c3e9d471d52fd5937b40ff06f6564d42e140105cb41aea90a1501f45752
-
-sudo docker images
-
-#REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
-
-sudo docker run -d --name inno-dkr-12 nginx:stable-alpine
-
-#Unable to find image 'nginx:stable-alpine' locally
-#stable-alpine: Pulling from library/nginx
-#b84a74cde5af: Pull complete 
-#5f993fba5645: Pull complete 
-#33a20d884ccd: Pull complete 
-#455053b8a991: Pull complete 
-#57c7372bb88a: Pull complete 
-#5fdd91ad9396: Pull complete 
-#e4b1d914adae: Pull complete 
-#d0ec18c31a8d: Pull complete 
-#Digest: sha256:208ae3c180b7d26f6a8046fac4c8468b2ab8bd92123ab73f9c5ad0f6f1c5543d
-#Status: Downloaded newer image for nginx:stable-alpine
-#12b400f112847964df055bddb316549760893dccece9567877c6b4f1f6feb197
-
-sudo docker rmi -f nginx:stable-alpine
-
-#Untagged: nginx:stable-alpine
-#Untagged: nginx@sha256:208ae3c180b7d26f6a8046fac4c8468b2ab8bd92123ab73f9c5ad0f6f1c5543d
-
-sudo docker ps
-
-#CONTAINER ID   IMAGE          COMMAND                  CREATED              STATUS              PORTS     NAMES
-#12b400f11284   19ddafb0ee3c   "/docker-entrypoint.…"   About a minute ago   Up About a minute   80/tcp    inno-dkr-12
-
-sudo docker restart inno-dkr-12
-
-#inno-dkr-12
-
-sudo docker ps
-
-#CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS     NAMES
-#12b400f11284   19ddafb0ee3c   "/docker-entrypoint.…"   2 minutes ago   Up 8 seconds   80/tcp    inno-dkr-12
-
-
-
+#[
+#    {
+#        "Id": "sha256:160f7cf66a17ce61d09d9de39ab1f90f81c867609da625b0dc4f07becf597ea2",
+#        "RepoTags": [
+#            "cache:4"
+#        ],
+#        "RepoDigests": [],
+#        "Parent": "",
+#        "Comment": "buildkit.dockerfile.v0",
+#        "Created": "2024-07-22T11:28:04.565602373+03:00",
+#        "DockerVersion": "",
+#        "Author": "",
+#        "Config": {
+#            "Hostname": "",
+#           "Domainname": "",
+#           "User": "",
+#            "AttachStdin": false,
+#            "AttachStdout": false,
+#            "AttachStderr": false,
+#            "Tty": false,
+#            "OpenStdin": false,
+#            "StdinOnce": false,
+#           "Env": [
+#                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+#            ],
+#            "Cmd": [
+#                "/bin/sh"
+#            ],
+#            "Image": "",
+#            "Volumes": null,
+#            "WorkingDir": "",
+#            "Entrypoint": null,
+#            "OnBuild": null,
+#            "Labels": null
+#        },
+#        "Architecture": "amd64",
+#        "Os": "linux",
+#        "Size": 232281842,
+#        "GraphDriver": {
+#            "Data": {
+#                "LowerDir": "/var/lib/docker/overlay2/eda39cc20ab0463a47078b694d302ad2a7c4358c9e40069d3e0d69d33534a932/diff",
+#                "MergedDir": "/var/lib/docker/overlay2/ma49gpim16qhjcso2jm9zndsz/merged",
+#                "UpperDir": "/var/lib/docker/overlay2/ma49gpim16qhjcso2jm9zndsz/diff",
+#                "WorkDir": "/var/lib/docker/overlay2/ma49gpim16qhjcso2jm9zndsz/work"
+#            },
+#            "Name": "overlay2"
+#        },
+#        "RootFS": {
+#            "Type": "layers",
+#            "Layers": [
+#                "sha256:94e5f06ff8e3d4441dc3cd8b090ff38dc911bfa8ebdb0dc28395bc98f82f983f",
+#                "sha256:112a29ba26a4a8d9436612aa203e45189a4f51682d5f617e1f2945f66a5b2d05"
+#            ]
+#        },
+#       "Metadata": {
+#            "LastTagTime": "2024-07-22T11:28:06.320222698+03:00"
+#        }
+#    }
+#]
