@@ -1,0 +1,23 @@
+sudo git clone https://github.com/fatfreecrm/fat_free_crm.git
+
+#Cloning into 'fat_free_crm'...
+#remote: Enumerating objects: 61060, done.
+#remote: Counting objects: 100% (1445/1445), done.
+#remote: Compressing objects: 100% (733/733), done.
+#remote: Total 61060 (delta 853), reused 1196 (delta 702), pack-reused 59615
+#Receiving objects: 100% (61060/61060), 19.74 MiB | 913.00 KiB/s, done.
+#Resolving deltas: 100% (41644/41644), done.
+
+
+sudo nano fat_free_crm/.dockerignore
+
+.git
+.*.yml
+
+.config/*.yml
+!config/settings.default.yml
+!config/database.sqlite.yml
+!config/database.postgres.docker.yml
+
+./public/avatars/**/*.git
+
