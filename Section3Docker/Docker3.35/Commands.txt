@@ -35,5 +35,9 @@ sudo nano /home/unty/Docker3.35/docker-compose-mounted.yml
 
 sudo docker-compose -f docker-compose-mounted.yml --project-name inno27 up -d
 
+curl 127.0.0.1:18888
+
+#Welcome to the training program Innowise: Docker! Again!
+
 sudo docker ps
 
