@@ -1,0 +1,70 @@
+sudo nano /home/unty/gocalc/docker-compose.yml
+
+version: '3'
+
+services:
+  db:
+    image: postgres:10
+    networks:
+      - postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: 'postgres'
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'DatabasePassword'
+
+  backend:
+    image: gocalc:5555
+    networks:
+      - nginx
+      - postgres
+    environment:
+      - POSTGRES_URI=postgres://user:DatabasePassword@db/postgres?sslmode=disable
+      - LISTEN_ADDRESS=:7000
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    networks:
+      - nginx
+    ports:
+      - "8089:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - db
+      - backend
+
+networks:
+  nginx:
+  postgres:
+
+sudo docker-compose -p inno28 up -d
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+#e1550775bcf7   nginx:latest   "/docker-entrypoint.…"   5 minutes ago   Up 5 minutes   0.0.0.0:8089->80/tcp, :::8089->80/tcp       inno28-nginx-1
+#103c56206790   gocalc:5555    "./myapp"                5 minutes ago   Up 5 minutes                                               inno28-backend-1
+#bb094fc3ffda   postgres:10    "docker-entrypoint.s…"   5 minutes ago   Up 5 minutes   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   inno28-db-1
+curl 127.0.0.1:8089/metrics
+
+#HELP go_gc_duration_seconds A summary of the pause duration of garbage collection cycles.
+#TYPE go_gc_duration_seconds summary
+go_gc_duration_seconds{quantile="0"} 0
+go_gc_duration_seconds{quantile="0.25"} 0
+go_gc_duration_seconds{quantile="0.5"} 0
+go_gc_duration_seconds{quantile="0.75"} 0
+go_gc_duration_seconds{quantile="1"} 0
+go_gc_duration_seconds_sum 0
+go_gc_duration_seconds_count 0
+# HELP go_goroutines Number of goroutines that currently exist.
+# TYPE go_goroutines gauge
+go_goroutines 7
+# HELP go_info Information about the Go environment.
+
+
+
