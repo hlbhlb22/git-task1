@@ -7,3 +7,6 @@ docker run -d --name grafana -p 3000:3000 -v grafana_config:/etc/grafana -v graf
 docker container ls
 To view readiness, navigate to http://localhost:3100/ready.
 To view metrics, navigate to http://localhost:3100/metrics.
+
+
+https://github.com/bbrumm/databasestar/blob/main/sample_databases/sample_db_videogames/mysql/01_reference_data.sql
