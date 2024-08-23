@@ -10,3 +10,5 @@ To view metrics, navigate to http://localhost:3100/metrics.
 
 
 https://github.com/bbrumm/databasestar/blob/main/sample_databases/sample_db_videogames/mysql/01_reference_data.sql
+
+https://fluca1978.github.io/2023/11/06/AnsibleOracleClient.html
