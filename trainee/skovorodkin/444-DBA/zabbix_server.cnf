@@ -1,0 +1,155 @@
+# This is a configuration file for Zabbix server daemon
+# To get more information about Zabbix, visit http://www.zabbix.com
+
+############ GENERAL PARAMETERS #################
+
+### Option: ListenPort
+#       Listen port for trapper.
+#
+# Mandatory: no
+# Range: 1024-32767
+# Default:
+# ListenPort=10051
+
+### Option: SourceIP
+#       Source IP address for outgoing connections.
+#
+# Mandatory: no
+# Default:
+# SourceIP=
+
+### Option: LogType
+#       Specifies where log messages are written to:
+#               system  - syslog
+#               file    - file specified with LogFile parameter
+#               console - standard output
+#
+# Mandatory: no
+# Default:
+# LogType=file
+
+### Option: LogFile
+#       Log file name for LogType 'file' parameter.
+#
+# M# Default:
+# LogFile=
+
+LogFile=/var/log/zabbix/zabbix_server.log
+
+### Option: LogFileSize
+#       Maximum size of log file in MB.
+#       0 - disable automatic log rotation.
+#
+# Mandatory: no
+# Range: 0-1024
+# Default:
+# LogFileSize=1
+
+LogFileSize=0
+
+### Option: DebugLevel
+#       Specifies debug level:
+#       0 - basic information about starting and stopping of Zabbix processes
+#       1 - critical information
+#       2 - error information
+#       3 - warnings
+#       4 - for debugging (produces lots of information)
+#       5 - extended debugging (produces even more information)
+#
+# Mandatory: no
+# Range: 0-5
+# Default:
+# DebugLevel=3
+
+### Option: PidFile
+#       Name of PID file.
+#
+# Mandatory: no
+#andatory: yes, if LogType is set to file, otherwise no
+# Default:
+# PidFile=/tmp/zabbix_server.pid
+
+PidFile=/run/zabbix/zabbix_server.pid
+
+### Option: SocketDir
+#       IPC socket directory.
+#               Directory to store IPC sockets used by internal Zabbix services.
+#
+# Mandatory: no
+# Default:
+# SocketDir=/tmp
+
+SocketDir=/run/zabbix
+
+### Option: DBHost
+#       Database host name.
+#       If set to localhost, socket is used for MySQL.
+#       If set to empty string, socket is used for PostgreSQL.
+#       If set to empty string, the Net Service Name connection method is used to connect to Oracle database; also see
+#       the TNS_ADMIN environment variable to specify the directory where the tnsnames.ora file is located.
+#
+# Mandatory: no
+# Default:
+# DBHost=localhost
+
+### Option: DBName
+#       Database name.
+#       If the Net Service Name connection method is used to connect to Oracle database, specify the service name from
+#       the tnsnames.ora file or set to empty string; also see the TWO_TASK environment variable if DBName is set to
+#       empty string.
+#
+
+
+### Option: DBName
+#       Database name.
+#       If the Net Service Name connection method is used to connect to Oracle database, specify the service name from
+#       the tnsnames.ora file or set to empty string; also see the TWO_TASK environment variable if DBName is set to
+#       empty string.
+#
+# Mandatory: yes
+# Default:
+# DBName=
+
+DBName=zabbix
+
+### Option: DBSchema
+#       Schema name. Used for PostgreSQL.
+#
+# Mandatory: no
+# Default:
+# DBSchema=
+
+### Option: DBUser
+#       Database user.
+#
+# Mandatory: no
+# Default:
+# DBUser=
+
+DBUser=zabbix
+
+### Option: DBPassword
+#       Database password.
+#       Comment this line if no password is used.
+#
+# Mandatory: no
+# Default:
+
+DBPassword=1121
+
+### Option: DBSocket
+#       Path to MySQL socket.
+#
+# Mandatory: no
+# Default:
+# DBSocket=
+
+### Option: DBPort
+#       Database port when not using local socket.
+#       If the Net Service Name connection method is used to connect to Oracle database, the port number from the
+#       tnsnames.ora file will be used. The port number set here will be ignored.
+#
+# Mandatory: no
+# Range: 1024-65535
+# Default:
+# DBPort=

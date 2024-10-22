@@ -1,0 +1,50 @@
+sudo mkdir Docker3.18
+
+sudo cp /home/unty/Downloads/nginx.conf /home/unty/Docker3.18
+
+sudo nano home/unty/Docker3.18/Dockerfile
+
+#FROM nginx:stable
+#COPY nginx.conf /etc/nginx/nginx.conf
+#EXPOSE 80
+
+sudo docker build -t nginx:inno-dkr-08 /home/unty/Docker3.18
+
+#[+] Building 1.5s (7/7) FINISHED                                                                                              docker:default
+# => [internal] load build definition from Dockerfile                                                                                    0.2s
+# => => transferring dockerfile: 105B                                                                                                    0.1s
+# => [internal] load metadata for docker.io/library/nginx:stable                                                                         0.0s
+# => [internal] load .dockerignore                                                                                                       0.1s
+# => => transferring context: 2B                                                                                                         0.1s
+# => [internal] load build context                                                                                                       0.2s
+# => => transferring context: 851B                                                                                                       0.1s
+# => CACHED [1/2] FROM docker.io/library/nginx:stable                                                                                    0.0s
+# => [2/2] COPY nginx.conf /etc/nginx/nginx.conf                                                                                         0.3s
+# => exporting to image                                                                                                                  0.4s
+# => => exporting layers                                                                                                                 0.2s
+# => => writing image sha256:102978bce580a51d65a831ede838e8c83e002acc4b0973442ecc89d5d4f86c5a                                            0.0s
+# => => naming to docker.io/library/nginx:inno-dkr-08       
+  
+sudo docker images
+
+#REPOSITORY    TAG             IMAGE ID       CREATED          SIZE
+#nginx         inno-dkr-08     102978bce580   16 seconds ago   188MB
+#nginx         stable          e7580268c63c   3 weeks ago      188MB
+#nginx         inno-dkr-07     19ddafb0ee3c   3 weeks ago      43.2MB
+#nginx         stable-alpine   19ddafb0ee3c   3 weeks ago      43.2MB
+#hello-world   latest          d2c94e258dcb   14 months ago    13.3kB
+
+sudo docker run -d -p 127.0.0.1:8900:80 --name inno-dkr-08-container nginx:inno-dkr-08
+
+#3bf06a5857e0b1c10d28777fa36a0c5d989aacd182e920ba81013590fe5f2538
+
+sudo curl http://127.0.0.1:8900
+
+#Welcome to the training program Innowise: Docker!
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS          PORTS                    NAMES
+#3bf06a5857e0   nginx:inno-dkr-08   "/docker-entrypoint.…"   50 seconds ago   Up 49 seconds   127.0.0.1:8900->80/tcp   inno-dkr-08-container
+
+

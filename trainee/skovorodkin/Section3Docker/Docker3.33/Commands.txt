@@ -1,0 +1,97 @@
+sudo docker network create -d bridge inno-25-bridge
+
+#91a9468970266dcaabd22a3e42d8bfd69cd56aee826711d72c28fa20f15c5736
+
+sudo docker network ls
+
+#NETWORK ID     NAME             DRIVER    SCOPE
+#889b71497944   bridge           bridge    local
+#b5fe461455e4   host             host      local
+#91a946897026   inno-25-bridge   bridge    local
+#231372d1a342   none             null      local
+
+
+sudo docker run -d --name inno-dkr-25-nginx nginx:stable
+
+#6d18919a64c622638866e8051ae7828cedbb5eb1754849b0585351beec74760f
+
+sudo docker network connect inno-25-bridge inno-dkr-25-nginx
+
+sudo docker inspect inno-25-bridge
+
+#[
+#    {
+#        "Name": "inno-25-bridge",
+#        "Id": "91a9468970266dcaabd22a3e42d8bfd69cd56aee826711d72c28fa20f15c5736",
+#        "Created": "2024-07-25T16:13:16.17717305+03:00",
+#        "Scope": "local",
+#        "Driver": "bridge",
+#        "EnableIPv6": false,
+#        "IPAM": {
+#            "Driver": "default",
+#            "Options": {},
+#            "Config": [
+#                {
+#                    "Subnet": "172.18.0.0/16",
+#                    "Gateway": "172.18.0.1"
+#                }
+#            ]
+#        },
+#        "Internal": false,
+#        "Attachable": false,
+#        "Ingress": false,
+#        "ConfigFrom": {
+#            "Network": ""
+#        },
+#        "ConfigOnly": false,
+#        "Containers": {
+#            "6d18919a64c622638866e8051ae7828cedbb5eb1754849b0585351beec74760f": {
+#                "Name": "inno-dkr-25-nginx",
+#                "EndpointID": "e39bb1014d4c79dfd5036387de29b47f0c4aa91d373767430627fc23ab86a361",
+#                "MacAddress": "02:42:ac:12:00:02",
+#                "IPv4Address": "172.18.0.2/16",
+#                "IPv6Address": ""
+#            }
+#        },
+#        "Options": {},
+#        "Labels": {}
+#    }
+#]
+
+sudo docker run -it --name inno-dkr-25-pinger --network inno-25-bridge alpine:3.10
+
+/ # apk add curl
+#(1/4) Installing ca-certificates (20191127-r2)
+#(2/4) Installing nghttp2-libs (1.39.2-r1)
+#(3/4) Installing libcurl (7.66.0-r4)
+#(4/4) Installing curl (7.66.0-r4)
+#Executing busybox-1.30.1-r5.trigger
+#Executing ca-certificates-20191127-r2.trigger
+#OK: 7 MiB in 18 packages
+/ # curl http://inno-dkr-25-nginx
+#<!DOCTYPE html>
+#<html>
+#<head>
+#<title>Welcome to nginx!</title>
+#<style>
+#html { color-scheme: light dark; }
+#body { width: 35em; margin: 0 auto;
+#font-family: Tahoma, Verdana, Arial, sans-serif; }
+#</style>
+#</head>
+#<body>
+#<h1>Welcome to nginx!</h1>
+#<p>If you see this page, the nginx web server is successfully installed and
+#working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+/ # 
+
+

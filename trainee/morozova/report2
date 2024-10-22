@@ -1,0 +1,13 @@
+
+CREATE OR REPLACE VIEW report2 as
+--get average number of comments in last, next and current period
+SELECT AVG(exact_num_of_comments) OVER (ORDER BY DATE_ID, HOUR_PERIOD ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)  AS rolling_num_of_comments,
+HOUR_PERIOD, exact_num_of_comments
+--get number of comments per period
+from
+(SELECT date_id, HOUR_PERIOD, count(*) AS exact_num_of_comments
+--divide days at hour periods
+FROM 
+(SELECT EXTRACT (HOUR FROM time_ival) AS hour_period,
+date_id
+ FROM scd.F_ARTICLE_COMMENT WHERE ACTION_TYPE='I') GROUP BY HOUR_PERIOD, date_id);

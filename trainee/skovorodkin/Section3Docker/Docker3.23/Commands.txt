@@ -1,0 +1,203 @@
+sudo docker build -t cache:1 /home/unty/Docker3.22
+
+#[+] Building 64.9s (6/6) FINISHED                                docker:default
+# => [internal] load build definition from Dockerfile                       0.2s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           2.4s
+# => [internal] load .dockerignore                                          0.1s
+# => => transferring context: 2B                                            0.0s
+# => [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed3597455  5.2s
+# => => resolve docker.io/library/alpine:latest@sha256:b89d9c93e9ed3597455  0.1s
+# => => sha256:a606584aa9aa875552092ec9e1d62cb98d486f51f38 1.47kB / 1.47kB  0.0s
+# => => sha256:ec99f8b99825a742d50fb3ce173d291378a46ab54b8 3.62MB / 3.62MB  1.3s
+# => => sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f 1.85kB / 1.85kB  0.0s
+# => => sha256:dabf91b69c191a1a0a1628fd6bdd029c0c4018041c7f052 528B / 528B  0.0s
+# => => extracting sha256:ec99f8b99825a742d50fb3ce173d291378a46ab54b8ef7dd  2.9s
+# => [2/2] RUN apk update && apk add build-base                            54.5s
+# => exporting to image                                                     1.9s 
+# => => exporting layers                                                    1.8s 
+# => => writing image sha256:c7922ea2c40daa0982eb5966f04794817c87c4b9979b5  0.0s 
+# => => naming to docker.io/library/cache:1                                 0.0s 
+ 
+sudo docker build -t cache:2 .
+
+#[+] Building 2.1s (6/6) FINISHED                                 docker:default
+# => [internal] load build definition from Dockerfile                       0.1s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           1.3s
+# => [internal] load .dockerignore                                          0.1s
+# => => transferring context: 2B                                            0.1s
+# => [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed3597455  0.0s
+# => CACHED [2/2] RUN apk update && apk add build-base                      0.0s
+# => exporting to image                                                     0.2s
+# => => exporting layers                                                    0.0s
+# => => writing image sha256:6ee12fdb79263190e3c26811cfa4be43bde8414907cfa  0.1s
+# => => naming to docker.io/library/cache:2                                 0.0s
+ 
+sudo docker build --no-cache=True /home/unty/Docker3.22
+
+#[+] Building 69.8s (6/6) FINISHED                                docker:default
+# => [internal] load build definition from Dockerfile                       0.2s
+# => => transferring dockerfile: 103B                                       0.0s
+# => [internal] load metadata for docker.io/library/alpine:latest           0.7s
+# => [internal] load .dockerignore                                          0.2s
+# => => transferring context: 2B                                            0.0s
+# => CACHED [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed  0.0s
+# => [2/2] RUN apk update && apk add build-base                            66.2s
+# => exporting to image                                                     1.9s 
+# => => exporting layers                                                    1.8s 
+# => => writing image sha256:6ee12fdb79263190e3c26811cfa4be43bde8414907cfa  0.0s
+
+
+sudo docker images
+
+#REPOSITORY   TAG       IMAGE ID       CREATED          SIZE                     
+#<none>       <none>    6ee12fdb7926   11 seconds ago   232MB
+#cache        2         6ee12fdb7926   6 minutes ago    232MB
+#cache        1         c7922ea2c40d   9 minutes ago    232MB
+#nginx        stable    e7580268c63c   4 weeks ago      188MB
+#<none>       <none>    19ddafb0ee3c   4 weeks ago      43.2MB
+sudo docker history cache:2
+
+#IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
+#6ee12fdb7926   22 minutes ago   RUN |1 MYARG= /bin/sh -c apk update && apk a…   224MB     buildkit.dockerfile.v0
+#<missing>      22 minutes ago   ARG MYARG                                       0B        buildkit.dockerfile.v0
+#<missing>      4 weeks ago      /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B        
+#<missing>      4 weeks ago      /bin/sh -c #(nop) ADD file:33ebe56b967747a97…   7.8MB     
+
+sudo docker history cache:1
+
+#IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
+#c7922ea2c40d   32 minutes ago   RUN |1 MYARG= /bin/sh -c apk update && apk a…   224MB     buildkit.dockerfile.v0
+#<missing>      32 minutes ago   ARG MYARG                                       0B        buildkit.dockerfile.v0
+#<missing>      4 weeks ago      /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B        
+#<missing>      4 weeks ago      /bin/sh -c #(nop) ADD file:33ebe56b967747a97…   7.8MB     
+
+sudo docker history 6ee12fdb7926
+
+#IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
+#6ee12fdb7926   25 minutes ago   RUN |1 MYARG= /bin/sh -c apk update && apk a…   224MB     buildkit.dockerfile.v0
+#<missing>      25 minutes ago   ARG MYARG                                       0B        buildkit.dockerfile.v0
+#<missing>      4 weeks ago      /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B        
+#<missing>      4 weeks ago      /bin/sh -c #(nop) ADD file:33ebe56b967747a97…   7.8MB     
+
+
+sudo docker build --build-arg MYARG=3 -t cache:3 /home/unty/Docker3.22
+
+#[+] Building 20.6s (6/6) FINISHED                                docker:default
+# => [internal] load build definition from Dockerfile                       0.2s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           1.3s
+# => [internal] load .dockerignore                                          0.1s
+# => => transferring context: 2B                                            0.0s
+# => CACHED [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed  0.0s
+# => [2/2] RUN apk update && apk add build-base                            16.9s
+# => exporting to image                                                     1.6s 
+# => => exporting layers                                                    1.4s 
+# => => writing image sha256:d515709e27694a24312d2543b266fdd50e8c7de63f8b2  0.1s 
+# => => naming to docker.io/library/cache:3 
+
+
+sudo docker build --build-arg MYARG=3 -t cache:3 /home/unty/Docker3.22       
+
+#[+] Building 1.7s (6/6) FINISHED                                 docker:default
+# => [internal] load build definition from Dockerfile                       0.1s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           0.7s
+# => [internal] load .dockerignore                                          0.2s
+# => => transferring context: 2B                                            0.1s
+# => [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed3597455  0.0s
+# => CACHED [2/2] RUN apk update && apk add build-base                      0.0s
+# => exporting to image                                                     0.1s
+# => => exporting layers                                                    0.0s
+# => => writing image sha256:d515709e27694a24312d2543b266fdd50e8c7de63f8b2  0.0s
+# => => naming to docker.io/library/cache:3
+ 
+ 
+sudo docker build --build-arg MYARG=4 -t cache:4 /home/unty/Docker3.22
+
+#[+] Building 37.4s (6/6) FINISHED                                docker:default
+# => [internal] load build definition from Dockerfile                       0.1s
+# => => transferring dockerfile: 103B                                       0.1s
+# => [internal] load metadata for docker.io/library/alpine:latest           0.7s
+# => [internal] load .dockerignore                                          0.1s
+# => => transferring context: 2B                                            0.0s
+# => CACHED [1/2] FROM docker.io/library/alpine:latest@sha256:b89d9c93e9ed  0.0s
+# => [2/2] RUN apk update && apk add build-base                            34.3s
+# => exporting to image                                                     1.8s 
+# => => exporting layers                                                    1.6s 
+# => => writing image sha256:160f7cf66a17ce61d09d9de39ab1f90f81c867609da62  0.0s 
+# => => naming to docker.io/library/cache:4           
+ 
+sudo docker images
+
+#REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+#cache        4         160f7cf66a17   2 minutes ago    232MB
+#cache        3         d515709e2769   4 minutes ago    232MB
+#cache        2         6ee12fdb7926   12 minutes ago    232MB
+#<none>       <none>    6ee12fdb7926   8 minutes ago    232MB
+#cache        1         c7922ea2c40d   17 minutes ago   232MB
+#nginx        stable    e7580268c63c   4 weeks ago      188MB
+#<none>       <none>    19ddafb0ee3c   4 weeks ago      43.2MB
+
+sudo docker inspect cache:4
+
+#[
+#    {
+#        "Id": "sha256:160f7cf66a17ce61d09d9de39ab1f90f81c867609da625b0dc4f07becf597ea2",
+#        "RepoTags": [
+#            "cache:4"
+#        ],
+#        "RepoDigests": [],
+#        "Parent": "",
+#        "Comment": "buildkit.dockerfile.v0",
+#        "Created": "2024-07-22T11:28:04.565602373+03:00",
+#        "DockerVersion": "",
+#        "Author": "",
+#        "Config": {
+#            "Hostname": "",
+#           "Domainname": "",
+#           "User": "",
+#            "AttachStdin": false,
+#            "AttachStdout": false,
+#            "AttachStderr": false,
+#            "Tty": false,
+#            "OpenStdin": false,
+#            "StdinOnce": false,
+#           "Env": [
+#                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+#            ],
+#            "Cmd": [
+#                "/bin/sh"
+#            ],
+#            "Image": "",
+#            "Volumes": null,
+#            "WorkingDir": "",
+#            "Entrypoint": null,
+#            "OnBuild": null,
+#            "Labels": null
+#        },
+#        "Architecture": "amd64",
+#        "Os": "linux",
+#        "Size": 232281842,
+#        "GraphDriver": {
+#            "Data": {
+#                "LowerDir": "/var/lib/docker/overlay2/eda39cc20ab0463a47078b694d302ad2a7c4358c9e40069d3e0d69d33534a932/diff",
+#                "MergedDir": "/var/lib/docker/overlay2/ma49gpim16qhjcso2jm9zndsz/merged",
+#                "UpperDir": "/var/lib/docker/overlay2/ma49gpim16qhjcso2jm9zndsz/diff",
+#                "WorkDir": "/var/lib/docker/overlay2/ma49gpim16qhjcso2jm9zndsz/work"
+#            },
+#            "Name": "overlay2"
+#        },
+#        "RootFS": {
+#            "Type": "layers",
+#            "Layers": [
+#                "sha256:94e5f06ff8e3d4441dc3cd8b090ff38dc911bfa8ebdb0dc28395bc98f82f983f",
+#                "sha256:112a29ba26a4a8d9436612aa203e45189a4f51682d5f617e1f2945f66a5b2d05"
+#            ]
+#        },
+#       "Metadata": {
+#            "LastTagTime": "2024-07-22T11:28:06.320222698+03:00"
+#        }
+#    }
+#]
