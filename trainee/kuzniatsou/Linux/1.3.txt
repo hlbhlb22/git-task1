@@ -1,0 +1,120 @@
+sudo nano /usr/local/bin/uptime_logger.sh
+\\\\\\\\\\\
+#!/bin/bash
+
+while true; do
+    uptime >> /var/log/uptime.log
+    sleep 15
+done
+\\\\\\\\\\\\
+
+sudo nano /etc/systemd/system/uptime_logger.service
+\\\\\\\\\\\
+[Unit]
+Description=Uptime Logger Service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/uptime_logger.sh
+Restart=always
+RestartSec=3
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=uptime_logger
+User=nobody
+Group=nogroup
+
+[Install]
+WantedBy=multi-user.target
+\\\\\\\\\\\\\\
+
+sudo touch /var/log/uptime.log /var/log/overload.log
+sudo chmod 666 /var/log/uptime.log /var/log/overload.log
+
+sudo systemctl daemon-reload
+sudo systemctl start uptime_logger.service
+sudo systemctl enable uptime_logger.service
+
+cat /var/log/uptime.log
+2.
+sudo nano /usr/local/bin/uptime_logger.sh
+////////////
+#!/bin/bash
+
+while true; do
+    uptime_output=$(uptime)
+    load_average=$(echo $uptime_output | awk '{print $(NF-2)}' | sed 's/,//')
+
+    if (( $(echo "$load_average > 1.0" | bc -l) )); then
+        echo $uptime_output >> /var/log/overload.log
+    else
+        echo $uptime_output >> /var/log/uptime.log
+    fi
+    
+    sleep 15
+done
+//////////////
+sudo systemctl daemon-reload
+sudo systemctl start uptime_logger.service
+sudo systemctl enable uptime_logger.service
+
+3.
+sudo apt-get update
+sudo apt-get install stress
+
+nproc
+
+stress --cpu 2 --timeout 50s
+
+4.
+
+sudo nano /usr/local/bin/uptime_logger.sh
+
+\\\\\\\\\\\
+#!/bin/bash
+
+OVERLOAD_LOG="/var/log/overload.log"
+UPTIME_LOG="/var/log/uptime.log"
+CLEANUP_LOG="/var/log/cleanup.log"
+
+while true; do
+    uptime_output=$(uptime)
+    load_average=$(echo $uptime_output | awk '{print $(NF-2)}' | sed 's/,//')
+
+    # Проверяем, превышает ли Load Average за минуту значение 1.0
+    if (( $(echo "$load_average > 1.0" | bc -l) )); then
+        echo $uptime_output >> $OVERLOAD_LOG
+    else
+        echo $uptime_output >> $UPTIME_LOG
+    fi
+
+    # Проверяем размер файла overload.log и очищаем, если превышает 50 KB
+    if [ $(stat -c%s "$OVERLOAD_LOG") -ge 51200 ]; then
+        echo "$(date): overload.log очищен" >> $CLEANUP_LOG
+        > $OVERLOAD_LOG
+    fi
+    
+    sleep 15
+done
+\\\\\\\\\\\
+
+sudo touch /var/log/cleanup.log
+sudo chmod 666 /var/log/cleanup.log
+
+5.
+
+crontab -e
+*/10 * * * * /etc/systemd/system/uptime_logger.service > /var/log/cronjob.log
+sudo touch /var/log/cronjob.log
+sudo chmod 666 /var/log/cronjob.log
+
+6.
+ping 8.8.8.8
+
+Ctrl + Z
+
+jobs
+fg
+Ctrl + Z
+ps -ef
+kill -9 17618

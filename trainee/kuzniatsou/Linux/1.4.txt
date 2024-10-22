@@ -1,0 +1,78 @@
+mkdir ~/test
+
+echo "Тест123" > ~/test/test_123
+
+ln -s ~/test /tmp/soft_link
+
+cp /tmp/soft_link/test_123 /tmp/test_123
+
+ln /tmp/test_123 /tmp/hard_link
+
+df -i
+
+
+lsblk
+sudo fdisk /dev/sdb
+//////////////////////
+Welcome to fdisk (util-linux 2.39.3).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS (MBR) disklabel with disk identifier 0x929e3f91.
+
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (1-4, default 1): 1
+First sector (2048-6291455, default 2048): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-6291455, default 6291455): +2G
+
+Created a new partition 1 of type 'Linux' and of size 2 GiB.
+
+Command (m for help): w
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+/////////////////
+sudo apt install xfsprogs
+
+sudo mkfs.xfs /dev/sdb1
+
+sudo mount /dev/sdb1 /mnt
+
+echo "Test file content" | sudo tee /mnt/test_file
+
+df -hT
+///////////
+Filesystem     Type     Size  Used Avail Use% Mounted on
+tmpfs          tmpfs    392M  1.5M  391M   1% /run
+/dev/sda2      ext4      25G   11G   13G  45% /
+tmpfs          tmpfs    2.0G     0  2.0G   0% /dev/shm
+tmpfs          tmpfs    5.0M  8.0K  5.0M   1% /run/lock
+tmpfs          tmpfs    392M  132K  392M   1% /run/user/1000
+/dev/sr0       iso9660   51M   51M     0 100% /media/yura/VBox_GAs_7.0.18
+/dev/sdb1      xfs      2.0G   71M  1.9G   4% /mnt
+//////////////////
+
+sudo fdisk /dev/sdb
+
+
+sudo xfs_growfs /mnt
+
+
+////////////////////
+Filesystem     Type     Size  Used Avail Use% Mounted on
+tmpfs          tmpfs    392M  1.5M  391M   1% /run
+/dev/sda2      ext4      25G   11G   13G  45% /
+tmpfs          tmpfs    2.0G     0  2.0G   0% /dev/shm
+tmpfs          tmpfs    5.0M  8.0K  5.0M   1% /run/lock
+tmpfs          tmpfs    392M  124K  392M   1% /run/user/1000
+/dev/sr0       iso9660   51M   51M     0 100% /media/yura/VBox_GAs_7.0.18
+/dev/sdb1      xfs      3.0G   91M  2.9G   3% /mnt
+///////////////////////
+Разница в размере раздела sdb1. Означает успешное его увеличение
+
+ls /mnt
