@@ -1,0 +1,28 @@
+sudo docker volume create inno-dkr-04-volume
+
+sudo docker run -d --name inno-dkr-04 -p 127.0.0.1:8891:80 -v /home/unty/nginx.conf:/etc/nginx/nginx.conf:ro -v inno-dkr-04-volume:/var/log/nginx/external nginx:stable
+
+#903e9e0b2bf72220b821600bc03e73d8b197b31804724d025dc94766a1e77f31
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS                    NAMES
+#903e9e0b2bf7   nginx:stable   "/docker-entrypoint.…"   5 seconds ago   Up 4 seconds   127.0.0.1:8891->80/tcp   inno-dkr-04
+
+sudo curl http://127.0.0.1:8891
+
+#Welcome to the training program Innowise: Docker!
+
+
+sudo docker volume ls
+
+#DRIVER    VOLUME NAME
+#local     inno-dkr-04-volume
+
+sudo ls -la /var/lib/docker/volumes/inno-dkr-04-volume/_data
+
+#total 12
+#drwxr-xr-x 2 root root 4096 Jul 17 16:08 .
+#drwx-----x 3 root root 4096 Jul 17 15:23 ..
+#-rw-r--r-- 1 root root   90 Jul 17 16:09 access.log
+#-rw-r--r-- 1 root root    0 Jul 17 16:08 error.log

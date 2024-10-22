@@ -1,0 +1,35 @@
+--create dimentional calendar
+CREATE TABLE dim_dates AS 
+WITH base_calendar AS
+ (    SELECT
+    	TRUNC (currdate)  AS days,
+        TO_NUMBER(TO_CHAR( currdate, 'YYYYMMDD' ) )                                                                           AS id,
+        INITCAP(RTRIM(TO_CHAR(currdate,'MONTH'))) ||' ' || TO_CHAR(currdate,'DD') || ', ' || RTRIM(TO_CHAR(currdate,'YYYY')) AS d_date,
+        to_number(TRIM(LEADING '0' FROM TO_CHAR(currdate,'D')))                                                              AS d_week,
+        to_number(TRIM(LEADING '0' FROM TO_CHAR(currdate,'DDD')))                                                            AS d_day,
+         to_number(TRIM(LEADING '0' FROM TO_CHAR(currdate,'MM')))                                                  	AS d_month,
+         initcap(TO_CHAR(currdate,'Month'))                                                      							 AS name_month,
+        to_number(TO_CHAR(currdate,'Q'))                                               AS d_quarter,                                                                                           
+        CASE
+           WHEN to_number(TO_CHAR(currdate,'Q') ) <= 2
+                  THEN  1 
+                  ELSE  2 
+            END                                                                                                              AS half_year,
+        TO_CHAR(currdate,'YYYY')                                                                                             AS d_year
+    FROM (
+          SELECT  level n,
+                -- Calendar starts at the day after this date.
+                TO_DATE('31/12/2018','DD/MM/YYYY') + numtodsinterval(level,'DAY') currdate
+            FROM
+                DUAL
+             -- Change for the number of days to be added to the table.
+            CONNECT BY
+                level <= TO_DATE('31/12/2021','DD/MM/YYYY')-TO_DATE('31/12/2018','DD/MM/YYYY')
+        )) SELECT
+    id, d_date, d_year, half_year, d_quarter, d_month, name_month, d_day, d_week, 
+   to_number(TRIM(LEADING '0' FROM TO_CHAR( MIN(days) OVER(PARTITION BY d_month||D_YEAR),'DD')))   AS begin_of_month, 
+    to_number(TRIM(LEADING '0' FROM TO_CHAR(MAX(days) OVER(PARTITION BY d_month||D_YEAR),'DD')))   AS end_of_month
+  FROM
+    base_calendar
+ORDER BY
+    id;

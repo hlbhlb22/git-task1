@@ -1,0 +1,80 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    networks:
+      - nginx
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "20000:80"
+
+  voting:
+    build: .
+    image: voting:latest
+    ports:
+      - "9000:9000"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=voting
+      - DB_USERNAME=voting
+      - DB_PASSWORD=voting
+    networks:
+      - nginx
+      - mysql
+      - cache
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    restart: always
+    networks:
+      - mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=voting
+      - MYSQL_DATABASE=voting
+      - MYSQL_USER=voting
+      - MYSQL_PASSWORD=voting
+  
+  cache:
+    image: redis
+    restart: always
+    networks:
+      - cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
+    environment:
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redis
+
+networks:
+  nginx:
+  cache:
+  mysql:
+
+volumes:
+  cache:
+  
+ sudo docker-compose -p inno30 up -d
+ 
+ php artisan migrate --force
+ 
+ #Migration table created successfully.
+ 
+ php artisan db:seed --force
+ 
+ #Seeding: PollsSeeder
+ #Seeded:  PollsSeeder (130.09 seconds)
+ 
+ curl localhost:20000/polls
+
+ 
+
+
+ 

@@ -1,0 +1,160 @@
+#Mysqld_Exporter
+
+groupadd --system mysqld_exporter
+useradd -s /bin/false -r -g mysqld_exporter mysqld_exporter
+
+mysql -u root -p
+CREATE USER 'mysqld_exporter'@'localhost' IDENTIFIED BY 'devops' WITH MAX_USER_CONNECTIONS 3;
+GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'mysqld_exporter'@'localhost';
+quit;
+
+mkdir /downlaods/mysql_exporter -p
+cd /downlaods/mysql_exporter
+wget https://github.com/prometheus/mysqld_exporter/releases/download/v0.14.0/mysqld_exporter-0.14.0.linux-amd64.tar.gz
+tar -zxvf mysqld_exporter-0.14.0.linux-amd64.tar.gz
+rm -rf mysqld_exporter-0.14.0.linux-amd64.tar.gz
+install mysqld_exporter-0.14.0.linux-amd64/mysqld_exporter /usr/local/bin/
+
+
+
+nano /etc/.my.cnf
+
+#[client]
+#user=mysqld_exporter
+#password=devops
+
+
+chown root:mysqld_exporter /etc/.my.cnf
+
+nano /etc/systemd/system/mysqld_exporter.service
+
+
+#[Unit]
+#Description=Prometheus MySQL Exporter
+#Wants=network.target
+#After=network.target
+#
+#[Service]
+#User=mysqld_exporter
+#Group=mysqld_exporter
+#Type=simple
+#ExecStart=/usr/local/bin/mysqld_exporter --config.my-cnf /etc/.my.cnf
+#Restart=always
+#
+#[Install]
+#WantedBy=multi-user.target
+
+
+cd /etc/mysql/mysql.conf.d/
+nano mysqld.cnf
+
+#bind-address            = 0.0.0.0
+#mysqlx-bind-address     = 0.0.0.0
+
+
+systemctl restart mysql.service
+systemctl status mysql.service
+
+systemctl daemon-reload
+systemctl enable mysqld_exporter
+systemctl start mysqld_exporter
+systemctl status mysqld_exporter.service 
+
+
+#Pormetheus
+
+groupadd --system prometheus
+useradd -s /bin/false -r -g prometheus prometheus
+
+mkdir /etc/prometheus
+mkdir /var/lib/prometheus
+
+mkdir /downloads/prometheus -p
+cd /downloads/prometheus
+wget https://github.com/prometheus/prometheus/releases/download/v2.38.0/prometheus-2.38.0.linux-amd64.tar.gz
+tar -zxvf prometheus-2.38.0.linux-amd64.tar.gz
+rm -rf prometheus-2.38.0.linux-amd64.tar.gz
+
+cd prometheus-2.38.0.linux-amd64/
+install prometheus /usr/local/bin/
+install promtool /usr/local/bin/
+mv consoles /etc/prometheus/
+mv console_libraries /etc/prometheus/
+
+cd /etc/prometheus
+nano prometheus.yml
+
+
+
+#global:
+#  scrape_interval: 15s
+#
+#scrape_configs:
+#  - job_name: 'prometheus'
+#    scrape_interval: 5s
+#    static_configs:
+#      - targets: ['localhost:9090']
+#
+#
+#
+#  - job_name: 'mysqld_exporter'
+#    scrape_interval: 5s
+#    static_configs:
+#      - targets: ['localhost:9104']
+
+
+chown prometheus:prometheus /usr/local/bin/prometheus 
+chown prometheus:prometheus /usr/local/bin/promtool
+chown prometheus:prometheus /var/lib/prometheus -R
+chown prometheus:prometheus /etc/prometheus -R
+chmod -R 775 /etc/prometheus/ /var/lib/prometheus/
+
+nano /etc/systemd/system/prometheus.service
+
+#[Unit]
+#Description=Prometheus
+#Wants=network-online.target
+#After=network-online.target
+
+#[Service]
+#User=prometheus
+#Group=prometheus
+#Type=simple
+#ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --storage.tsdb.path /var/lib/prometheus/ --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries
+
+#[Install]
+#WantedBy=multi-user.target
+#SyslogIdentifier=prometheus
+#Restart=always
+
+
+chown prometheus:prometheus /var/lib/prometheus -R
+chmod 775 /var/lib/prometheus -R
+systemctl daemon-reload
+systemctl enable prometheus
+systemctl start prometheus
+systemctl status prometheus.service
+
+
+
+#Grafana
+
+
+apt update
+apt-get install -y apt-transport-https
+apt-get install -y software-properties-common wget
+wget -q -O /usr/share/keyrings/grafana.key https://packages.grafana.com/gpg.key
+echo "deb [signed-by=/usr/share/keyrings/grafana.key] https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+apt-get update
+apt-get install grafana
+
+
+sudo systemctl daemon-reload
+sudo systemctl start grafana-server
+sudo systemctl status grafana-server
+
+#10.221.48.169:3000[Grafana[admin:0862Ax-6]]
+#10.221.48.169:9104[MySQL Exporter]
+#10.221.48.169:9090[Prometheus]
+
+

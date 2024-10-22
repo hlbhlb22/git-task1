@@ -1,0 +1,236 @@
+sudo docker run -d --name inno-dkr-24 --cap-drop ALL --cap-add CHOWN -d nginx:stable-alpine 
+
+#4834b291aad3e3ea988eea3434e185acbedf84a70ba9a182179a27c889ecca64
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE                 COMMAND                  CREATED         STATUS         PORTS     NAMES
+#4834b291aad3   nginx:stable-alpine   "/docker-entrypoint.…"   8 seconds ago   Up 7 seconds   80/tcp    inno-dkr-24
+#fd1752ad227b   nginx:stable-alpine   "/docker-entrypoint.…"   3 hours ago     Up 3 hours     80/tcp    inno-dkr-23-always
+#9adc6eb0d76f   nginx:stable-alpine   "/docker-entrypoint.…"   3 hours ago     Up 3 hours     80/tcp    inno-dkr-23-of-failure
+
+
+
+
+sudo docker inspect inno-dkr-24
+#[
+#    {
+#        "Id": "4834b291aad3e3ea988eea3434e185acbedf84a70ba9a182179a27c889ecca64",
+#        "Created": "2024-07-25T12:19:07.28165677Z",
+#        "Path": "/docker-entrypoint.sh",
+#        "Args": [
+#            "nginx",
+#            "-g",
+#            "daemon off;"
+#        ],
+#        "State": {
+#            "Status": "running",
+#            "Running": true,
+#            "Paused": false,
+#            "Restarting": false,
+#            "OOMKilled": false,
+#            "Dead": false,
+#            "Pid": 11922,
+#            "ExitCode": 0,
+#            "Error": "",
+#            "StartedAt": "2024-07-25T12:19:08.25373156Z",
+#            "FinishedAt": "0001-01-01T00:00:00Z"
+#        },
+#        "Image": "sha256:b32ed582bddb47a81d4c2b85eaa052c7574d900c7051f315c3ac2110bd715f54",
+#        "ResolvConfPath": "/var/lib/docker/containers/4834b291aad3e3ea988eea3434e185acbedf84a70ba9a182179a27c889ecca64/resolv.conf",
+#        "HostnamePath": "/var/lib/docker/containers/4834b291aad3e3ea988eea3434e185acbedf84a70ba9a182179a27c889ecca64/hostname",
+#        "HostsPath": "/var/lib/docker/containers/4834b291aad3e3ea988eea3434e185acbedf84a70ba9a182179a27c889ecca64/hosts",
+#        "LogPath": "/var/lib/docker/containers/4834b291aad3e3ea988eea3434e185acbedf84a70ba9a182179a27c889ecca64/4834b291aad3e3ea988eea3434e185acbedf84a70ba9a182179a27c889ecca64-json.log",
+#        "Name": "/inno-dkr-24",
+#        "RestartCount": 0,
+#        "Driver": "overlay2",
+#        "Platform": "linux",
+#        "MountLabel": "",
+#       "ProcessLabel": "",
+#       "AppArmorProfile": "docker-default",
+#        "ExecIDs": null,
+#        "HostConfig": {
+#            "Binds": null,
+#            "ContainerIDFile": "",
+#            "LogConfig": {
+#                "Type": "json-file",
+#                "Config": {}
+#            },
+#            "NetworkMode": "bridge",
+#            "PortBindings": {},
+#            "RestartPolicy": {
+#                "Name": "no",
+#                "MaximumRetryCount": 0
+#            },
+#            "AutoRemove": false,
+#            "VolumeDriver": "",
+#            "VolumesFrom": null,
+#            "ConsoleSize": [
+#                30,
+#                79
+#            ],
+#            "CapAdd": [
+#                "CHOWN"
+#            ],
+#            "CapDrop": [
+#                "ALL"
+#            ],
+#            "CgroupnsMode": "host",
+#            "Dns": [],
+#            "DnsOptions": [],
+#            "DnsSearch": [],
+#            "ExtraHosts": null,
+#            "GroupAdd": null,
+#            "IpcMode": "private",
+#            "Cgroup": "",
+#            "Links": null,
+#            "OomScoreAdj": 0,
+#            "PidMode": "",
+#            "Privileged": false,
+#            "PublishAllPorts": false,
+#            "ReadonlyRootfs": false,
+#            "SecurityOpt": null,
+#            "UTSMode": "",
+#            "UsernsMode": "",
+#            "ShmSize": 67108864,
+#            "Runtime": "runc",
+#            "Isolation": "",
+#            "CpuShares": 0,
+#            "Memory": 0,
+#            "NanoCpus": 0,
+#            "CgroupParent": "",
+#            "BlkioWeight": 0,
+#            "BlkioWeightDevice": [],
+#            "BlkioDeviceReadBps": [],
+#            "BlkioDeviceWriteBps": [],
+#            "BlkioDeviceReadIOps": [],
+#            "BlkioDeviceWriteIOps": [],
+#            "CpuPeriod": 0,
+#            "CpuQuota": 0,
+#            "CpuRealtimePeriod": 0,
+#           "CpusetCpus": "",
+#            "CpusetMems": "",
+#            "Devices": [],
+#            "DeviceCgroupRules": null,
+#            "DeviceRequests": null,
+#            "MemoryReservation": 0,
+#            "MemorySwap": 0,
+#            "MemorySwappiness": null,
+#            "OomKillDisable": false,
+#            "PidsLimit": null,
+#            "Ulimits": [],
+#            "CpuCount": 0,
+#            "CpuPercent": 0,
+#            "IOMaximumIOps": 0,
+#            "IOMaximumBandwidth": 0,
+#           "MaskedPaths": [
+#                "/proc/asound",
+#                "/proc/acpi",
+#                "/proc/kcore",
+#                "/proc/keys",
+#                "/proc/latency_stats",
+#                "/proc/timer_list",
+#                "/proc/timer_stats",
+#                "/proc/sched_debug",
+#                "/proc/scsi",
+#                "/sys/firmware",
+#                "/sys/devices/virtual/powercap"
+#            ],
+#            "ReadonlyPaths": [
+#                "/proc/bus",
+#                "/proc/fs",
+#                "/proc/irq",
+#                "/proc/sys",
+#                "/proc/sysrq-trigger"
+#            ]
+#        },
+#        "GraphDriver": {
+#            "Data": {
+#                "LowerDir": "/var/lib/docker/overlay2/506d7db0cc61185c38f728b3cd76f55580be52fcfaf4cbbbb4fad3585ac5d6fe-init/diff:/var/lib/docker/overlay2/fb6e61ef2a1f9f54cb4c9684394ffc3fc92562aebac28f335e79be44bf99af2c/diff:/var/lib/docker/overlay2/ce3d282dc2deab39288f0c2599e7e8fcff038f0a6301e302537abc66ac6d387a/diff:/var/lib/docker/overlay2/a3edb5cb88d051355e9224adda8ff4dbab0b113dc111f40d5c4d10043a9187de/diff:/var/lib/docker/overlay2/02ae482fcdbab20ca6827bcd2fa18cade2a7f4e90153d98e33e81e633992bb5c/diff:/var/lib/docker/overlay2/e540f2a80d3920a784905623ae80bd0e00028168fdfd86c555b0621fedb5d8c3/diff:/var/lib/docker/overlay2/62fd615e71bd741f81783a82c9a03058d33f949b9bad18e087b802a87a162aab/diff:/var/lib/docker/overlay2/5d7378c874ed9fc24151ca4902c1e716eac37a46fd6050a66bb5f15c6b48bc18/diff:/var/lib/docker/overlay2/3587c070c02f88ed3ab7ae0eea6ed77ca4186c3a95b6ae70f1545a31b956354e/diff",
+#                "MergedDir": "/var/lib/docker/overlay2/506d7db0cc61185c38f728b3cd76f55580be52fcfaf4cbbbb4fad3585ac5d6fe/merged",
+#               "UpperDir": "/var/lib/docker/overlay2/506d7db0cc61185c38f728b3cd76f55580be52fcfaf4cbbbb4fad3585ac5d6fe/diff",
+#                "WorkDir": "/var/lib/docker/overlay2/506d7db0cc61185c38f728b3cd76f55580be52fcfaf4cbbbb4fad3585ac5d6fe/work"
+#            },
+#            "Name": "overlay2"
+#        },
+#        "Mounts": [],
+#        "Config": {
+#            "Hostname": "4834b291aad3",
+#            "Domainname": "",
+#            "User": "",
+#            "AttachStdin": false,
+#            "AttachStdout": false,
+#            "AttachStderr": false,
+#            "ExposedPorts": {
+#                "80/tcp": {}
+#            },
+#            "Tty": false,
+#            "OpenStdin": false,
+#            "StdinOnce": false,
+#            "Env": [
+#                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+#                "NGINX_VERSION=1.26.1",
+#                "PKG_RELEASE=2",
+#                "NJS_VERSION=0.8.4",
+#                "NJS_RELEASE=2"
+#            ],
+#            "Cmd": [
+#                "nginx",
+#                "-g",
+#                "daemon off;"
+#            ],
+#            "Image": "nginx:stable-alpine",
+#            "Volumes": null,
+#            "WorkingDir": "",
+#            "Entrypoint": [
+#               "/docker-entrypoint.sh"
+#            ],
+#            "OnBuild": null,
+#            "Labels": {
+#                "maintainer": "NGINX Docker Maintainers <docker-maint@nginx.com>"
+#            },
+#            "StopSignal": "SIGQUIT"
+#        },
+#        "NetworkSettings": {
+#            "Bridge": "",
+#            "SandboxID": "f543ce3fac47d17c6d98234aca451fa642fbc173197599dfaf189cf7b1db8996",
+#            "SandboxKey": "/var/run/docker/netns/f543ce3fac47",
+#            "Ports": {
+#                "80/tcp": null
+#            },
+#            "HairpinMode": false,
+#            "LinkLocalIPv6Address": "",
+#            "LinkLocalIPv6PrefixLen": 0,
+#            "SecondaryIPAddresses": null,
+#            "SecondaryIPv6Addresses": null,
+#            "EndpointID": "8b7eb65a73c21605e5305853a40fec971427c164413fbacd8121bd26383e7f19",
+#            "Gateway": "172.17.0.1",
+#            "GlobalIPv6Address": "",
+#            "GlobalIPv6PrefixLen": 0,
+#            "IPAddress": "172.17.0.4",
+#            "IPPrefixLen": 16,
+#            "IPv6Gateway": "",
+#            "MacAddress": "02:42:ac:11:00:04",
+#            "Networks": {
+#                "bridge": {
+#                    "IPAMConfig": null,
+#                    "Links": null,
+#                    "Aliases": null,
+#                    "MacAddress": "02:42:ac:11:00:04",
+#                    "DriverOpts": null,
+#                    "NetworkID": "889b71497944394bf1193eea0b2a1bd5c68edf75d47c6c76d6560f0086c992e2",
+#                    "EndpointID": "8b7eb65a73c21605e5305853a40fec971427c164413fbacd8121bd26383e7f19",
+#                    "Gateway": "172.17.0.1",
+#                    "IPAddress": "172.17.0.4",
+#                    "IPPrefixLen": 16,
+#                    "IPv6Gateway": "",
+#                    "GlobalIPv6Address": "",
+#                    "GlobalIPv6PrefixLen": 0,
+#                    "DNSNames": null
+#                }
+#            }
+#        }
+#    }
+#]
+
+

@@ -1,0 +1,24 @@
+sudo docker run -d -p 5000:5000 --name registry registry:latest
+
+#Unable to find image 'registry:latest' locally
+#latest: Pulling from library/registry
+#930bdd4d222e: Pull complete 
+#a15309931e05: Pull complete 
+#6263fb9c821f: Pull complete 
+#86c1d3af3872: Pull complete 
+#a37b1bf6a96f: Pull complete 
+#Digest: sha256:e00e7bbb9cd8322e2c4ea9ed4c996f5060a51486d90cbfd5aca7f3d8214eebe9
+#Status: Downloaded newer image for registry:latest
+#56b46674139d52611d3f65353068fd58d2292afe4541fa534d3dc27c553f33cc
+
+sudo docker image tag 130e82477638 localhost:5000/mygocalcimage
+
+sudo docker push localhost:5000/mygocalcimage
+
+#Using default tag: latest
+#The push refers to repository [localhost:5000/mygocalcimage]
+#d04f11e51d46: Pushed 
+#d27571371fd6: Pushed 
+#f3f0f9fa1bf0: Pushed 
+#77cae8ab23bf: Pushed 
+#latest: digest: sha256:8811f10fb383256b5d5e3487b6c2352637892bdb4500da1dad9e76675b812c3f size: 1152

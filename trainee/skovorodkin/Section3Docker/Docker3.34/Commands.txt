@@ -1,0 +1,112 @@
+sudo docker run -dit --privileged --name inno-dkr-34 docker:dind
+
+sudo docker exec -it inno-dkr-34 /bin/sh
+
+/ # docker images
+
+#REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
+
+/ # docker ps
+
+#CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+/ # docker pull redis:5
+
+#5: Pulling from library/redis
+#a603fa5e3b41: Pull complete 
+#77631c3ef092: Pull complete 
+#ed3847cf62b8: Pull complete 
+#295236254fbb: Pull complete 
+#1d25d6f70191: Pull complete 
+#23acdbbf5eef: Pull complete 
+#Digest: sha256:fc5ecd863862f89f04334b7cbb57e93c9790478ea8188a49f6e57b0967d38c75
+#Status: Downloaded newer image for redis:5
+#docker.io/library/redis:5
+
+/ # docker run -d --name inno-dkr 26 redis:5
+
+#Unable to find image '26:latest' locally
+#docker: Error response from daemon: pull access denied for 26, repository does not exist or may require 'docker login': denied: requested access to the resource is denied.
+#See 'docker run --help'.
+
+/ # docker run -d --name inno-dkr-26 redis:5
+
+#d89d85658b849b31a223c4b0253d9cf252997c9334318e1369bcfb0d89b3cadb
+
+/ # docker images
+
+#REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+#redis        5         99ee9af2b6b1   20 months ago   110MB
+
+/ # docker ps
+
+#CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS      NAMES
+#d89d85658b84   redis:5   "docker-entrypoint.s…"   14 seconds ago   Up 13 seconds   6379/tcp   inno-dkr-26
+
+/ # exit
+
+
+sudo docker run -ti -v /var/run/docker.sock:/var/run/docker.sock docker /bin/sh
+
+/ # docker images
+
+#REPOSITORY                     TAG             IMAGE ID       CREATED         SIZE
+#python-changes5                normal          3574fb9f3019   45 hours ago    926MB
+#python-changes4                normal          0aa371cc60cf   46 hours ago    926MB
+#python-changes3                normal          b6227bb0753a   46 hours ago    972MB
+#python-multistage1             normal          34897b2bed9d   46 hours ago    5.58MB
+#python-changes2                normal          97ef5f15ff4f   46 hours ago    5.58MB
+#<none>                         <none>          82e4c5900e95   46 hours ago    972MB
+#python-change1                 normal          18c8a069c83c   47 hours ago    989MB
+#python                         normal          dc0c0363827d   47 hours ago    989MB
+#docker                         dind            60ded0dc5246   2 days ago      361MB
+#docker                         latest          60ded0dc5246   2 days ago      361MB
+#java                           backend         8fde9e5f1362   2 days ago      303MB
+#react                          frontend        1d06cb16008f   2 days ago      18.5MB
+#django                         latest          ae58240a57de   2 days ago      307MB
+#multistage-secret              example         130e82477638   3 days ago      18.5MB
+#localhost:5000/mygocalcimage   latest          130e82477638   3 days ago      18.5MB
+#multistage                     example         4ea3f029dfda   3 days ago      18.5MB
+#gleb                           meow            04c496385992   3 days ago      398MB
+#cache                          4               160f7cf66a17   4 days ago      232MB
+#cache                          3               d515709e2769   4 days ago      232MB
+#cache                          2               6ee12fdb7926   4 days ago      232MB
+#cache                          1               c7922ea2c40d   4 days ago      232MB
+#nginx                          stable          e7580268c63c   5 weeks ago     188MB
+#nginx                          stable-alpine   b32ed582bddb   5 weeks ago     43.2MB
+#<none>                         <none>          19ddafb0ee3c   5 weeks ago     43.2MB
+#registry                       latest          cfb4d9904335   9 months ago    25.4MB
+#redis                          5               99ee9af2b6b1   20 months ago   110MB
+#alpine                         3.10            e7b300aee9f9   3 years ago     5.58MB
+
+/ # docker ps
+
+#CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS           NAMES
+#0a8a817f9e04   docker    "dockerd-entrypoint.…"   48 seconds ago   Up 47 seconds   2375-2376/tcp   admiring_chaplygin
+/ # docker pull redis:5
+
+#5: Pulling from library/redis
+#Digest: sha256:fc5ecd863862f89f04334b7cbb57e93c9790478ea8188a49f6e57b0967d38c75
+#Status: Image is up to date for redis:5
+#docker.io/library/redis:5
+
+/ # docker run -d --name inno-dkr-26 redis:5 
+
+#df937f27897966919220ba51534a4cd04302df995a29c17f53f440e3c1592ff8
+
+/ # docker ps
+
+#CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS              PORTS           NAMES
+#df937f278979   redis:5   "docker-entrypoint.s…"   10 seconds ago       Up 10 seconds       6379/tcp        inno-dkr-26
+#0a8a817f9e04   docker    "dockerd-entrypoint.…"   About a minute ago   Up About a minute   2375-2376/tcp   admiring_chaplygin
+
+/ # docker rm -f inno-dkr-26
+
+#inno-dkr-26
+
+/ # docker ps
+
+#CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS           NAMES
+#0a8a817f9e04   docker    "dockerd-entrypoint.…"   2 minutes ago   Up 2 minutes   2375-2376/tcp   admiring_chaplygin
+
+/ # exit

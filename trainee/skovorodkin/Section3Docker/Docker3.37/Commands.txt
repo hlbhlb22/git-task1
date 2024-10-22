@@ -1,0 +1,80 @@
+sudo nano /home/unty/gocalc/docker-compose.yml
+
+version: '3'
+
+services:
+  db:
+    image: postgres:10
+    networks:
+      - postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: 'postgres'
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'DatabasePassword'
+
+  backend:
+    image: gocalc:5555
+    networks:
+      - nginx
+      - postgres
+    environment:
+      - POSTGRES_URI=postgres://user:DatabasePassword@db/postgres?sslmode=disable
+      - LISTEN_ADDRESS=:5432
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    networks:
+      - nginx
+    ports:
+      - "8089:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+    depends_on:
+      - db
+      - backend
+
+networks:
+  nginx:
+  postgres:
+  
+  
+sudo docker-compose -p inno29 up -d nginx
+
+sudo docker ps 
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+#a876cdac8844   nginx:latest   "/docker-entrypoint.…"   24 seconds ago   Up 16 seconds   0.0.0.0:8089->80/tcp, :::8089->80/tcp       inno29-nginx-1
+#36547a47eb13   gocalc:5555    "./myapp"                24 seconds ago   Up 7 seconds                                                inno29-backend-1
+#d88c0143b333   postgres:10    "docker-entrypoint.s…"   24 seconds ago   Up 22 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   inno29-db-1
+
+sudo docker exec -it a876cdac8844 /bin/sh
+
+apt update&&apt-get install iputils-ping -y 
+
+ping db
+
+#ping: db: Temporary failure in name resolution
+
+ping backend
+
+#PING backend (172.20.0.2) 56(84) bytes of data.
+#64 bytes from inno29-backend-1.inno29_nginx (172.20.0.2): icmp_seq=1 ttl=64 time=16.5 ms
+#64 bytes from inno29-backend-1.inno29_nginx (172.20.0.2): icmp_seq=2 ttl=64 time=0.092 ms
+#64 bytes from inno29-backend-1.inno29_nginx (172.20.0.2): icmp_seq=3 ttl=64 time=0.072 ms
+#64 bytes from inno29-backend-1.inno29_nginx (172.20.0.2): icmp_seq=4 ttl=64 time=0.092 ms
+#64 bytes from inno29-backend-1.inno29_nginx (172.20.0.2): icmp_seq=5 ttl=64 time=0.067 ms
+
+
+

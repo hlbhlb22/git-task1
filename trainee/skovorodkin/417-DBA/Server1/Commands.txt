@@ -1,0 +1,61 @@
+#Async Replication:
+ip addr
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+#CHECK IP CONFIGURATION FILE
+sudo systemctl restart mysql
+sudo mysql -u root -p
+SHOW MASTER STATUS \G;
+(*************************** 1. row ***************************
+             File: mysql-bin.000013
+         Position: 157
+     Binlog_Do_DB: 
+ Binlog_Ignore_DB: 
+Executed_Gtid_Set: 
+1 row in set (0.00 sec)
+)
+
+CREATE USER 'repl'@'10.221.48.158' IDENTIFIED BY 'pass';
+GRANT REPLICATION SLAVE ON *.* TO 'repl'@'10.221.48.158';
+
+SHOW MASTER STATUS \G
+*************************** 1. row ***************************
+             File: mysql-bin.000013
+         Position: 716
+     Binlog_Do_DB: 
+ Binlog_Ignore_DB: 
+Executed_Gtid_Set: 
+1 row in set (0.00 sec)
+
+ip addr
+
+sudo mysql;
+
+SHOW DATABASES;
+
+CREATE DATABASE chivava;
+
+
+SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| chivava            |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+
+show databases;
++--------------------+
+| Database           |
++--------------------+
+| chivava            |
+| drakul             |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+
+

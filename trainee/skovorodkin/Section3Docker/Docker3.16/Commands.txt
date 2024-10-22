@@ -1,0 +1,80 @@
+sudo docker run -d -p 127.0.0.1:8892:80 --name inno-dkr-06-local --log-driver local --log-opt max-size=10m nginx:stable
+
+#c5ccab9aa81da5b0d6027ebbf80acdca999cf19eb6b90f426f3fefa335a162e3
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS                    NAMES
+#c5ccab9aa81d   nginx:stable   "/docker-entrypoint.…"   6 seconds ago   Up 5 seconds   127.0.0.1:8892->80/tcp   inno-dkr-06-local
+
+sudo cat /var/lib/docker/containers/c5ccab9aa81da5b0d6027ebbf80acdca999cf19eb6b90f426f3fefa335a162e3/local-logs/container.log
+
+#t
+#stdout���������`/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configurationt]
+#stdout謇������I/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/]i
+#stdout������U/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.shiq
+#stdout��ӱ�����]10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.confqs
+#stdoutӓ�ʐ����_10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.confsa
+#stdout�ɤ͐����M/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envshae
+#stdoutÈ�Ґ����Q/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.shee
+#stdout���ݐ����Q/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sheU
+#stdout�ґ�����A/docker-entrypoint.sh: Configuration complete; ready for start upUT
+#stderr������@2024/07/18 07:49:22 [notice] 1#1: using the "epoll" event methodTB
+#stderr��������.2024/07/18 07:49:22 [notice] 1#1: nginx/1.26.1B]
+#stderr��������I2024/07/18 07:49:22 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14) ]R
+#stderr�к�����>2024/07/18 07:49:22 [notice] 1#1: OS: Linux 5.15.0-113-genericR_
+#stderr��������K2024/07/18 07:49:22 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576_L
+#stderrІ������82024/07/18 07:49:22 [notice] 1#1: start worker processesLM
+#stderr��������92024/07/18 07:49:22 [notice] 1#1: start worker process 30MM
+#stderr�λ�����92024/07/18 07:49:22 [notice] 1#1: start worker process 31MM
+#stderr��������92024/07/18 07:49:22 [notice] 1#1: start worker process 32MM
+#stderr��������92024/07/18 07:49:22 [notice] 1#1: start worker process 33MM
+#stderr��������92024/07/18 07:49:22 [notice] 1#1: start worker process 34MM
+#stderr�Ѽ�����92024/07/18 07:49:22 [notice] 1#1: start worker process 35Mn
+#stdout���������Z172.17.0.1 - - [18/Jul/2024:07:49:46 +0000] "GET / HTTP/1.1" 200 615 "-" "curl/7.68.0" "-"n
+
+sudo nano /etc/docker/daemon.json
+
+#{
+#  "log-driver": "local",
+#  "log-opts": {
+#    "max-size": "10m"
+#  }
+#}
+
+sudo systemctl restart docker
+
+sudo docker run -d -p 127.0.0.1:8893:80 --name inno-dkr-06-global nginx:stable
+
+#89227f3891e282bcc7ebb61be5850b19f424e907dcbf0951cff748283cbc1db4
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS         PORTS                    NAMES
+#89227f3891e2   nginx:stable   "/docker-entrypoint.…"   10 seconds ago   Up 9 seconds   127.0.0.1:8893->80/tcp   inno-dkr-06-global
+
+sudo cat /var/lib/docker/containers/89227f3891e282bcc7ebb61be5850b19f424e907dcbf0951cff748283cbc1db4/89227f3891e282bcc7ebb61be5850b19f424e907dcbf0951cff748283cbc1db4-json.log
+
+#{"log":"/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration\n","stream":"stdout","time":"2024-07-18T08:19:35.563090564Z"}
+#{"log":"/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/\n","stream":"stdout","time":"2024-07-18T08:19:35.563310468Z"}
+#{"log":"/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh\n","stream":"stdout","time":"2024-07-18T08:19:35.590199987Z"}
+#{"log":"10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf\n","stream":"stdout","time":"2024-07-18T08:19:35.619878795Z"}
+#{"log":"10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf\n","stream":"stdout","time":"2024-07-18T08:19:35.679415118Z"}
+#{"log":"/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh\n","stream":"stdout","time":"2024-07-18T08:19:35.681863616Z"}
+#{"log":"/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh\n","stream":"stdout","time":"2024-07-18T08:19:35.685599457Z"}
+#{"log":"/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh\n","stream":"stdout","time":"2024-07-18T08:19:35.729268215Z"}
+#{"log":"/docker-entrypoint.sh: Configuration complete; ready for start up\n","stream":"stdout","time":"2024-07-18T08:19:35.736551523Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: using the \"epoll\" event method\n","stream":"stderr","time":"2024-07-18T08:19:35.745591837Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: nginx/1.26.1\n","stream":"stderr","time":"2024-07-18T08:19:35.745610984Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14) \n","stream":"stderr","time":"2024-07-18T08:19:35.745614591Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: OS: Linux 5.15.0-113-generic\n","stream":"stderr","time":"2024-07-18T08:19:35.745617987Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576\n","stream":"stderr","time":"2024-07-18T08:19:35.745621443Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: start worker processes\n","stream":"stderr","time":"2024-07-18T08:19:35.745624589Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: start worker process 30\n","stream":"stderr","time":"2024-07-18T08:19:35.745627685Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: start worker process 31\n","stream":"stderr","time":"2024-07-18T08:19:35.748387079Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: start worker process 32\n","stream":"stderr","time":"2024-07-18T08:19:35.748414702Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: start worker process 33\n","stream":"stderr","time":"2024-07-18T08:19:35.748418298Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: start worker process 34\n","stream":"stderr","time":"2024-07-18T08:19:35.748421694Z"}
+#{"log":"2024/07/18 08:19:35 [notice] 1#1: start worker process 35\n","stream":"stderr","time":"2024-07-18T08:19:35.748425411Z"}
+
+

@@ -1,0 +1,11 @@
+df -h | awk '{print $1, $5, $6}'|column -t >> disk_usage.txt
+
+
+ls -lSh /etc | head
+sudo du -ah /etc | sort -rh | head
+
+
+cat file.txt | awk '/\// {print}'
+
+cat -n /etc/passwd > backup.txt
+sed -i 's/\/bin\/sh/\/bin\/bash/g' backup.txt

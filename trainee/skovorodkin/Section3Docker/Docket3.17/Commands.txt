@@ -1,0 +1,42 @@
+sudo docker pull nginx:stable-alpine
+
+#stable-alpine: Pulling from library/nginx
+#b84a74cde5af: Pull complete 
+#5f993fba5645: Pull complete 
+#33a20d884ccd: Pull complete 
+#455053b8a991: Pull complete 
+#57c7372bb88a: Pull complete 
+#5fdd91ad9396: Pull complete 
+#e4b1d914adae: Pull complete 
+#d0ec18c31a8d: Pull complete 
+#Digest: sha256:208ae3c180b7d26f6a8046fac4c8468b2ab8bd92123ab73f9c5ad0f6f1c5543d
+#Status: Downloaded newer image for nginx:stable-alpine
+#docker.io/library/nginx:stable-alpine
+
+sudo docker images
+
+#REPOSITORY    TAG             IMAGE ID       CREATED         SIZE
+#nginx         stable          e7580268c63c   3 weeks ago     188MB
+#nginx         stable-alpine   19ddafb0ee3c   3 weeks ago     43.2MB
+#hello-world   latest          d2c94e258dcb   14 months ago   13.3kB
+
+sudo docker tag nginx:stable-alpine nginx:inno-dkr-07
+
+sudo docker images
+
+#REPOSITORY    TAG             IMAGE ID       CREATED         SIZE
+#nginx         stable          e7580268c63c   3 weeks ago     188MB
+#nginx         inno-dkr-07     19ddafb0ee3c   3 weeks ago     43.2MB
+#nginx         stable-alpine   19ddafb0ee3c   3 weeks ago     43.2MB
+#hello-world   latest          d2c94e258dcb   14 months ago   13.3kB
+
+sudo docker run -d nginx:inno-dkr-07
+
+#f6e03bddcc5d60e2f5049fe56eaad4788944dbb73467fe617ca1a5648fa98eb1
+
+sudo docker ps
+
+#CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS         PORTS                    NAMES
+#f6e03bddcc5d   nginx:inno-dkr-07   "/docker-entrypoint.…"   11 seconds ago   Up 9 seconds   80/tcp                   trusting_stonebraker
+#89227f3891e2   nginx:stable        "/docker-entrypoint.…"   4 hours ago      Up 4 hours     127.0.0.1:8893->80/tcp   inno-dkr-06-global
+

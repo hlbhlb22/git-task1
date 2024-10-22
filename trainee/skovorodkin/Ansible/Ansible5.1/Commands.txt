@@ -1,0 +1,178 @@
+playbook.yml:
+
+- name: Install Docker and Docker-compose
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Check if Docker is installed
+      command: docker -v
+      register: docker_result
+      ignore_errors: true
+
+    - name: Check if Docker Compose is installed
+      command: docker-compose -v
+      register: docker_compose_result
+      ignore_errors: true
+
+    - name: Ensure Docker is not installed
+      debug:
+        msg: "Docker is already installed"
+      when: docker_result.rc == 0
+      failed_when: docker_result.rc == 0
+      ignore_errors: true
+
+    - name: Ensure Docker Compose is not installed
+      debug:
+        msg: "Docker Compose is already installed"
+      when: docker_compose_result.rc == 0
+      failed_when: docker_compose_result.rc == 0
+      ignore_errors: true
+
+    - name: Install necessary packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+      when: docker_result.rc != 0 or docker_compose_result.rc != 0
+
+    - name: Add Docker GPG apt key
+- name: Add Docker GPG apt key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+      when: docker_result.rc != 0 or docker_compose_result.rc != 0
+
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: "deb https://download.docker.com/linux/ubuntu focal stable"
+        state: present
+      when: docker_result.rc != 0 or docker_compose_result.rc != 0
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+      when: do- name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+   # - name: Install docker repo
+   #   ansible.builtin.command:
+   #     cmd: curl --http.1.1 -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bi>
+   #     creates: /usr/local/bin/docker-compose
+
+   # - name: Correct permissions for installing
+   #   ansible.builtin.command:
+   #     cmd: chmod +x /usr/local/bin/docker-compose
+   #     removes: /usr/local/bin/docker-compose
+
+   - name: Create docker group
+      group:
+        name: docker
+        state: present
+
+    - name: Create docker user and add to docker group
+      user:
+        name: docker
+        state: present
+        groups: docker
+        append: yes
+
+    - name: Test Docker installation
+      command: docker --version
+      register: docker_version_result
+
+    - name: Test Docker Compose installation
+      command: docker-compose --version
+      register: docker_compose_version_result
+
+  handlers:
+    - name: Restart Docker
+      service:
+        name: docker
+        state: restarted
+
+hosts.ini:
+10.221.48.159 ansible_user=gleb ansible_password=1121
+
+
+commands:
+
+ansible all -i hosts.ini -m ping
+
+#10.221.48.159 | SUCCESS => {
+#    "ansible_facts": {
+#        "discovered_interpreter_python": "/usr/bin/python3"
+#    },
+#    "changed": false,
+#    "ping": "pong"
+#}
+
+ansible-playbook playbook1.yml -i hosts.ini --ask-become-pass
+
+#BECOME password: 
+#
+#PLAY [Install Docker and Docker-compose] *************************************************************************************************************
+#
+#TASK [Gathering Facts] *******************************************************************************************************************************
+#ok: [10.221.48.159]
+#
+#TASK [Check if Docker is installed] ******************************************************************************************************************
+#changed: [10.221.48.159]
+#
+#TASK [Check if Docker Compose is installed] **********************************************************************************************************
+#fatal: [10.221.48.159]: FAILED! => {"changed": false, "cmd": "docker-compose -v", "msg": "[Errno 2] No such file or directory: b'docker-compose'", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+#...ignoring
+#
+#TASK [Ensure Docker is not installed] ****************************************************************************************************************
+#fatal: [10.221.48.159]: FAILED! => {
+#    "msg": "Docker is already installed"
+#}
+#...ignoring
+#
+#TASK [Ensure Docker Compose is not installed] ********************************************************************************************************
+#skipping: [10.221.48.159]
+
+#TASK [Install necessary packages] ********************************************************************************************************************
+#ok: [10.221.48.159]
+
+#TASK [Add Docker GPG apt key] ************************************************************************************************************************
+#ok: [10.221.48.159]
+
+#TASK [Add Docker APT repository] *********************************************************************************************************************
+#ok: [10.221.48.159]
+
+#TASK [Update apt cache] ******************************************************************************************************************************
+#changed: [10.221.48.159]
+
+#TASK [Install Docker] ********************************************************************************************************************************
+#ok: [10.221.48.159]
+
+#TASK [Create docker group] ***************************************************************************************************************************
+#ok: [10.221.48.159]
+
+#TASK [Create docker user and add to docker group] ****************************************************************************************************
+#ok: [10.221.48.159]
+
+#TASK [Test Docker installation] **********************************************************************************************************************
+#changed: [10.221.48.159]
+
+#TASK [Test Docker Compose installation] **************************************************************************************************************
+#fatal: [10.221.48.159]: FAILED! => {"changed": false, "cmd": "docker-compose --version", "msg": "[Errno 2] No such file or directory: b'docker-compose'", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+
+#PLAY RECAP *******************************************************************************************************************************************
+#10.221.48.159              : ok=12   changed=3    unreachable=0    failed=1    skipped=1    rescued=0    ignored=2   
+
+
+

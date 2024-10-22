@@ -1,0 +1,244 @@
+├── git_clone.yml
+├── install_nginx
+│   ├── defaults
+│   │   └── main.yml
+│   ├── files
+│   ├── handlers
+│   │   └── main.yml
+│   ├── meta
+│   │   └── main.yml
+│   ├── molecule
+│   │   └── default
+│   │       ├── converge.yml
+│   │       ├── molecule.yml
+│   │       └── verify.yml
+│   ├── README.md
+│   ├── tasks
+│   │   └── main.yml
+│   ├── templates
+│   ├── tests
+│   │   ├── inventory
+│   │   └── test.yml
+│   └── vars
+│       └── main.yml
+├── installnodejs.yml
+├── inventory.ini
+├── playbook.yml
+├── private_key.yml
+└── roles
+    ├── git_clone_site
+    │   ├── defaults
+    │   │   └── main.yml
+    │   ├── files
+    │   ├── handlers
+    │   │   └── main.yml
+    │   ├── meta
+    │   │   └── main.yml
+    │   ├── README.md
+    │   ├── tasks
+    │   │   └── main.yml
+    │   ├── templates
+    │   ├── tests
+    │   │   ├── inventory
+    │   │   └── test.yml
+    │   └── vars
+    │       └── main.yml
+    ├── install_nginx
+    │   ├── defaults
+    │   │   └── main.yml
+    │   ├── files
+    │   ├── handlers
+    │   │   └── main.yml
+    │   ├── meta
+    │   │   └── main.yml
+    │   ├── molecule
+    │   │   └── default
+    │   │       ├── converge.yml
+    │   │       ├── molecule.yml
+    │   │       └── verify.yml
+    │   ├── README.md
+    │   ├── tasks
+    │   │   └── main.yml
+    │   ├── templates
+    │   ├── tests
+    │   │   ├── inventory
+    │   │   └── test.yml
+    │   └── vars
+    │       ├── main.yml
+    │       └── vault.yml
+    └── private_key
+        ├── defaults
+        │   └── main.yml
+        ├── files
+        ├── handlers
+        │   └── main.yml
+        ├── meta
+        │   └── main.yml
+        ├── README.md
+        ├── tasks
+        │   └── main.yml
+        ├── templates
+        ├── tests
+        │   ├── inventory
+        │   └── test.yml
+        └── vars
+            └── main.yml
+            
+---
+- name: Git clone repo
+  hosts: all
+  become: yes
+
+  roles: git_clone_site
+
+cat installnodejs.yml
+---
+- name: Install NodeJS from binary
+  hosts: all
+  become: yes
+  
+  roles: 
+    - install_nginx
+
+  vars_files:
+    - /home/unty/Ansible5.3/roles/install_nginx/vars/vault.yml  
+
+---
+# tasks file for install_nginx
+- name: Check if NodeJS directory exists
+  stat:
+     path: "{{nodejspath}}"
+  register: nodejs_info
+
+- name: Message if directory doesn't exist
+  debug:
+    var: nodejs_info
+  when: not nodejs_info.stat.exists
+
+- name: Ensure the directory exists
+  file:
+    path: "{{nodejspath}}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+
+- name: Download NodeJS tarball
+  get_url:
+    url: "https://nodejs.org/dist/{{nodejsversion}}/node-{{nodejsversion}}-linux-x64.tar.xz"
+    dest: "{{nodejspath}}/node-{{nodejsversion}}-linux-x64.tar.xz"
+    mode: '0755'
+  delegate_to: localhost
+
+- name: Unarchive NodeJS tarball
+  unarchive:
+    src: "{{nodejspath}}/node-{{nodejsversion}}-linux-x64.tar.xz"
+    dest: "{{nodejspath}}" 
+  delegate_to: localhost
+
+- name: Delete the tarball file
+  file:
+    path: "{{nodejspath}}/node-{{nodejsversion}}-linux-x64.tar.xz"
+    state: absent
+  delegate_to: localhost
+
+- name: Create dir for mv
+  file:
+     path: "{{dirformv}}"
+     state: directory 
+
+- name: Move extracted NodeJS to the installation directory
+  command: "mv {{nodejspath}}/node-{{nodejsversion}}-linux-x64 {{dirformv}}"
+  delegate_to: localhost
+
+- name: Remove directory for installation locally
+  file:
+    path: "{{nodejspath}}"
+    state: absent
+  delegate_to: localhost
+  run_once: true
+     
+- name: Create a symbolic link
+  file:
+    src: "{{dirformv}}"
+    path: "{{symboliclink}}"
+    state: link
+    
+# vars file for install_nginx
+$ANSIBLE_VAULT;1.1;AES256
+63336636356233373331636263613630376234663039376335616533643164313034333337393663
+3562623531623630333662366134363336633165306663370a653038666233333635323430323136
+35633033353364383736343462306432376337326638366461383439303364626464616531383830
+3661316263306365630a366339653565306162376564313731626231363538386365646133393835
+33633933663134633764653163323934303265386432333665616236386232303432353234613065
+63366630633834393734333031656533333635313962373363313363663237663036373365343130
+66646539323964656162666230663831333561656631656433393032643137663738623365666365
+36386530353731383233336636643831336531326231626466303039346231326562323834336233
+37306462646263346333343562646238663064646562313837363638643764353861333931613434
+37663036663866343338393133366564316561666461303331346566626261333736656564303535
+633962303732663462656634623663336131
+
+
+- nodejspath: '/usr/local/lib/node'
+- nodejsversion: 'v20.16.0'
+- dirformv: '/usr/local/lib/node/nodejs'
+- symboliclink: '/usr/sbin/nodejs'
+
+---
+# tasks file for git_clone_site
+- name: Create rep for clone
+  file:
+    path: /usr/local/lib/git/nodejs-ansible
+    state: directory
+  when: epic == true
+
+- name: Clone repo
+  git: 
+    repo: https://devops-gitlab.inno.ws/devops-board/nodejs-ansible.git
+    dest: /usr/local/lib/git/nodejs-ansible
+    version: master
+    recursive: true
+    force: yes
+    depth: 1
+  when: epic == true
+
+- name: Install NodeJS, npm
+  apt:
+    name:
+      - nodejs
+      - npm
+        state: present
+        update_cache: yes
+  when: epic == true
+    
+- name: Download packages from package.json
+  npm:
+    path: /usr/local/lib/git/nodejs-ansible
+  when: epic == true
+ 
+- name: Wait
+  wait_for:
+     host: 127.0.0.1
+     port: 3000
+     delay: 10
+     timeout: 20
+  when: epic == true
+ 
+- name: Check works
+  uri:
+    url: http://127.0.0.1:3000
+    method: GET
+    return_content: true
+  register: local_info
+  when: epic == true
+---
+# vars file for git_clone_site
+- epic: true
+- repclone: '/usr/local/lib/git/nodejs-ansible'
+- user: 'hleb.skavarodkin'
+- token: '39RDLf5zYkHrXs47HSEd'
+- git_path: "https://{{user}}:{{token}}@devops-gitlab.inno.ws/devops-board/nodejs-ansible"
+
+
+
+
+

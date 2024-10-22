@@ -1,0 +1,19 @@
+ssh -keygen
+ssh -i .\keys Raymond@10.212.46.108
+
+Создание скрипта
+nano script.sh
+
+#!/bin/bash
+echo "Hello from user1's script!"
+
+chmod +x script.sh
+изменение интерпретатора
+sudo chsh -s /bin/bash John
+Создание пользователя с интерпретатором sh
+sudo useradd -m -d /home/newuser -g users -s /bin/sh newuser
+
+scp
+
+echo "hello" > hello.txt
+scp C:\Users\user\hello.txt yura@10.212.46.108:/home/yura

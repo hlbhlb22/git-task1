@@ -1,0 +1,19 @@
+
+CREATE OR REPLACE VIEW report1 as
+SELECT 
+--replase id of day on 7
+    DISTINCT REPLACE (d_day,0,7) AS week_day,
+--get average number of new comments acording to day of the week
+    AVG(article_count) OVER (PARTITION BY d_day) AS avg_article_count
+FROM (
+    SELECT 
+--count nubbers of records of a day
+        COUNT(*) AS article_count,
+--delete numbers of articles according to day
+       TO_CHAR(CRT_DT, 'DDMMYYYY')AS day_name,
+--divide articles acording to day of week, moving sunday at the last position 
+       TO_NUMBER(to_char(CRT_DT, 'D'))-1 AS d_day
+    FROM SCD.DIM_ARTICLE
+    WHERE IS_ACT_IND = 1
+    GROUP BY TO_CHAR(CRT_DT, 'DDMMYYYY'), TO_NUMBER(to_char(CRT_DT, 'D'))-1
+) ORDER BY week_day;

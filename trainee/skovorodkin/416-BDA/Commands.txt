@@ -1,0 +1,112 @@
+CREATE DATABASE TEST;
+USE TEST;
+CREATE TABLE master (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE details (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    master_id INT,
+    detail_info VARCHAR(255),
+    FOREIGN KEY (master_id) REFERENCES master(id)
+);
+
+
+INSERT INTO master (name) VALUES ('Master 1'), ('Master 2');
+
+INSERT INTO details (master_id, detail_info) VALUES
+(1, 'Detail_1'),
+(2, 'Detail_2');
+
+sudo xtrabackup --user=root --password=1121 --backup --target-dir=/home/gleb/dba/backup1;
+
+INSERT INTO master (name) VALUES ('master3');
+INSERT INTO details(master_id, details_info) VALUES (3, 'Detail_3');
+
+sudo xtrabackup --user=root --password=1121 --backup --target-dir=/home/gleb/dba/backup2;
+
+DROP DATABASE TEST;
+
+sudo systemctl status mysql
+sudo systemctl stop mysql;
+
+sudo xtrabackup --prepare --target-dir=/home/gleb/dba/backup1;
+sudo find /var/lib/mysql -mindepth 1 -delete;
+sudo ls -al /var/lib/mysql/;
+sudo xtrabackup --copy-back --target-dir=/home/gleb/dba/backup1;
+sudo chown -R mysql:mysql /var/lib/mysql;
+sudo systemctl restart mysql;
+sudo mysql -u root -p;
+show databases;
+
++--------------------+
+| Database           |
++--------------------+
+| TEST               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+USE TEST;
+
+SHOW TABLES;
++----------------+
+| Tables_in_TEST |
++----------------+
+| details        |
+| master         |
++----------------+
+
+SELECT * FROM master;
++----+---------+
+| id | name    |
++----+---------+
+|  1 | master1 |
+|  2 | master2 |
++----+---------+
+
+
+DROP DATABASE TEST;
+
+sudo systemctl status mysql
+sudo systemctl stop mysql;
+
+sudo xtrabackup --prepare --target-dir=/home/gleb/dba/backup2;
+sudo find /var/lib/mysql -mindepth 1 -delete;
+sudo ls -al /var/lib/mysqsl/;
+sudo xtrabackup --copy-back --target-dir=/home/gleb/dba/backup2;
+sudo chown -R mysql:mysql /var/lib/mysql;
+sudo systemctl restart mysql;
+sudo mysql -u root -p;
+show databases;
+
++--------------------+
+| Database           |
++--------------------+
+| TEST               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+USE TEST;
+
+SHOW TABLES;
++----------------+
+| Tables_in_TEST |
++----------------+
+| details        |
+| master         |
++----------------+
+
+SELECT * FROM master;
++----+---------+
+| id | name    |
++----+---------+
+|  1 | master1 |
+|  2 | master2 |
+|  3 | master3 |
++----+---------+
+

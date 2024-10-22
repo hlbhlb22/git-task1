@@ -1,0 +1,43 @@
+sudo nano /home/unty/Docker3.35/docker-compose-unmounted.yml
+
+#version: '3'
+#
+#services:
+#
+#  nginx:
+#
+#    image: nginx:stable
+#
+#    ports:
+#      - "127.0.0.1:18888:80"
+
+
+sudo docker-compose -f docker-compose-unmounted.yml --project-name inno27 up -d
+
+sudo docker ps
+
+sudo nano /home/unty/Docker3.35/docker-compose-mounted.yml
+                                                      
+#version: '3'
+#
+#services:
+#
+#  nginx:
+#
+#    image: nginx:stable
+#
+#    ports:
+#      - "127.0.0.1:18888:80"
+#
+#
+#    volumes:
+#      - /home/unty/Docker3.35/nginx2.conf:/etc/nginx/nginx.conf
+
+sudo docker-compose -f docker-compose-mounted.yml --project-name inno27 up -d
+
+curl 127.0.0.1:18888
+
+#Welcome to the training program Innowise: Docker! Again!
+
+sudo docker ps
+

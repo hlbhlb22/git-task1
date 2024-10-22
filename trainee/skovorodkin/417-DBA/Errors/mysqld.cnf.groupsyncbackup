@@ -1,0 +1,130 @@
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License, version 2.0,
+# as published by the Free Software Foundation.
+#
+# This program is designed to work with certain software (including
+# but not limited to OpenSSL) that is licensed under separate terms,
+# as designated in a particular file or component or in included license
+# documentation.  The authors of MySQL hereby grant you an additional
+# permission to link the program and your derivative works with the
+# separately licensed software that they have either included with
+# the program or referenced in the documentation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License, version 2.0, for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+
+#
+# The MySQL database server configuration file.
+#
+# One can use all long options that the program supports.
+# Run program with --help to get a list of available options and with
+# --print-defaults to see which it would actually understand and use.
+#
+# For explanations see
+# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+
+# Here is entries for some specific programs
+# The following values assume you have at least 32M ram
+
+[mysqld]
+#
+# * Basic Settings
+#
+user		= mysql
+pid-file	= /var/run/mysqld/mysqld.pid
+socket	= /var/run/mysqld/mysqld.sock
+port		= 3306
+datadir	= /var/lib/mysql
+
+
+# If MySQL is running as a replication slave, this should be
+# changed. Ref https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_tmpdir
+# tmpdir		= /tmp
+#
+# Instead of skip-networking the default is now to listen only on
+# localhost which is more compatible and is not less secure.
+mysqlx-bind-address	= 127.0.0.1
+#
+# * Fine Tuning
+#
+key_buffer_size		= 16M
+# max_allowed_packet	= 64M
+# thread_stack		= 256K
+
+# thread_cache_size       = -1
+
+# This replaces the startup script and checks MyISAM tables if needed
+# the first time they are touched
+myisam-recover-options  = BACKUP
+
+# max_connections        = 151
+
+# table_open_cache       = 4000
+
+#
+# * Logging and Replication
+#
+# Both location gets rotated by the cronjob.
+#
+# Log all queries
+# Be aware that this log type is a performance killer.
+# general_log_file        = /var/log/mysql/query.log
+# general_log             = 1
+#
+# Error log - should be very few entries.
+#
+log_error = /var/log/mysql/error.log
+#
+# Here you can see queries with especially long duration
+# slow_query_log		= 1
+# slow_query_log_file	= /var/log/mysql/mysql-slow.log
+# long_query_time = 2
+# log-queries-not-using-indexes
+#
+# The following can be used as easy to replay backup logs or for replication.
+# note: if you are setting up a replication slave, see README.Debian about
+#       other settings you may need to change.
+
+# General replication settings
+disabled_storage_engines="MyISAM,BLACKHOLE,FEDERATED,ARCHIVE,MEMORY"
+gtid_mode = ON
+enforce_gtid_consistency = ON
+master_info_repository = TABLE
+relay_log_info_repository = TABLE
+binlog_checksum = NONE
+log_slave_updates = ON
+log_bin = binlog
+binlog_format = ROW
+transaction_write_set_extraction = XXHASH64
+loose-group_replication_bootstrap_group = OFF
+loose-group_replication_start_on_boot = OFF
+loose-group_replication_ssl_mode = REQUIRED
+loose-group_replication_recovery_use_ssl = 1
+
+# Shared replication group configuration
+loose-group_replication_group_name = "18ebd185-ef81-4d2a-a92d-0d52353faf6a"
+loose-group_replication_ip_whitelist = "10.221.48.159,10.221.48.162"
+loose-group_replication_group_seeds = ""10.221.48.159:33061,10.221.48.162:33061"
+# Single or Multi-primary mode? Uncomment these two lines
+# for multi-primary mode, where any host can accept writes
+#loose-group_replication_single_primary_mode = OFF
+#loose-group_replication_enforce_update_everywhere_checks = ON
+
+# Host specific replication configuration
+server_id = 1
+bind-address = "10.221.48.159"
+report_host = "10.221.48.159"
+loose-group_replication_local_address = "10.221.48.159:33061"
+log_bin			= /var/log/mysql/mysql-bin.log
+# binlog_expire_logs_seconds	= 2592000
+max_binlog_size   = 100M
+# binlog_do_db		= include_database_name
+# binlog_ignore_db	= include_database_name

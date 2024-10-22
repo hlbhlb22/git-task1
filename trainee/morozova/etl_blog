@@ -1,0 +1,130 @@
+CREATE OR REPLACE PACKAGE BODY SCD.etl_blog IS 
+
+--procedure to load articles	
+PROCEDURE etl_load_articles IS
+
+cursor p_article IS SELECT * FROM DELL.ARTICLE ORDER BY DELL.ARTICLe.ID;
+
+--create variables to catch data from cursor
+v_id_article DELL.ARTICLE.ID%TYPE;
+v_crt_dt_article DELL.ARTICLE.CRT_DT%TYPE;
+v_mod_dt_article DELL.ARTICLE.MOD_DT%TYPE;
+v_author_article DELL.ARTICLE.AUTHOR%TYPE;
+v_title_article DELL.ARTICLE.TITLE%TYPE;
+v_content_article DELL.ARTICLE.CONTENT%TYPE;
+
+--flag to check if article already exists
+v_exist NUMBER:=0;
+
+BEGIN
+OPEN p_article;
+	LOOP
+		FETCH p_article INTO v_id_article,v_crt_dt_article,v_mod_dt_article,
+		v_author_article,v_title_article,v_content_article;
+	EXIT WHEN p_article%NOTFOUND;
+
+SELECT COUNT(NID) INTO v_exist FROM SCD.DIM_ARTICLE WHERE NID=v_id_article AND IS_ACT_IND=1;
+
+--create new record
+if(v_exist=0) then
+--insert data from cursor
+		INSERT INTO scd.DIM_ARTICLE(nid, crt_dt, mod_dt, AUTHOR,TITLE,CONTENT,START_DT,END_DT,IS_ACT_IND)
+	SELECT v_id_article,v_crt_dt_article,v_mod_dt_article,
+		v_author_article,v_title_article,v_content_article, current_date, NULL, 1
+	FROM DUAL;
+
+--if article was loaded earlier check fields on updates
+ELSIF (v_exist>0) THEN
+DECLARE
+--variables to compare data
+				v_art_crt_dt SCD.DIM_ARTICLE.CRT_DT%TYPE;
+				v_art_mod_dt SCD.DIM_ARTICLE.MOD_DT%TYPE;
+				v_art_author SCD.DIM_ARTICLE.AUTHOR%TYPE;
+				v_art_title SCD.DIM_ARTICLE.TITLE%TYPE;
+				v_art_content SCD.DIM_ARTICLE.CONTENT%TYPE;
+			BEGIN
+--get the active record			
+				SELECT CRT_DT, MOD_DT, AUTHOR, TITLE, CONTENT
+				INTO v_art_crt_dt, v_art_mod_dt, v_art_author, v_art_title, v_art_content
+				FROM SCD.DIM_ARTICLE 
+				WHERE NID=v_id_article AND IS_ACT_IND=1;
+	IF(v_art_crt_dt<>v_crt_dt_article or v_art_mod_dt<>v_mod_dt_article OR v_art_author<>v_author_article OR v_art_title<>v_title_article OR v_art_content<>v_content_article) THEN 
+	UPDATE scd.DIM_ARTICLE x
+		SET x.END_DT=current_date, x.IS_ACT_IND=NULL 
+		WHERE x.IS_ACT_IND=1 AND x.NID=v_id_article;
+	INSERT INTO scd.DIM_ARTICLE(nid, crt_dt, mod_dt, AUTHOR,TITLE,CONTENT,START_DT,END_DT,IS_ACT_IND)
+		SELECT v_id_article,v_crt_dt_article,v_mod_dt_article,v_author_article,v_title_article,v_content_article, current_date, NULL, 1
+		FROM DUAL;
+--if record hadn't changes skip it
+	ELSIF (v_art_crt_dt=v_crt_dt_article and v_art_mod_dt=v_mod_dt_article and v_art_author=v_author_article and v_art_title=v_title_article and v_art_content=v_content_article) THEN 
+	CONTINUE;
+	END IF;
+END;
+END IF;
+
+END LOOP;
+
+CLOSE p_article;
+
+END etl_load_articles;
+
+--procedure to load comments
+PROCEDURE etl_load_comments IS
+CURSOR p_article_comment IS SELECT RATING, VOTES, CONTENT, ARTICLE_ID,ID,ts FROM DELL.ARTICLE_COMMENT 
+ORDER BY ID;
+
+--create variables to catch data from cursor
+v_rating_article_comment DELL.ARTICLE_COMMENT.RATING%TYPE;
+v_votes_article_comment DELL.ARTICLE_COMMENT.VOTES%TYPE;
+v_content_article_comment DELL.ARTICLE_COMMENT.CONTENT%TYPE;
+v_article_id_article_comment DELL.ARTICLE_COMMENT.ARTICLE_ID%TYPE;
+v_id_article_comment DELL.ARTICLE_COMMENT.ID%TYPE;
+v_ts_article_comment DELL.ARTICLE_COMMENT.TS%TYPE;
+
+--create variables to select data from other tables
+	v_date_id_dim_dates SCD.DIM_DATES.ID%TYPE;
+	v_sid_dim_article SCD.DIM_ARTICLE.SID%TYPE;
+	v_ts_audit_action DELL.AUDIT_ACTION.TS%TYPE;
+	v_action_type_audit_action DELL.AUDIT_ACTION.ACTION_TYPE%TYPE;
+
+BEGIN
+	etl_load_articles;
+
+	OPEN p_article_comment;
+LOOP
+	FETCH p_article_comment INTO v_rating_article_comment, v_votes_article_comment,
+v_content_article_comment, v_article_id_article_comment, v_id_article_comment,v_ts_article_comment;
+	EXIT WHEN p_article_comment%NOTFOUND;
+
+SELECT SID INTO v_sid_dim_article FROM SCD.DIM_ARTICLE 
+where SCD.DIM_ARTICLE.NID=v_article_id_article_comment AND SCD.DIM_ARTICLE.IS_ACT_IND=1;
+--select id of the day
+	SELECT ID INTO v_date_id_dim_dates FROM SCD.DIM_DATES WHERE SCD.DIM_DATES.ID=to_number(to_char(CURRENT_DATE,'YYYYMMDD'));
+--get information from latest record in audit_action
+SELECT TS, ACTION_TYPE INTO v_ts_audit_action, v_action_type_audit_action FROM DELL.AUDIT_ACTION WHERE DELL.AUDIT_ACTION.ROW_ID = v_id_article_comment AND DELL.AUDIT_ACTION.ID = (SELECT MAX(ID) FROM DELL.AUDIT_ACTION WHERE ROW_ID = v_id_article_comment AND TABLE_NAME = 'ARTICLE_COMMENT');
+
+--check whether record is already exist
+MERGE INTO SCD.F_ARTICLE_COMMENT x
+	USING DUAL
+	ON (x.ARTICLE_SID=v_sid_dim_article AND x.COMMENT_ID=v_id_article_comment)
+WHEN MATCHED THEN
+--if record exists update it
+UPDATE
+	
+	SET 
+	x.rating=nvl(v_rating_article_comment,0),
+	x.votes=nvl(v_votes_article_comment,0),
+	x.content=v_content_article_comment,
+	x.action_type=v_action_type_audit_action 
+	WHERE x.article_sid=v_sid_dim_article AND x.comment_id=v_id_article_comment
+--if record doesn't exist create it
+--get time of creation from audit using to_dsinterval
+	WHEN NOT MATCHED THEN
+INSERT (article_sid, comment_id, DATE_ID,TIME_IVAL,RATING,VOTES,CONTENT,ACTION_TYPE)
+values (v_sid_dim_article,v_id_article_comment,v_date_id_dim_dates,TO_DSINTERVAL('0 '||TO_CHAR(v_ts_audit_action, 'HH24:MI:SS')),nvl(v_rating_article_comment,0),nvl(v_votes_article_comment,0),v_content_article_comment, v_action_type_audit_action);
+END LOOP;
+CLOSE p_article_comment;
+		
+END etl_load_comments;
+
+END etl_blog;

@@ -1,0 +1,75 @@
+sudo apt install mysql-server-8.0
+sudo systemctl status mysql.service
+
+# CHECK configuration, data and log files:
+
+cd /etc/mysql/mysql.conf.d
+sudo nano mysqld.cnf
+/var/lib/mysql - datadir
+/var/log/mysql/error.log - logs file
+
+# Run any select query from local and remote hosts:
+
+# Local:
+
+sudo mysql
+SELECT USER FROM mysql.user;
+
+#Remote:
+
+ssh gelb@10.221.48.162
+cd /etc/mysql/mysql.conf.d/
+sudo nano mysqld.cnf
+
+#Change bind-address to 0.0.0.0
+
+#Save changes + exit
+
+sudo mysql -u root -p
+
+#Password
+
+CREATE USER 'User_TEST'@'10.221.48.162' IDENTIFIED BY '0862Ax-6';
+GRANT ALL PRIVILEGES ON *.* TO'User_TEST'@'10.221.48.162' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EXIT
+sudo service mysql restart
+exit
+mysql -h 10.221.48.162 -u User_TEST -p
+
+#Password
+
+# Extra tasks:
+
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+
+
+# Open config file
+
+# I changed the following parametres:
+
+key_buffer_size = 128M 
+innodb_buffer_pool_size = 1G
+
+# Uncomment following parametres:
+
+general_log = 1 
+general_log_file = /var/log/mysql/genereal.log 
+slow_query_log = 1 
+slow_query_log_file = /var/log/mysql/slow.log 
+long_time_query = 2 
+
+sudo systemctl restart mysql
+
+sudo apt remove --purge mysql-server-mysql-clietn mysql-common 
+sudo apt autoremove
+sudo apt autoclean
+sudo apt update
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.22-1_all.deb
+sudo dpkg -i mysql-apt-config_0.8.22-1_all.deb
+
+# Change cluster to 5
+
+sudo apt update
+
+sudo apt install mysql-server
