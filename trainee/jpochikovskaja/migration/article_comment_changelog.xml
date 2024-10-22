@@ -1,0 +1,45 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" 
+    xmlns:pro="http://www.liquibase.org/xml/ns/pro" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+                        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog 
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+                        
+       <changeSet author="Yulia P (generated)" id="1675177265353-3">
+        <createTable tableName="ARTICLE_COMMENT">
+            <column autoIncrement="true" defaultOnNull="false" generationType="ALWAYS" name="ID" type="NUMBER(*, 0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="ARTICLE_COMMENT_PK"/>
+            </column>
+            <column name="ARTICLE_ID" type="NUMBER(*, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="SYSDATE" name="TS" type="TIMESTAMP(0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REPLY_TO_ID" type="NUMBER(*, 0)"/>
+            <column name="RATING" type="NUMBER(*, 0)"/>
+            <column name="VOTES" type="NUMBER(*, 0)"/>
+            <column name="COMMENTER" type="VARCHAR2(128 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTENT" type="CLOB">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+        <changeSet author="Yulia P (generated)" id="1675177265351-4">
+        <addForeignKeyConstraint baseColumnNames="ARTICLE_ID" baseTableName="ARTICLE_COMMENT" constraintName="ARTICLE_COMMENT_ARTICLE_ID_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="ARTICLE" validate="true"/>
+    </changeSet>
+
+    <changeSet author="Yulia P (generated)" id="1675177265351-5">
+        <addForeignKeyConstraint baseColumnNames="REPLY_TO_ID" baseTableName="ARTICLE_COMMENT" constraintName="ARTICLE_COMMENT_REPLY_TO_ID_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="ARTICLE_COMMENT" validate="true"/>
+    </changeSet>
+
+    </databaseChangeLog>
+
+    

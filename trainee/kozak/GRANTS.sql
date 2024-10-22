@@ -1,7 +1,7 @@
 CREATE USER blog_base IDENTIFIED BY "StrongP@ssw0rd";
 CREATE USER blog_app IDENTIFIED BY "StrongP@ssw0rd";
 CREATE USER blog_admin IDENTIFIED BY "StrongP@ssw0rd";
-
+-- users with grants
 GRANT CREATE SESSION TO blog_base;
 GRANT CREATE TABLE TO blog_base;
 GRANT CREATE VIEW TO blog_base;
