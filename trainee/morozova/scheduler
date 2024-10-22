@@ -1,0 +1,25 @@
+--create process to do
+BEGIN
+DBMS_SCHEDULER.CREATE_JOB(
+Job_name=>'blog_job',
+Job_type=>'PLSQL_BLOCK',
+--procedure to do
+Job_action=>'BEGIN SCD.etl_blog.etl_load_comments; END;',
+Start_date=>systimestamp,
+--do every minute
+Repeat_interval=>'FREQ=MINUTELY; bysecond=0;',
+Enabled=>true
+);	
+END;
+
+
+--create scheduler to do the job
+BEGIN
+DBMS_SCHEDULER.CREATE_SCHEDULE (
+schedule_name => 'blog_schedule',
+start_date => SYSTIMESTAMP,
+repeat_interval => 'freq=minutely; bysecond=0',
+end_date => NULL,
+comments => 'Repeats on minutely basis, on the minute'
+);
+END;

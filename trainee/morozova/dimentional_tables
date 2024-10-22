@@ -1,0 +1,27 @@
+CREATE TABLE dim_article(
+sid int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+nid int NOT NULL,
+crt_dt DATE NOT NULL,
+mod_dt DATE NOT NULL,
+author varchar2(128) NOT NULL,
+title varchar2(50) NOT NULL,
+content clob NOT NULL,
+start_dt DATE DEFAULT sysdate,
+end_dt DATE default NULL,
+is_act_ind number(1),
+CHECK (is_act_ind IN (0, 1))
+)
+
+CREATE TABLE f_article_comment(
+sid int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+article_sid int,
+date_id int,
+time_ival INTERVAL DAY TO second,
+comment_id int NOT NULL,
+rating int NOT null,
+votes int NOT null,
+content clob NOT NULL,
+action_type char(1) NOT NULL,
+CONSTRAINT dim_article_fk_f_article_comment FOREIGN KEY (article_sid) REFERENCES dim_article(sid),
+CONSTRAINT dim_article_fk_dim_dates FOREIGN KEY (date_id) REFERENCES dim_dates(id)
+)
