@@ -1,0 +1,147 @@
+
+
+Checkpoints (Practical Tasks)
+
+1.    Create an Ubuntu Virtual Machine on VirtualBox using the official ISO image.
+Created locally on laptop via official iso image. 
+2.     Read/Learn the difference between an absolute path and a relative path. This is critical. Determine the absolute path of the directory you are currently in. 
+pwd echo $HOME echo ~
+/home/vboxuser
+
+Output the full contents of this directory, including hidden files.
+ls -la
+total 116
+drwxr-x--- 18 vboxuser vboxuser 4096 Jan 19 13:31 .
+drwxr-xr-x  3 root     root     4096 Jun 29  2025 ..
+-rw-------  1 vboxuser vboxuser 1204 Aug 16 17:36 .bash_history
+-rw-r--r--  1 vboxuser vboxuser  220 Mar 31  2024 .bash_logout
+-rw-r--r--  1 vboxuser vboxuser 3771 Mar 31  2024 .bashrc
+drwx------ 13 vboxuser vboxuser 4096 Aug 19 11:25 .cache
+...
+
+3.  Navigate directories: Go down one directory level, then return to the previous one. Navigate to the root directory. Perform a full content output (ls -l). Then, perform a full output including hidden files (ls -la). Analyze and understand what each column in the output represents.
+cd /
+pwd
+
+vboxuser@Ubuntu-24:/$ ls -l
+total 92
+lrwxrwxrwx   1 root root     7 Apr 22  2024 bin -> usr/bin
+
+drwxr-xr-x   2 root root  4096 Feb 26  2024 bin.usr-is-merged
+drwxr-xr-x   3 root root  4096 Aug 21 09:52 boot
+dr-xr-xr-x   2 root root  4096 Jun 29  2025 cdrom
+drwxr-xr-x  19 root root  4180 Jan 19 13:30 dev
+drwxr-xr-x 139 root root 12288 Aug 22 10:24 etc
+drwxr-xr-x   3 root root  4096 Jun 29  2025 home
+...
+
+ls -la
+total 100
+drwxr-xr-x  23 root root  4096 Aug 19 12:05 .
+drwxr-xr-x  23 root root  4096 Aug 19 12:05 ..
+lrwxrwxrwx   1 root root     7 Apr 22  2024 bin -> usr/bin
+drwxr-xr-x   2 root root  4096 Feb 26  2024 bin.usr-is-merged
+drwxr-xr-x   3 root root  4096 Aug 21 09:52 boot
+dr-xr-xr-x   2 root root  4096 Jun 29  2025 cdrom
+...
+
+
+4. Navigate to your home directory. Create a file named "dog.txt". Using the "echo" command, write the name of your favorite movie into the file.
+cd ~
+nano dog.txt
+echo "Avatar II" > dog.txt
+
+5. 	Edit the file: Using the vim editor, add the names of 4 main characters to the file, each on a new line.
+sudo apt install vim
+vim dog.txt
+i
+Quarritch
+Avatar
+Avatar's wife
+Avatar's son
+:wq
+
+6. Read the file: Output the contents of the file using the "cat" command.
+cat dog.txt
+
+7.  Manage files: Rename the file from "dog.txt" to "cat.txt". 
+mv dog.txt cat.txt
+
+Create a new directory named "animals". 
+mkdir animals
+ls -ld animals
+Move "cat.txt" into "animals".
+mv cat.txt ./animals/
+
+8. Pathing practice: While inside the "animals" directory, output the contents of "cat.txt" using a relative path (this method of referencing a file is often called "dot notation" or "via dot").
+cd animals
+cat cat.txt
+cat ../animals/cat.txt
+
+9. Navigate to the root directory. 
+cd /
+Output the contents of "cat.txt" using both the absolute and relative paths.
+cat ~/animals/cat.txt
+cat /home/vboxuser/animals/cat.txt
+
+10. Create more files: Create several more files with animal names in the "animals" directory (e.g., "mouse.txt", etc.).
+sudo touch wolf.txt fox.txt squirrel.txt
+ls
+sudo rm wolf.txt fox.txt squirrel.tx
+cd ~
+touch wolf.txt fox.txt squirrel.txt
+
+
+11. Redirection: Enter the name of your favorite cartoon into "mouse.txt" using ">". Understand the difference between ">" and ">>".
+    echo "Tom and Jerry" > mouse.txt
+	echo "Alladdin" >> mouse.txt
+	cat mouse.txt
+	Tom and Jerry
+	Alladdin
+	
+12. Search: Find the file "cat.txt" inside the "animals" directory using the "grep" command. Next, do the same using the "find" command.
+cd ~
+ls animals/ | grep cat.txt
+
+find animals/ -name "cat.txt"    
+	
+	
+13. Deletion: Delete one of the files in the "animals" directory. After that, delete the "animals" directory itself. Read about the flag options for the "rm" command.
+
+rm animals/wolf.txt
+y
+
+rm -ri animals/
+y
+y
+you
+
+14. Output the history of your interactions with the command line and find the command you used to create the directory. (Use the pipe |).
+    history | grep "mkdir animals"
+	history | grep -B2 -A2 mkdir
+	
+	vboxuser@Ubuntu-24:~$ history | grep -B2 -A2 mkdir
+   34  cd desktop
+   35  cd Desktop/
+   36  mkdir scr
+   37  mv scr.sh scr
+   38  cd scr/
+--
+   77  vim dog.txt
+   78  cat dog.txt 
+   79  mkdir animals
+   80  ls
+   81  ls ld
+--
+  120  rm -ri animals/ 
+  121  ls
+  122  history | grep "mkdir animals"
+  123  history | grep "mkdir animals" | less
+  124  history | grep -n "mkdir animals"
+  125  history | grep -i b1 a1 mkdir
+  126  history | grep -i b1 a1 "mkdir"
+  127  history | grep -i B1 A1 "mkdir"
+  128  history | grep -B2 -A2 mkdir
+
+
+	
