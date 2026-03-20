@@ -1,0 +1,207 @@
+
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker pull nginx:stable-alpine
+stable-alpine: Pulling from library/nginx
+Digest: sha256:5b4900b042ccfa8b0a73df622c3a60f2322faeb2be800cbee5aa7b44d241649e
+Status: Image is up to date for nginx:stable-alpine
+docker.io/library/nginx:stable-alpine
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker tag nginx:stable-alpine nginx:inno-dkr-12
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker images | grep -E "nginx.*(stable-alpine|inno-dkr-12)"
+WARNING: This output is designed for human readability. For machine-readable output, please use --format.
+nginx:inno-dkr-12     5b4900b042cc       93.3MB         26.9MB   U    
+nginx:stable-alpine   5b4900b042cc       93.3MB         26.9MB   U    
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi nginx:stable-alpine
+Untagged: nginx:stable-alpine
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker images | grep inno-dkr-12
+WARNING: This output is designed for human readability. For machine-readable output, please use --format.
+nginx:inno-dkr-12     5b4900b042cc       93.3MB         26.9MB   U    
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker pull nginx:stable-alpine
+stable-alpine: Pulling from library/nginx
+Digest: sha256:5b4900b042ccfa8b0a73df622c3a60f2322faeb2be800cbee5aa7b44d241649e
+Status: Downloaded newer image for nginx:stable-alpine
+docker.io/library/nginx:stable-alpine
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker images | tee /home/user/images.txt
+WARNING: This output is designed for human readability. For machine-readable output, please use --format.
+IMAGE                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+custom-nginx:latest   faccb3b7a982        237MB         62.9MB   U    
+hello-world:latest    85404b3c5395       25.9kB         9.52kB        
+nginx:custom-arg      74ebf71a93cd        237MB         62.9MB        
+nginx:inno-dkr-07     5b4900b042cc       93.3MB         26.9MB   U    
+nginx:inno-dkr-08     aeda9f1884ad        237MB         62.9MB   U    
+nginx:inno-dkr-09     25a05811e17f        186MB         51.4MB   U    
+nginx:inno-dkr-10     f8b40a516de3        186MB         51.4MB   U    
+nginx:inno-dkr-11     556e1ec12af9       92.4MB           26MB        
+nginx:inno-dkr-12     5b4900b042cc       93.3MB         26.9MB   U    
+nginx:stable          42e026ae5315        240MB         65.8MB   U    
+nginx:stable-alpine   5b4900b042cc       93.3MB         26.9MB   U    
+ubuntu-nginx:custom   8b2448bd851f        186MB         51.4MB   U    
+root@Ubuntu-24:~/docker-ubuntu-nginx# cat /home/user/images.txt
+IMAGE                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+custom-nginx:latest   faccb3b7a982        237MB         62.9MB   U    
+hello-world:latest    85404b3c5395       25.9kB         9.52kB        
+nginx:custom-arg      74ebf71a93cd        237MB         62.9MB        
+nginx:inno-dkr-07     5b4900b042cc       93.3MB         26.9MB   U    
+nginx:inno-dkr-08     aeda9f1884ad        237MB         62.9MB   U    
+nginx:inno-dkr-09     25a05811e17f        186MB         51.4MB   U    
+nginx:inno-dkr-10     f8b40a516de3        186MB         51.4MB   U    
+nginx:inno-dkr-11     556e1ec12af9       92.4MB           26MB        
+nginx:inno-dkr-12     5b4900b042cc       93.3MB         26.9MB   U    
+nginx:stable          42e026ae5315        240MB         65.8MB   U    
+nginx:stable-alpine   5b4900b042cc       93.3MB         26.9MB   U    
+ubuntu-nginx:custom   8b2448bd851f        186MB         51.4MB   U    
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi $(docker images nginx -q)
+Untagged: nginx:inno-dkr-11
+Deleted: sha256:556e1ec12af9ad7aa65815cf9c0de7ead19622d3a52efe5145247a3ca5dc967b
+Untagged: nginx:custom-arg
+Deleted: sha256:74ebf71a93cd140ddde4027e98168c1809ad70b12084407485c240f85f0fdbef
+Error response from daemon: conflict: unable to delete 25a05811e17f (cannot be forced) - image is being used by running container 4d235e00e578
+Error response from daemon: conflict: unable to delete f8b40a516de3 (cannot be forced) - image is being used by running container b016fc58b262
+Error response from daemon: conflict: unable to delete aeda9f1884ad (must be forced) - image is being used by stopped container f0d4cd0133a6
+Error response from daemon: conflict: unable to delete 42e026ae5315 (cannot be forced) - image is being used by running container 8802c406833a
+Error response from daemon: conflict: unable to delete 5b4900b042cc (cannot be forced) - image is being used by running container 820fbab584a6
+Error response from daemon: conflict: unable to delete 5b4900b042cc (cannot be forced) - image is being used by running container 820fbab584a6
+Error response from daemon: conflict: unable to delete 5b4900b042cc (cannot be forced) - image is being used by running container 820fbab584a6
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi -f $(docker images nginx -q)
+Untagged: nginx:inno-dkr-08
+Deleted: sha256:aeda9f1884ad22116fdefd3011106f58904c1301329fe8bee05e0257a09c5a14
+Error response from daemon: conflict: unable to delete 25a05811e17f (cannot be forced) - image is being used by running container 4d235e00e578
+Error response from daemon: conflict: unable to delete f8b40a516de3 (cannot be forced) - image is being used by running container b016fc58b262
+Error response from daemon: conflict: unable to delete 42e026ae5315 (cannot be forced) - image is being used by running container 7cc55be190a7
+Error response from daemon: conflict: unable to delete 5b4900b042cc (cannot be forced) - image is being used by running container 820fbab584a6
+Error response from daemon: conflict: unable to delete 5b4900b042cc (cannot be forced) - image is being used by running container 820fbab584a6
+Error response from daemon: conflict: unable to delete 5b4900b042cc (cannot be forced) - image is being used by running container 820fbab584a6
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker images
+                                                                                                      i Info >   U  In Use
+IMAGE                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+custom-nginx:latest   faccb3b7a982        237MB         62.9MB    U  
+hello-world:latest    85404b3c5395       25.9kB         9.52kB        
+nginx:inno-dkr-07     5b4900b042cc       93.3MB         26.9MB    U  
+nginx:inno-dkr-09     25a05811e17f        186MB         51.4MB    U  
+nginx:inno-dkr-10     f8b40a516de3        186MB         51.4MB    U  
+nginx:inno-dkr-12     5b4900b042cc       93.3MB         26.9MB    U  
+nginx:stable          42e026ae5315        240MB         65.8MB    U  
+nginx:stable-alpine   5b4900b042cc       93.3MB         26.9MB    U  
+ubuntu-nginx:custom   8b2448bd851f        186MB         51.4MB    U  
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi -force $(docker images nginx -q)
+unknown shorthand flag: 'o' in -orce
+
+Usage:  docker rmi [OPTIONS] IMAGE [IMAGE...]
+
+Run 'docker rmi --help' for more information
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi --force $(docker images nginx -q)
+Error response from daemon: conflict: unable to delete 25a05811e17f (cannot be forced) - image is being used by running container 4d235e00e578
+Error response from daemon: conflict: unable to delete f8b40a516de3 (cannot be forced) - image is being used by running container b016fc58b262
+Error response from daemon: conflict: unable to delete 42e026ae5315 (cannot be forced) - image is being used by running container 8802c406833a
+Error response from daemon: conflict: unable to delete 5b4900b042cc (cannot be forced) - image is being used by running container 820fbab584a6
+Error response from daemon: conflict: unable to delete 5b4900b042cc (cannot be forced) - image is being used by running container 820fbab584a6
+Error response from daemon: conflict: unable to delete 5b4900b042cc (cannot be forced) - image is being used by running container 820fbab584a6
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi^Cf $(docker images nginx -q)
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker stop $(docker ps -q)
+b016fc58b262
+4d235e00e578
+f2b665bd8b08
+820fbab584a6
+7cc55be190a7
+7a7045f6f1ef
+8802c406833a
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker ps -a
+CONTAINER ID   IMAGE                 COMMAND                  CREATED             STATUS                      PORTS     NAMES
+b016fc58b262   nginx:inno-dkr-10     "nginx -g 'daemon of…"   38 minutes ago      Exited (0) 13 seconds ago             inno-dkr-10
+4d235e00e578   nginx:inno-dkr-09     "nginx -g 'daemon of…"   About an hour ago   Exited (0) 13 seconds ago             inno-dkr-09-container
+f2b665bd8b08   ubuntu-nginx:custom   "nginx -g 'daemon of…"   About an hour ago   Exited (0) 13 seconds ago             ubuntu-nginx-container
+f0d4cd0133a6   aeda9f1884ad          "/docker-entrypoint.…"   2 hours ago         Exited (1) 2 hours ago                inno-dkr-08-container
+820fbab584a6   nginx:inno-dkr-07     "/docker-entrypoint.…"   2 hours ago         Exited (0) 13 seconds ago             inno-dkr-07-container
+7cc55be190a7   nginx:stable          "/docker-entrypoint.…"   7 hours ago         Exited (0) 13 seconds ago             inno-dkr-06-global
+7a7045f6f1ef   nginx:stable          "/docker-entrypoint.…"   7 hours ago         Exited (0) 13 seconds ago             test-log-config
+8802c406833a   nginx:stable          "/docker-entrypoint.…"   7 hours ago         Exited (0) 13 seconds ago             inno-dkr-06-local
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi -f $(docker images nginx -q)
+Untagged: nginx:inno-dkr-10
+Deleted: sha256:f8b40a516de3f9a6537dacd6d39eba4c1bb4b8bc5fdb50eba586b704b69d3353
+Untagged: nginx:inno-dkr-09
+Deleted: sha256:25a05811e17f475cb0c78d28bb177168af0ccfc5a0f76724d2d794ef184bb2df
+Untagged: nginx:stable
+Deleted: sha256:42e026ae5315aa0deec22fb00c364fc5ec8d9af1c4833ad5317e2a433e4de0df
+Untagged: nginx:inno-dkr-07
+Untagged: nginx:inno-dkr-12
+Untagged: nginx:stable-alpine
+Deleted: sha256:5b4900b042ccfa8b0a73df622c3a60f2322faeb2be800cbee5aa7b44d241649e
+Error response from daemon: No such image: 5b4900b042cc:latest
+Error response from daemon: No such image: 5b4900b042cc:latest
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker ps -a
+CONTAINER ID   IMAGE                 COMMAND                  CREATED             STATUS                      PORTS     NAMES
+b016fc58b262   f8b40a516de3          "nginx -g 'daemon of…"   38 minutes ago      Exited (0) 39 seconds ago             inno-dkr-10
+4d235e00e578   25a05811e17f          "nginx -g 'daemon of…"   About an hour ago   Exited (0) 39 seconds ago             inno-dkr-09-container
+f2b665bd8b08   ubuntu-nginx:custom   "nginx -g 'daemon of…"   About an hour ago   Exited (0) 39 seconds ago             ubuntu-nginx-container
+f0d4cd0133a6   aeda9f1884ad          "/docker-entrypoint.…"   2 hours ago         Exited (1) 2 hours ago                inno-dkr-08-container
+820fbab584a6   5b4900b042cc          "/docker-entrypoint.…"   2 hours ago         Exited (0) 39 seconds ago             inno-dkr-07-container
+7cc55be190a7   42e026ae5315          "/docker-entrypoint.…"   7 hours ago         Exited (0) 39 seconds ago             inno-dkr-06-global
+7a7045f6f1ef   42e026ae5315          "/docker-entrypoint.…"   7 hours ago         Exited (0) 38 seconds ago             test-log-config
+8802c406833a   42e026ae5315          "/docker-entrypoint.…"   7 hours ago         Exited (0) 38 seconds ago             inno-dkr-06-local
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi --force $(docker images nginx -q)
+docker: 'docker rmi' requires at least 1 argument
+
+Usage:  docker rmi [OPTIONS] IMAGE [IMAGE...]
+
+See 'docker rmi --help' for more information
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi -f $(docker images nginx -q)
+docker: 'docker rmi' requires at least 1 argument
+
+Usage:  docker rmi [OPTIONS] IMAGE [IMAGE...]
+
+See 'docker rmi --help' for more information
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker ps -a
+CONTAINER ID   IMAGE                 COMMAND                  CREATED             STATUS                          PORTS     NAMES
+b016fc58b262   f8b40a516de3          "nginx -g 'daemon of…"   39 minutes ago      Exited (0) About a minute ago             inno-dkr-10
+4d235e00e578   25a05811e17f          "nginx -g 'daemon of…"   About an hour ago   Exited (0) About a minute ago             inno-dkr-09-container
+f2b665bd8b08   ubuntu-nginx:custom   "nginx -g 'daemon of…"   About an hour ago   Exited (0) About a minute ago             ubuntu-nginx-container
+f0d4cd0133a6   aeda9f1884ad          "/docker-entrypoint.…"   2 hours ago         Exited (1) 2 hours ago                    inno-dkr-08-container
+820fbab584a6   5b4900b042cc          "/docker-entrypoint.…"   2 hours ago         Exited (0) About a minute ago             inno-dkr-07-container
+7cc55be190a7   42e026ae5315          "/docker-entrypoint.…"   7 hours ago         Exited (0) About a minute ago             inno-dkr-06-global
+7a7045f6f1ef   42e026ae5315          "/docker-entrypoint.…"   7 hours ago         Exited (0) About a minute ago             test-log-config
+8802c406833a   42e026ae5315          "/docker-entrypoint.…"   7 hours ago         Exited (0) About a minute ago             inno-dkr-06-local
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker ps -a
+CONTAINER ID   IMAGE                 COMMAND                  CREATED             STATUS                     PORTS     NAMES
+b016fc58b262   f8b40a516de3          "nginx -g 'daemon of…"   41 minutes ago      Exited (0) 3 minutes ago             inno-dkr-10
+4d235e00e578   25a05811e17f          "nginx -g 'daemon of…"   About an hour ago   Exited (0) 3 minutes ago             inno-dkr-09-container
+f2b665bd8b08   ubuntu-nginx:custom   "nginx -g 'daemon of…"   About an hour ago   Exited (0) 3 minutes ago             ubuntu-nginx-container
+f0d4cd0133a6   aeda9f1884ad          "/docker-entrypoint.…"   2 hours ago         Exited (1) 2 hours ago               inno-dkr-08-container
+820fbab584a6   5b4900b042cc          "/docker-entrypoint.…"   2 hours ago         Exited (0) 3 minutes ago             inno-dkr-07-container
+7cc55be190a7   42e026ae5315          "/docker-entrypoint.…"   7 hours ago         Exited (0) 3 minutes ago             inno-dkr-06-global
+7a7045f6f1ef   42e026ae5315          "/docker-entrypoint.…"   7 hours ago         Exited (0) 3 minutes ago             test-log-config
+8802c406833a   42e026ae5315          "/docker-entrypoint.…"   7 hours ago         Exited (0) 3 minutes ago             inno-dkr-06-local
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker images
+                                                                                                      i Info >   U  In Use
+IMAGE                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+custom-nginx:latest   faccb3b7a982        237MB         62.9MB    U  
+hello-world:latest    85404b3c5395       25.9kB         9.52kB        
+ubuntu-nginx:custom   8b2448bd851f        186MB         51.4MB    U  
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi $(docker images nginx -q)
+docker: 'docker rmi' requires at least 1 argument
+
+Usage:  docker rmi [OPTIONS] IMAGE [IMAGE...]
+
+See 'docker rmi --help' for more information
+root@Ubuntu-24:~/docker-ubuntu-nginx# ^C
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker run -d --name inno-dkr-12 nginx:stable-alpine
+Unable to find image 'nginx:stable-alpine' locally
+stable-alpine: Pulling from library/nginx
+Digest: sha256:5b4900b042ccfa8b0a73df622c3a60f2322faeb2be800cbee5aa7b44d241649e
+Status: Downloaded newer image for nginx:stable-alpine
+eebeba38431897cedcd844742fd0a006dd8a0ed83d5cb765ddd138c8ac62d0cf
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker run -d --name inno-dkr-12 nginx:stable-alpine
+docker: Error response from daemon: Conflict. The container name "/inno-dkr-12" is already in use by container "eebeba38431897cedcd844742fd0a006dd8a0ed83d5cb765ddd138c8ac62d0cf". You have to remove (or rename) that container to be able to reuse that name.
+
+Run 'docker run --help' for more information
+root@Ubuntu-24:~/docker-ubuntu-nginx# ^C
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker ps | grep inno-dkr-12
+eebeba384318   nginx:stable-alpine   "/docker-entrypoint.…"   23 seconds ago   Up 22 seconds   80/tcp    inno-dkr-12
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi nginx:stable-alpine
+Error response from daemon: conflict: unable to delete nginx:stable-alpine (must be forced) - container eebeba384318 is using its referenced image 5b4900b042cc
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker rmi --force nginx:stable-alpine
+Untagged: nginx:stable-alpine
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker ps | grep inno-dkr-12
+eebeba384318   5b4900b042cc   "/docker-entrypoint.…"   About a minute ago   Up About a minute   80/tcp    inno-dkr-12
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker restart inno-dkr-12
+inno-dkr-12
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker ps | grep inno-dkr-12
+eebeba384318   5b4900b042cc   "/docker-entrypoint.…"   2 minutes ago   Up 7 seconds   80/tcp    inno-dkr-12
+root@Ubuntu-24:~/docker-ubuntu-nginx# history

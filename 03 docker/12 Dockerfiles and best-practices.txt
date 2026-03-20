@@ -1,0 +1,93 @@
+
+cd ~
+git clone https://github.com/priscilla-codes/alonetone.git
+
+mkdir -p /home/user/dkr-17-alonetone
+cd /home/user/dkr-17-alonetone
+
+cp -r ~/alonetone/. .
+
+rm -rf ~/alonetone
+
+cat > /home/user/dkr-17-alonetone/Dockerfile.dev << 'EOF'
+# Dockerfile.dev - For development with full dependencies
+FROM ruby:3.2-slim
+
+cd /home/user/dkr-17-alonetone
+
+cat > Dockerfile.dev << 'EOF'
+FROM ruby:2.7
+
+RUN apt-get update -qq && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g yarn
+
+WORKDIR /app
+
+COPY Gemfile Gemfile.lock ./
+
+RUN bundle install --with development test
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["rails", "server", "-b", "0.0.0.0"]
+EOF
+
+cat > Dockerfile.prod << 'EOF'
+FROM ruby:2.7-alpine
+
+
+RUN apk add --no-cache \
+    build-base \
+    postgresql-dev \
+    nodejs \
+    yarn \
+    tzdata
+
+
+WORKDIR /app
+
+
+COPY Gemfile Gemfile.lock ./
+
+RUN bundle install --without development test --deployment --quiet
+
+COPY . .
+
+
+EXPOSE 3000
+
+CMD ["rails", "server", "-b", "0.0.0.0"]
+EOF
+
+git add Dockerfile.dev Dockerfile.prod
+
+git commit -m "Add Dockerfile.dev and Dockerfile.prod"
+
+git push origin main
+
+
+ls -la Dockerfile.*
+cat Dockerfile.dev
+cat Dockerfile.prod
+
+cd /home/user/dkr-17-alonetone
+
+docker build -f Dockerfile.dev \
+  --build-arg RAILS_ENV=development \
+  -t alonetone:dev \
+  .
+
+docker build -f Dockerfile.prod \
+  --build-arg RAILS_ENV=production \
+  -t alonetone:prod \
+  .
+
+docker images alonetone

@@ -1,0 +1,29 @@
+docker pull nginx:stable-alpine
+docker tag nginx:stable-alpine nginx:inno-dkr-07
+docker images
+
+MAGE                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+hello-world:latest    85404b3c5395       25.9kB         9.52kB        
+nginx:inno-dkr-07     5b4900b042cc       93.3MB         26.9MB        
+nginx:stable          42e026ae5315        240MB         65.8MB    U  
+nginx:stable-alpine   5b4900b042cc       93.3MB         26.9MB        
+
+docker images nginx | grep -E "(stable-alpine|inno-dkr-07)"
+docker run -d --name inno-dkr-07-container nginx:inno-dkr-07
+docker ps | grep inno-dkr-07-container
+docker ps 
+
+CONTAINER ID   IMAGE               COMMAND                  CREATED              STATUS              PORTS                    NAMES
+820fbab584a6   nginx:inno-dkr-07   "/docker-entrypoint.…"   About a minute ago   Up About a minute   80/tcp                   inno-dkr-07-container
+7cc55be190a7   nginx:stable        "/docker-entrypoint.…"   5 hours ago          Up 5 hours          127.0.0.1:8893->80/tcp   inno-dkr-06-global
+7a7045f6f1ef   nginx:stable        "/docker-entrypoint.…"   5 hours ago          Up 5 hours          80/tcp                   test-log-config
+8802c406833a   nginx:stable        "/docker-entrypoint.…"   5 hours ago          Up 5 hours          127.0.0.1:8892->80/tcp   inno-dkr-06-local
+
+
+docker ps --filter "name=inno-dkr-07-container" --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+
+NAMES                   STATUS              IMAGE
+inno-dkr-07-container   Up About a minute   nginx:inno-dkr-07
+
+
+

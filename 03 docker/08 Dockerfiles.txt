@@ -1,0 +1,55 @@
+
+nano /home/nginx.conf
+FROM nginx:stable
+COPY nginx.conf /etc/nginx/nginx.conf
+mkdir -p ~/docker-nginx
+cd ~/docker-nginx
+cat > Dockerfile << 'EOF'
+FROM nginx:stable
+COPY nginx.conf /etc/nginx/nginx.conf
+LABEL maintainer="Hlb" description="Custom nginx image with custom config+++"
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+EOF
+
+cat Dockerfile
+docker build -t custom-nginx:latest .
+cp /home/nginx.conf /home/docker-nginx
+ls
+cd ..
+ls
+cd ..
+ls
+cd /home
+ls
+cp nginx.conf docker-nginx
+cd docker-nginx
+ls
+rm -f docker-nginx
+ls
+mkdir -p docker-nginx
+cd docker-nginx
+cp /home/nginx.conf ~
+ls
+cp /home/nginx.conf /home/docker-nginx/
+ls
+cat > Dockerfile << 'EOF'
+FROM nginx:stable
+COPY nginx.conf /etc/nginx/nginx.conf
+LABEL maintainer="Hlb" description="Custom nginx image with custom config+++"
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+EOF
+
+cat Dockerfile
+ls
+docker build -t custom-nginx:latest .
+docker images | grep custom-nginx
+docker exec my-custom-nginx ls -la /etc/nginx/nginx.conf
+docker exec custom-nginx ls -la /etc/nginx/nginx.conf
+docker build -t nginx:inno-dkr-08 .
+docker images nginx | grep inno-dkr-08
+docker run -d   --name inno-dkr-08-container   -p 127.0.0.1:8900:80   nginx:inno-dkr-08
+docker ps
+docker run -d   --name inno-dkr-08-container   -p 127.0.0.1:8900:80   nginx:inno-dkr-08
+docker ps -a

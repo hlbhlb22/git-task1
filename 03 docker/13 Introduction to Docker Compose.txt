@@ -1,0 +1,67 @@
+cat > docker-compose-unmounted.yml << 'EOF'
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:stable
+    container_name: nginx
+    ports:
+      - "127.0.0.1:18888:80"
+EOF
+
+docker-compose -f docker-compose-unmounted.yml up -d
+
+docker ps
+
+curl http://127.0.0.1:18888
+
+docker-compose -f docker-compose-unmounted.yml down
+
+cat docker-compose-unmounted.yml
+
+docker-compose -p inno27 -f docker-compose-unmounted.yml up -d
+
+docker ps
+
+curl -o nginx.conf https://raw.githubusercontent.com/nginx/nginx/master/conf/nginx.conf
+
+
+
+cat > nginx.conf << 'EOF'
+events {
+    worker_connections 1024;
+}
+
+http {
+    server {
+        listen 80;
+        server_name localhost;
+
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+        }
+    }
+}
+EOF
+
+ls -la nginx.conf
+
+cat > docker-compose-mounted.yml << 'EOF'
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:stable
+    container_name: nginx
+    ports:
+      - "127.0.0.1:18888:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+EOF
+
+docker-compose -p inno27 -f docker-compose-unmounted.yml down
+
+docker-compose -p inno27 -f docker-compose-mounted.yml up -d
+
+docker ps

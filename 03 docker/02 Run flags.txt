@@ -1,0 +1,78 @@
+
+
+wget -O ~/nginx.conf https://raw.githubusercontent.com/piijai/server-configs-nginx/master/nginx.conf
+ls
+cd /root
+ls
+mv nginx.conf ~home
+ls
+cd /home/
+ls
+wget -O home/nginx.conf https://raw.githubusercontent.com/piijai/server-configs-nginx/master/nginx.conf
+wget -O /home/nginx.conf https://raw.githubusercontent.com/piijai/server-configs-nginx/master/nginx.conf
+ls
+docker run -d   --name inno-dkr-02   -p 127.0.0.1:8889:80   -v /home/nginx.conf:/etc/nginx/nginx.conf:ro   nginx:stable
+docker ps
+curl http://127.0.0.1:8889
+docker exec inno-dkr-02 cat /etc/nginx/nginx.conf
+nano /home/nginx.conf
+docker ps -a
+docker stop rbm-dkr-01
+docker run -d   --name inno-dkr-02   -p 127.0.0.1:8889:80   -v /home/nginx.conf:/etc/nginx/nginx.conf:ro   nginx:stable
+docker run -d   --name inno-dkr-02   -p 127.0.0.1:8889:80   -v /home/nginx.conf:/etc/nginx/nginx.conf:ro   nginx:stable
+docker restart inno-dkr-02
+docker ps -a
+docker rm inno-dkr-02
+docker ps -a
+docker rm romantic_robinson
+docker rm agitated_elbakyan
+docker ps -a
+docker run -d   --name inno-dkr-02   -p 127.0.0.1:8889:80   -v /home/nginx.conf:/etc/nginx/nginx.conf:ro   nginx:stable
+docker ps -a
+docker run -d --name inno-test -p 127.0.0.1:8889:80 nginx:stable
+docker ps -a
+ls -la /home/nginx.conf
+cat /home/nginx.conf
+docker run -d --name inno-dkr-02 -p 127.0.0.1:8889:80 -v /home/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable
+docker rm inno-dkr-02
+docker run -d --name inno-dkr-02 -p 127.0.0.1:8889:80 -v /home/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable
+docker ps | grep 8889
+docker rm inno-test
+docker rm -force inno-test
+docker rm -f inno-test
+docker ps -a
+docker ps -a
+docker run -d --name inno-dkr-02 -p 127.0.0.1:8889:80 -v /home/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable
+docker exec -ti inno-dkr-02 md5sum /etc/nginx/nginx.conf
+docker ps -a
+docker restart inno-dkr-02
+docker ps -a
+docker rm -f inno-dkr-02
+docker run -d --name inno-dkr-02 -p 127.0.0.1:8889:80 -v /home/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable
+sudo docker exec -ti inno-dkr-02 md5sum /etc/nginx/nginx.conf
+docker ps -a
+docker run -d --name inno-dkr-02 -p 127.0.0.1:8889:80 -v /home/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable
+docker rm -f inno-dkr-02
+docker run -d --name inno-dkr-02 -p 127.0.0.1:8889:80 -v /home/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable
+docker ps -a
+docker rm -f inno-dkr-02
+docker ps -a
+docker run -d --name inno-dkr-02 -p 127.0.0.1:8889:80 -v /home/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable
+docker ps -a
+lsof -i :8889
+netstat -tulpn | grep 8889
+apt install net-tools
+netstat -tulpn | grep 8889
+docker ps -a
+docker rm -f inno-dkr-02
+docker ps -a
+docker run -d --name inno-dkr-02 -p 127.0.0.1:8889:80 -v /home/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable
+docker ps -a
+docker logs inno-dkr-02
+docker run -d --name nginx-temp nginx:stable
+mkdir -p ~/nginx-conf
+docker cp nginx-temp:/etc/nginx/h5bp ~/nginx-conf/
+docker ps -a
+docker cp nginx-temp:/etc/nginx/h5bp ~/nginx-conf/
+docker exec -ti inno-dkr-02 md5sum /etc/nginx/nginx.conf
+history

@@ -1,0 +1,19 @@
+docker run -d   --name inno-dkr-05-run-$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 10)   nginx:stable
+docker run -d   --name inno-dkr-05-run-$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 10)   nginx:stable
+docker ps -a
+docker ps -a | grep inno-dkr-05-run-
+docker run -d --name inno-dkr-05-stop nginx:stable
+docker ps | grep inno-dkr-05-stop
+docker ps -a | grep inno-dkr-05
+docker ps | tee /home/user/ps.txt
+ls
+docker ps | tee /home/ps.txt
+ls
+nano ps.txt
+docker stop inno-dkr-05-stop
+docker ps -a
+docker stop $(docker ps -q)
+docker ps -a
+docker rm -f $(docker ps -aq)
+docker ps -a
+history

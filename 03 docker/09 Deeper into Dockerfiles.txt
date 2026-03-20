@@ -1,0 +1,300 @@
+
+
+root@Ubuntu-24:/home/docker-nginx# cd ..
+root@Ubuntu-24:/home# mkdir -p ~/docker-ubuntu-nginx
+cd ~/docker-ubuntu-nginx
+root@Ubuntu-24:~/docker-ubuntu-nginx# cat > Dockerfile << 'EOF'
+# Use Ubuntu 18.04 as the base image
+FROM ubuntu:18.04
+> WORKDIR /etc/nginx/
+> RUN apt-get update && \
+    apt-get install -y nginx && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+> COPY nginx.conf /etc/nginx/nginx.conf
+> VOLUME /var/lib/nginx
+> ENTRYPOINT ["nginx"]
+> CMD ["-g", "daemon off;"]
+EOF
+root@Ubuntu-24:~/docker-ubuntu-nginx# cat > nginx.conf << 'EOF'
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 768;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    gzip on;
+
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+EOF }   }   try_files $uri $uri/ =404;
+root@Ubuntu-24:~/docker-ubuntu-nginx# cat nginx.conf
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 768;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    gzip on;
+
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+        index index.html index.htm;
+
+        server_name _;
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
+}
+root@Ubuntu-24:~/docker-ubuntu-nginx# cat nginx.conf
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 768;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    gzip on;
+
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+        index index.html index.htm;
+
+        server_name _;
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
+}
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker build -t ubuntu-nginx:custom .
+[+] Building 79.5s (9/9) FINISHED                                                                          docker:default
+ => [internal] load build definition from Dockerfile                                                                 0.2s
+ => => transferring dockerfile: 334B                                                                                 0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:18.04                                                      2.2s
+ => [internal] load .dockerignore                                                                                    0.2s
+ => => transferring context: 2B                                                                                      0.0s
+ => [1/4] FROM docker.io/library/ubuntu:18.04@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43  15.2s
+ => => resolve docker.io/library/ubuntu:18.04@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c  0.3s
+ => => sha256:7c457f213c7634afb95a0fb2410a74b7b5bc0ba527033362c240c7a11bef4331 25.69MB / 25.69MB                    10.1s
+ => => extracting sha256:7c457f213c7634afb95a0fb2410a74b7b5bc0ba527033362c240c7a11bef4331                            4.5s
+ => [internal] load build context                                                                                    0.3s
+ => => transferring context: 688B                                                                                    0.0s
+ => [2/4] WORKDIR /etc/nginx/                                                                                        0.6s
+ => [3/4] RUN apt-get update &&     apt-get install -y nginx &&     apt-get clean &&     rm -rf /var/lib/apt/lists  44.4s
+ => [4/4] COPY nginx.conf /etc/nginx/nginx.conf                                                                      0.4s
+ => exporting to image                                                                                              15.4s
+ => => exporting layers                                                                                             11.3s
+ => => exporting manifest sha256:42b495a470e70927f751ad467fa2e8390d4b316e279f44df52a6c88d14555ffd                    0.1s
+ => => exporting config sha256:beea02adfdef02dff13b398d5a0a7e794cd7546eb778bf8f4d8e07e38b420854                      0.1s
+ => => exporting attestation manifest sha256:385106d3862252e2904ae02abc52aeab3d28e520bf4114be66cbf40e1325fbc4        0.1s
+ => => exporting manifest list sha256:8b2448bd851f5519e5ce03af551ad871d9ec43905f6b262b54ee1fa3df805350               0.1s
+ => => naming to docker.io/library/ubuntu-nginx:custom                                                               0.0s
+ => => unpacking to docker.io/library/ubuntu-nginx:custom                                                            3.4s
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker images | grep ubuntu-nginx
+WARNING: This output is designed for human readability. For machine-readable output, please use --format.
+ubuntu-nginx:custom   8b2448bd851f        186MB         51.4MB        
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker run -d \
+  --name ubuntu-nginx-container \
+  -p 8903:80 \
+  ubuntu-nginx:custom
+f2b665bd8b08fb16a907ddddcb8093472cd7925fefb10cfc916e6bdaf087af4a
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker ps | grep ubuntu-nginx-container
+f2b665bd8b08   ubuntu-nginx:custom   "nginx -g 'daemon of…"   10 seconds ago      Up 9 seconds       0.0.0.0:8903->80/tcp, [::]:8903->80/tcp   ubuntu-nginx-container
+root@Ubuntu-24:~/docker-ubuntu-nginx# curl http://127.0.0.1:8903
+<html>
+<head><title>403 Forbidden</title></head>
+<body bgcolor="white">
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx/1.14.0 (Ubuntu)</center>
+</body>
+</html>
+root@Ubuntu-24:~/docker-ubuntu-nginx# cd ~/docker-ubuntu-nginx^C
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker build -t nginx:inno-dkr-09 .
+[+] Building 4.1s (9/9) FINISHED                                                                           docker:default
+ => [internal] load build definition from Dockerfile                                                                 0.1s
+ => => transferring dockerfile: 334B                                                                                 0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:18.04                                                      1.7s
+ => [internal] load .dockerignore                                                                                    0.1s
+ => => transferring context: 2B                                                                                      0.0s
+ => [1/4] FROM docker.io/library/ubuntu:18.04@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c  0.3s
+ => => resolve docker.io/library/ubuntu:18.04@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c  0.3s
+ => [internal] load build context                                                                                    0.1s
+ => => transferring context: 32B                                                                                     0.0s
+ => CACHED [2/4] WORKDIR /etc/nginx/                                                                                 0.0s
+ => CACHED [3/4] RUN apt-get update &&     apt-get install -y nginx &&     apt-get clean &&     rm -rf /var/lib/apt  0.0s
+ => CACHED [4/4] COPY nginx.conf /etc/nginx/nginx.conf                                                               0.0s
+ => exporting to image                                                                                               0.9s
+ => => exporting layers                                                                                              0.0s
+ => => exporting manifest sha256:42b495a470e70927f751ad467fa2e8390d4b316e279f44df52a6c88d14555ffd                    0.0s
+ => => exporting config sha256:beea02adfdef02dff13b398d5a0a7e794cd7546eb778bf8f4d8e07e38b420854                      0.0s
+ => => exporting attestation manifest sha256:17b702dc602a5bac33ef33ab309f61921fea2f1b41139eede1e174500281d987        0.3s
+ => => exporting manifest list sha256:25a05811e17f475cb0c78d28bb177168af0ccfc5a0f76724d2d794ef184bb2df               0.1s
+ => => naming to docker.io/library/nginx:inno-dkr-09                                                                 0.0s
+ => => unpacking to docker.io/library/nginx:inno-dkr-09                                                              0.1s
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker images
+                                                                                                      i Info >   U  In Use
+IMAGE                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+custom-nginx:latest   faccb3b7a982        237MB         62.9MB    U  
+hello-world:latest    85404b3c5395       25.9kB         9.52kB        
+nginx:inno-dkr-07     5b4900b042cc       93.3MB         26.9MB    U  
+nginx:inno-dkr-08     aeda9f1884ad        237MB         62.9MB    U  
+nginx:inno-dkr-09     25a05811e17f        186MB         51.4MB    U  
+nginx:stable          42e026ae5315        240MB         65.8MB    U  
+nginx:stable-alpine   5b4900b042cc       93.3MB         26.9MB    U  
+ubuntu-nginx:custom   8b2448bd851f        186MB         51.4MB    U  
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker images nginx | grep inno-dkr-09
+WARNING: This output is designed for human readability. For machine-readable output, please use --format.
+nginx:inno-dkr-09     25a05811e17f        186MB         51.4MB   U    
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker run -d \
+  --name inno-dkr-09-container \
+  -p 127.0.0.1:8901:80 \
+  nginx:inno-dkr-09
+4d235e00e5781fa80d2372e260384bb77a44e756493626a851dbc1b9fb28543a
+root@Ubuntu-24:~/docker-ubuntu-nginx# docker ps | grep inno-dkr-09-container
+4d235e00e578   nginx:inno-dkr-09     "nginx -g 'daemon of…"   22 seconds ago      Up 20 seconds      127.0.0.1:8901->80/tcp                    inno-dkr-09-container
+root@Ubuntu-24:~/docker-ubuntu-nginx# curl http://127.0.0.1:8901
+<html>
+<head><title>403 Forbidden</title></head>
+<body bgcolor="white">
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx/1.14.0 (Ubuntu)</center>
+</body>
+</html>
+root@Ubuntu-24:~/docker-ubuntu-nginx# curl http://127.0.0.1:8901
+<html>
+<head><title>403 Forbidden</title></head>
+<body bgcolor="white">
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx/1.14.0 (Ubuntu)</center>
+</body>
+</html>
+root@Ubuntu-24:~/docker-ubuntu-nginx# history
+    1* clear
+    2  9 Deeper into Dockerfiles
+    3  cd ..
+    4  mkdir -p ~/docker-ubuntu-nginx
+    5  cd ~/docker-ubuntu-nginx
+    6  cat > Dockerfile << 'EOF'
+# Use Ubuntu 18.04 as the base image
+FROM ubuntu:18.04
+WORKDIR /etc/nginx/
+RUN apt-get update && \
+    apt-get install -y nginx && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+COPY nginx.conf /etc/nginx/nginx.conf
+VOLUME /var/lib/nginx
+ENTRYPOINT ["nginx"]
+CMD ["-g", "daemon off;"]
+EOF
+
+    7  cat > nginx.conf << 'EOF'
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 768;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    gzip on;
+
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+        index index.html index.htm;
+
+        server_name _;
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
+}
+EOF
+
+cat nginx.conf
+docker build -t ubuntu-nginx:custom .
+docker images | grep ubuntu-nginx
+docker run -d   --name ubuntu-nginx-container   -p 8903:80   ubuntu-nginx:custom
+docker ps | grep ubuntu-nginx-container
+curl http://127.0.0.1:8903
+docker build -t nginx:inno-dkr-09 .
+docker images
+docker images nginx | grep inno-dkr-09
+docker run -d   --name inno-dkr-09-container   -p 127.0.0.1:8901:80   nginx:inno-dkr-09
+docker ps | grep inno-dkr-09-container
+curl http://127.0.0.1:8901
+
+

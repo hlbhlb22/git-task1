@@ -1,0 +1,122 @@
+  docker rm -f inno-dkr-02
+  docker rm -f nginx-temp
+  docker rm -f rbm-dkr-01
+  docker rm -f elegant_buck
+  docker ps -a
+  sudo apt update
+  sudo apt install nginx -y
+  ls
+  rm nginx.conf
+  ls
+  cp /etc/nginx/nginx.conf /home/
+  ls
+  docker ps -a
+  docker run -d   --name inno-dkr-03   -p 127.0.0.1:8890:80   -v /home/nginx.conf:/etc/nginx/nginx.conf:ro   nginx:stable
+  docker ps -a
+  nano /home/nginx.conf
+  hist
+  history
+  docker exec -ti inno-dkr-03 md5sum /etc/nginx/nginx.conf
+  md5sum /home/nginx.conf
+  cp /etc/nginx/nginx.conf /home/
+  nano /home/nginx.conf
+  docker ps -a
+  mkdir -p ~/nginx-configs
+  ls
+  cd root
+  cd /
+  ls
+  mkdir -p /home/nginx-configs
+  ls
+  cd /home/
+  ls
+  cat > /home/nginx-configs/nginx-new.conf << 'EOF'
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+        default_type text/plain;
+        return 200 "Welcome to the training program Innowise: Docker! Again!\n";
+    }
+}
+EOF
+
+  ls
+  cd nginx-configs/
+  ls
+  nano nginx-new.conf
+  cp /home/nginx.conf /home/nginx.conf.backup
+  cp /home/nginx-configs/nginx-new.conf /home/nginx.conf
+  cat /home/nginx.conf
+  nano /home/nginx.conf
+  vi /home/nginx.conf
+  docker exec inno-dkr-03 nginx -s reload
+  docker ps-a
+  docker ps -a
+  docker exec inno-dkr-03 systemctl reload nginx 2>/dev/null || docker exec inno-dkr-03 nginx -s reload
+  cat > /home/nginx.conf << 'EOF'
+events {
+    worker_connections 1024;
+}
+
+http {
+    server {
+        listen 80;
+       
+        location / {
+            default_type text/plain;
+            return 200 "Welcome to the training program Innowise: Docker! Again!\n";
+        }
+    }
+}
+EOF
+
+  nano /home/nginx.conf
+  vi /home/nginx.conf
+  nano /home/nginx.conf
+  vi /home/nginx.conf
+  nano /home/nginx.conf
+  vi /home/nginx.conf
+  nano /home/nginx.conf
+  nano /home/nginx.conf
+  kill 39151
+  nano /home/nginx.conf
+  rm -f /home/nginx.conf
+  ls
+  cp /etc/nginx/nginx.conf /home/
+  ls
+  cd /home/
+  ls
+  ls -a
+  cat > /home/nginx.conf << 'EOF'
+events {
+    worker_connections 1024;
+}
+
+http {
+    server {
+        listen 80;
+       
+        location / {
+            default_type text/plain;
+            return 200 "Welcome to the training program Innowise: Docker! Again!\n";
+        }
+    }
+}
+EOF
+
+  nano /home/nginx.conf
+  docker ps -a
+  docker exec inno-dkr-03 nginx -s reload
+  nano /home/nginx.conf
+  docker exec inno-dkr-03 nginx -s reload
+  hist
+  history
+
+
+root@Ubuntu-24:/home# docker ps -a
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                    NAMES
+c4d977c1fa47   nginx:stable   "/docker-entrypoint.…"   38 minutes ago   Up 38 minutes   127.0.0.1:8890->80/tcp   inno-dkr-03

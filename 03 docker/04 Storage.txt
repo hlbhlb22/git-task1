@@ -1,0 +1,95 @@
+docker volume create inno-dkr-04-volume
+docker volume ls | grep inno-dkr-04-volume
+docker run -d   --name inno-dkr-04   -p 127.0.0.1:8891:80   -v /home/nginx.conf:/etc/nginx/nginx.conf:ro   -v inno-dkr-04-volume:/logs/external   nginx:stable
+nano /home/nginx.conf
+cp /home/nginx.conf /home/nginx.conf2
+ls
+cat > /home/nginx.conf << 'EOF'
+user  nginx;
+worker_processes  auto;
+
+error_log  /logs/external/error.log notice;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /logs/external/access.log  main;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    server {
+        listen 80;
+        server_name localhost;
+
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }
+}
+EOF
+
+nano /home/nginx.conf
+docker ps -a
+docker ps | grep inno-dkr-04
+curl http://127.0.0.1:8891
+docker inspect inno-dkr-04 | grep -A 10 Mounts
+docker exec inno-dkr-04 ls -la /logs/external
+docker exec inno-dkr-04 ls /logs/external
+docker exec inno-dkr-04 cat /logs/external/access.log
+curl http://127.0.0.1:8891
+docker exec inno-dkr-04 cat /logs/external/access.log
+curl http://127.0.0.1:8891/anything
+curl http://127.0.0.1:8891/test
+docker exec inno-dkr-04 ls -la /logs/external/
+cat /home/nginx.conf | grep -A 5 -B 5 log
+cat > /home/nginx.conf << 'EOF'
+events {
+    worker_connections 1024;
+}
+
+http {
+    access_log /logs/external/access.log;
+    error_log /logs/external/error.log;
+
+    server {
+        listen 80;
+       
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+            default_type text/plain;
+            return 200 "Welcome to inno-dkr-04!\n";
+        }
+    }
+}
+EOF
+
+docker exec inno-dkr-04 nginx -t
+docker exec inno-dkr-04 nginx -s reload
+for i in {1..5}; do     curl -s http://127.0.0.1:8891 > /dev/null;     echo "Request $i done"; done
+docker exec inno-dkr-04 ls -la /logs/external/
+docker exec inno-dkr-04 cat /logs/external/access.log
+docker exec inno-dkr-04 cat /logs/external/error.log
+
+drwxr-xr-x 2 root root 4096 Mar 18 03:28 .
+drwx-----x 3 root root 4096 Mar 18 03:13 ..
+-rw-r--r-- 1 root root  425 Mar 18 03:29 access.log
+-rw-r--r-- 1 root root    0 Mar 18 03:28 error.log
+
