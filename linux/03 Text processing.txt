@@ -1,0 +1,51 @@
+
+
+
+1. 
+df -h | awk '{print $1, $5, $6}' > disk_analysis.txt 
+
+
+df -h --output=source,pcent,target > disk_partitions.txt
+
+2.
+
+sudo du -ah /etc 2>/dev/null | sort -rh | head -10
+
+sudo du -ah /etc 2>/dev/null | sort -rh | head -10 > etc_largest_files.txt
+
+3. 
+
+# Create file with content
+nano regex_content.txt
+NDS/A
+NSDA
+ANS!D
+NAD/A
+
+cat > regex_content.txt << 'EOF'
+NDS/A
+NSDA
+ANS!D
+NAD/A
+EOF
+
+4.
+
+awk '/^N.*\/.*$/' regex_content.txt
+
+sed -n '/\//p' regex_content.txt
+
+5. 
+
+sudo cp /etc/passwd passwd.bak
+
+grep -n '/bin/bash' passwd.bak > bash_users.txt
+
+6. 
+
+sudo sed -i 's|/bin/sh|/bin/bash|g' passwd.bak
+
+
+grep '/bin/sh' passwd.bak  # empty
+grep '/bin/bash' passwd.bak  # +
+

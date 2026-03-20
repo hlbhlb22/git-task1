@@ -1,0 +1,81 @@
+
+1. deployed on virtual box 
+
+2. 
+sudo useradd -m -s /bin/bash raymond
+sudo useradd -m -s /bin/bash john
+
+sudo passwd raymond
+12345
+
+sudo passwd john
+123456
+
+3. 
+
+
+passphrase
+bkepbkrtt2758-=!
+
+The key's randomart image is: id rsa priv
++---[RSA 4096]----+
+|      oo...   E  |
+|     o. o.   . . |
+|      .. .... +  |
+|     . . =o+ o o |
+|      + S*X o o  |
+|     + +oB*o.+.  |
+|    + * oo=+.o   |
+|     = =.. .o    |
+|      o..        |
++----[SHA256]-----+
+
+pub ~/.ssh/id_rsa.pub
+
+sudo touch /home/john/.ssh/authorized_keys
+sudo chmod 600 /home/john/.ssh/authorized_keys
+sudo chown -R john:john /home/john/.ssh
+
+4.
+sudo usermod -aG sudo raymond
+
+sudo deluser john sudo 2>/dev/null || true
+
+5. 
+
+sudo su - raymond
+echo "This is Raymond's file" > raymond_file.txt
+
+chown raymond:raymond raymond_file.txt
+chmod 644 raymond_file.txt  # rw-r--r--
+
+sudo su - john
+
+echo '#!/bin/bash
+echo "Hello from John script"' > john_script.sh
+
+chmod 705 john_script.sh  
+
+6. 
+sudo chsh -s /bin/bash john
+
+7. 
+sudo useradd -m -s /bin/sh thirduser
+
+8. 
+sudo usermod -aG john thirduser
+
+id john
+
+sudo -u thirduser sh -c "ls -la /home/john/john_script.sh"
+
+9.
+
+echo "Content from host" > host_file.txt
+
+scp host_file.txt raymond@<server-ip>:/home/raymond/
+
+
+
+
+

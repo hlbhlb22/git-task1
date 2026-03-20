@@ -1,0 +1,197 @@
+
+
+1. 
+
+mkdir -p ~/test
+echo "This is test content for test_123 file" > ~/test/test_123
+
+ln -s ~/test /tmp/soft_link
+
+cp /tmp/soft_link/test_123 /tmp/
+
+
+ln /tmp/test_123 /tmp/hard_link
+
+ls -li /tmp/test_123 /tmp/hard_link
+echo "Symbolic link points to:"
+ls -l /tmp/soft_link
+
+FS=$(df /tmp | tail -1 | awk '{print $1}')
+echo "Filesystem for /tmp: $FS"
+
+
+df -i /tmp
+
+df -i --output=source,itotal,iused,iavail,ipcent,target | grep -E "(Source|$FS)"
+
+
+2.
+
+sudo fdisk -l
+
+NEW_DISK="/dev/sdb"
+
+echo "Creating partition..."
+sudo fdisk $NEW_DISK << EOF
+n
+p
+1
+
++2G
+w
+EOF
+
+echo "Formatting as XFS..."
+sudo mkfs.xfs ${NEW_DISK}1
+
+sudo mkdir -p /mnt
+sudo mount ${NEW_DISK}1 /mnt
+
+
+echo "Test file created at $(date)" | sudo tee /mnt/test_file.txt
+
+df -hT
+
+df -hT > df_before_resize.txt
+echo "Output saved to df_before_resize.txt"
+cat df_before_resize.txt
+
+
+sudo umount /mnt
+
+
+echo "Resizing partition..."
+sudo fdisk $NEW_DISK << EOF
+d
+n
+p
+1
+
+
+w
+EOF
+
+
+sudo xfs_repair ${NEW_DISK}1
+
+sudo mount ${NEW_DISK}1 /mnt
+
+sudo xfs_growfs /mnt
+
+
+echo "Checking test file..."
+sudo cat /mnt/test_file.txt
+
+df -hT > df_after_resize.txt
+echo "Output after resize saved to df_after_resize.txt"
+cat df_after_resize.txt
+
+echo "=== BEFORE RESIZE ==="
+cat df_before_resize.txt | grep ${NEW_DISK}1
+echo ""
+echo "=== AFTER RESIZE ==="
+cat df_after_resize.txt | grep ${NEW_DISK}1
+
+LVM
+
+1. 
+GUI
+
+2. 
+
+df -h > initial_df.txt
+sudo pvs > initial_pvs.txt
+sudo lvs > initial_lvs.txt
+sudo vgs > initial_vgs.txt
+
+echo "=== Initial df -h ==="
+cat initial_df.txt
+echo -e "\n=== Initial pvs ==="
+cat initial_pvs.txt
+echo -e "\n=== Initial lvs ==="
+cat initial_lvs.txt
+echo -e "\n=== Initial vgs ==="
+cat initial_vgs.txt 
+
+3. 
+GUI
+
+4. 
+DISK1="/dev/sdb"
+DISK2="/dev/sdc"
+VG_NAME="myvg"
+
+sudo pvcreate $DISK1
+
+sudo vgcreate $VG_NAME $DISK1
+
+sudo pvs
+sudo vgs
+
+5. 
+VG_SIZE=$(sudo vgs $VG_NAME --units g --noheadings --nosuffix -o vg_free)
+LV_SIZE=$(echo "$VG_SIZE / 2" | bc)
+
+sudo lvcreate -L ${LV_SIZE}G -n lv1 $VG_NAME
+sudo lvcreate -l 100%FREE -n lv2 $VG_NAME  # Use remaining space
+
+sudo lvs
+
+6. 
+
+sudo mkfs.xfs /dev/$VG_NAME/lv1
+sudo mkfs.xfs /dev/$VG_NAME/lv2
+
+sudo blkid | grep $VG_NAME
+
+7. 
+sudo mkdir -p /mnt/lv1
+sudo mkdir -p /mnt/lv2
+
+sudo mount /dev/$VG_NAME/lv1 /mnt/lv1
+sudo mount /dev/$VG_NAME/lv2 /mnt/lv2
+
+mount | grep $VG_NAME 
+
+8.
+df -h > after_lv_creation_df.txt
+echo "=== After LV Creation (df -h) ==="
+cat after_lv_creation_df.txt
+
+9. 
+sudo pvcreate $DISK2
+
+sudo vgextend $VG_NAME $DISK2
+
+10. 
+sudo vgs $VG_NAME
+
+DISK2_SIZE=$(sudo pvs $DISK2 --units g --noheadings --nosuffix -o pv_size)
+
+sudo lvextend -L +${DISK2_SIZE}G /dev/$VG_NAME/lv1
+
+sudo lvs $VG_NAME
+
+11.
+sudo xfs_growfs /mnt/lv1
+
+df -h /mnt/lv1
+
+12. 
+df -h > final_df.txt
+sudo pvs > final_pvs.txt
+sudo lvs > final_lvs.txt
+sudo vgs > final_vgs.txt
+
+echo "=== FINAL RESULTS ==="
+echo -e "\n=== df -h ==="
+cat final_df.txt
+
+echo -e "\n=== pvs ==="
+cat final_pvs.txt
+
+echo -e "\n=== lvs ==="
+cat final_lvs.txt
+
+echo -e "\n=== vgs ==="
+cat final_vgs.txt

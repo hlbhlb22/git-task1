@@ -1,0 +1,57 @@
+
+
+1. 
+Vbox clone full
+Ubuntu - Main Host (Client) 
++Clone Ubuntu Remote Host (Target)
+
+"NAT Network"
+
+
+
+2. 
+
+ping -c 4 google.com > ping_output.txt
+echo "Ping results saved to ping_output.txt"
+cat ping_output.txt
+
+3. 
+
+
+sudo apt install traceroute
+traceroute -n google.com > traceroute_output.txt
+echo "Traceroute saved to traceroute_output.txt"
+cat traceroute_output.txt
+
+4. 
+ip addr show > main_host_network.txt
+ip route show >> main_host_network.txt
+echo "=== Main Host IP ===" >> main_host_network.txt
+hostname -I >> main_host_network.txt
+
+ip addr show > remote_host_network.txt
+ip route show >> remote_host_network.txt
+echo "=== Remote Host IP ===" >> remote_host_network.txt
+hostname -I >> remote_host_network.txt
+
+ip link show | grep "state UP"
+
+5. 
+
+sudo ufw status verbose
+
+#inactive
+
+sudo ufw disable
+
+6.
+sudo apt install wireshark -y
+
+sudo usermod -aG wireshark vboxuser
+
+wireshark
+
+7. 
+sudo apt install telnetd -y
+
+

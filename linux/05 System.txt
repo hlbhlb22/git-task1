@@ -1,0 +1,268 @@
+
+1. 
+
+sudo nano /usr/local/bin/system_monitor.sh
+
+#!/bin/bash
+# /usr/local/bin/system_monitor.sh
+
+LOG_FILE="/var/log/system_monitor.log"
+OVERLOAD_FILE="/var/log/overload"
+
+while true; do
+    # Get uptime output
+    UPTIME_OUTPUT=$(uptime)
+    
+    # Write to log file
+    echo "$(date): $UPTIME_OUTPUT" >> "$LOG_FILE"
+    
+    # Sleep for 15 seconds
+    sleep 15
+done
+
+sudo chmod +x /usr/local/bin/system_monitor.sh
+
+
+sudo nano /etc/systemd/system/system-monitor.service
+
+
+[Unit]
+Description=System Monitor Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/system_monitor.sh
+Restart=always
+RestartSec=5
+User=root
+Group=root
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+sudo systemctl daemon-reload
+sudo systemctl enable system-monitor.service
+sudo systemctl start system-monitor.service
+
+
+sudo systemctl status system-monitor.service
+
+
+2. 
+
+sudo nano /usr/local/bin/system_monitor.sh
+
+#!/bin/bash
+# /usr/local/bin/system_monitor.sh - Updated version
+
+LOG_FILE="/var/log/system_monitor.log"
+OVERLOAD_FILE="/var/log/overload"
+
+while true; do
+    # Get uptime output
+    UPTIME_OUTPUT=$(uptime)
+    TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+    
+    # Write to log file
+    echo "$TIMESTAMP: $UPTIME_OUTPUT" >> "$LOG_FILE"
+    
+    # Extract 1-minute load average
+    LOAD_AVG=$(echo "$UPTIME_OUTPUT" | awk -F'[ ,:]+' '{print $(NF-2)}' | tr -d ',')
+    
+    # Check if load average > 1
+    if (( $(echo "$LOAD_AVG > 1" | bc -l) )); then
+        echo "$TIMESTAMP: LOAD WARNING - $UPTIME_OUTPUT" >> "$OVERLOAD_FILE"
+    fi
+    
+    # Sleep for 15 seconds
+    sleep 15
+done
+
+
+sudo systemctl restart system-monitor.service
+
+
+sudo tail -f /var/log/system_monitor.log
+
+3.
+
+sudo apt update
+
+sudo apt install stress -y
+
+CPU_COUNT=$(nproc)
+
+echo $CPU_COUNT
+
+echo "Current load average: $(uptime | awk '{print $10 $11 $12}')"
+echo "Running stress test for 50 seconds with $CPU_COUNT cores..."
+stress --cpu $CPU_COUNT --timeout 50s &
+
+
+echo "Monitoring overload file..."
+sudo tail -f /var/log/overload
+
+4.
+
+sudo nano /usr/local/bin/cleanup_monitor.sh
+
+#!/bin/bash
+# /usr/local/bin/cleanup_monitor.sh
+
+OVERLOAD_FILE="/var/log/overload"
+CLEANUP_LOG="/var/log/cleanup.log"
+MAX_SIZE_KB=50
+
+# Check if overload file exists
+if [[ -f "$OVERLOAD_FILE" ]]; then
+    # Get file size in kilobytes
+    FILE_SIZE=$(du -k "$OVERLOAD_FILE" | cut -f1)
+    
+    if [[ $FILE_SIZE -gt $MAX_SIZE_KB ]]; then
+        # Log cleanup action
+        TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+        echo "$TIMESTAMP: Cleaned $OVERLOAD_FILE (size: ${FILE_SIZE}KB)" >> "$CLEANUP_LOG"
+        
+        # Clear the file
+        > "$OVERLOAD_FILE"
+        
+        echo "Cleaned overload file at $TIMESTAMP"
+    else
+        echo "File size ($FILE_SIZE KB) within limits"
+    fi
+else
+    echo "Overload file does not exist"
+fi
+
+sudo chmod +x /usr/local/bin/cleanup_monitor.sh
+
+sudo /usr/local/bin/cleanup_monitor.sh
+
+sudo nano /etc/systemd/system/cleanup-monitor.timer
+
+[Unit]
+Description=Cleanup Monitor Timer
+Requires=cleanup-monitor.service
+
+[Timer]
+OnCalendar=*:0/5  # Every 5 minutes
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
+sudo nano /etc/systemd/system/cleanup-monitor.service
+
+[Unit]
+Description=Cleanup Monitor Service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cleanup_monitor.sh
+User=root
+
+
+# Enable and start the timer
+sudo systemctl daemon-reload
+sudo systemctl enable cleanup-monitor.timer
+sudo systemctl start cleanup-monitor.timer
+
+# /// Check timer status
+sudo systemctl status cleanup-monitor.timer
+sudo systemctl list-timers --all
+
+5. 
+
+sudo nano /usr/local/bin/check_monitor_status.sh
+
+
+#!/bin/bash
+# /usr/local/bin/check_monitor_status.sh
+
+SERVICE="system-monitor.service"
+STATUS_LOG="/var/log/service_status.log"
+
+# Check service status
+SERVICE_STATUS=$(systemctl is-active "$SERVICE")
+TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+
+# Log status
+echo "$TIMESTAMP: $SERVICE is $SERVICE_STATUS" >> "$STATUS_LOG"
+
+# Restart if not active
+if [[ "$SERVICE_STATUS" != "active" ]]; then
+    echo "$TIMESTAMP: Restarting $SERVICE" >> "$STATUS_LOG"
+    systemctl restart "$SERVICE"
+fi
+
+
+sudo chmod +x /usr/local/bin/check_monitor_status.sh
+
+sudo crontab -e
+
+
+*/10 * * * * /usr/local/bin/check_monitor_status.sh 
+
+sudo /usr/local/bin/check_monitor_status.sh
+sudo tail -f /var/log/service_status.log
+
+6. 
+
+ping google.com
+
+ Ctrl+Z to suspend
+
+bg
+
+jobs -l
+ps aux | grep ping
+pgrep -f "ping google.com"
+
+fg
+
+jobs
+kill __
+pkill -f "ping google.com"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
